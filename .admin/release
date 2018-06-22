@@ -1,0 +1,4 @@
+mvn javadoc:aggregate
+rm -rf docs
+mv target/site/apidocs/ docs
+mvn -P release-sign-artifacts package

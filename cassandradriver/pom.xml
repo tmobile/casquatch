@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.tmobile.opensource.casquatch</groupId>
+  <artifactId>CassandraDriver</artifactId>
+  <version>1.2-RELEASE</version>
+  <packaging>jar</packaging>
+
+  <name>Project Casquatch - Cassandra Driver</name>
+  <description>Cassandra Driver component of Project Casquatch</description>
+  <url>http://github.com/tmobile/casquatch</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Josh Turner</name>
+      <email>turner.josh@gmail.com</email>
+      <organization>T-Mobile Open Source</organization>
+      <organizationUrl>https://opensource.t-mobile.com/</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:ssh://github.com:tmobile/casquatch.git</connection>
+    <developerConnection>scm:git:ssh://github.com:tmobile/casquatch.git</developerConnection>
+    <url>https://github.com/tmobile/casquatch/tree/master</url>
+  </scm>
+
+  <dependencies>
+    <dependency>
+        <groupId>com.datastax.cassandra</groupId>
+        <artifactId>cassandra-driver-core</artifactId>
+        <version>${dse.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.datastax.cassandra</groupId>
+        <artifactId>cassandra-driver-mapping</artifactId>
+        <version>${dse.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${spring-context.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${spring-context.version}</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+      <version>${spring-boot.version}</version>
+    </dependency>
+      <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.cassandraunit</groupId>
+      <artifactId>cassandra-unit</artifactId>
+      <version>${cassandraunit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${apache-commons.version}</version>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <dse.version>3.4.0</dse.version>
+    <logback.version>1.2.3</logback.version>
+    <jackson.version>2.9.4</jackson.version>
+    <junit.version>4.12</junit.version>
+    <spring-context.version>5.0.4.RELEASE</spring-context.version>
+    <spring-boot.version>1.5.10.RELEASE</spring-boot.version>
+    <cassandraunit.version>3.3.0.2</cassandraunit.version>
+    <apache-commons.version>3.7</apache-commons.version>
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.19.1</version>
+        <configuration>
+          <includes>
+            <include>**/*Tests.java</include>
+          </includes>
+          <excludes>
+            <include>**/*DSETests.java</include>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

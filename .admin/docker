@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# Helper script to spin up docker with a cql and configure generator. Used for testing
+#
+
+KEYSPACE=$1
+INSTANCE=dkr
+
+echo "---------------------------------------------"
+echo "Starting Docker (30 second pause to startup)"
+echo "---------------------------------------------"
+docker run --rm  -p 9042:9042 -d --name $INSTANCE -d cassandra:latest
+sleep 30
+
+echo "---------------------------------------------"
+echo "Installing CQL"
+echo "---------------------------------------------"
+cat ${KEYSPACE}.cql | docker exec -i $INSTANCE cqlsh
+
+echo "---------------------------------------------"
+echo "Configure project"
+echo "---------------------------------------------"
+mkdir config
+cat << EOF > config/application.properties
+cassandraDriver.contactPoints=localhost
+cassandraDriver.localDC=datacenter1
+cassandraDriver.keyspace=$KEYSPACE
+cassandraDriver.features.driverConfig=disabled
+EOF

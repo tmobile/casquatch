@@ -1,0 +1,11 @@
+**/nohup.out
+*/.gitignore
+**/logs/*
+**/.classpath
+**/.project
+**/.settings/**
+**/target/**
+**/doc/*
+**/config/**
+**/application.properties
+cassandramodels/
