@@ -314,6 +314,24 @@ public class CassandraDriverTests {
         db.delete(TableName.class, obj);
     }
     
+    @Before
+    public void beforeReconnect() {
+        TableName obj = new TableName(20,21);
+        obj.setColOne("ColumnOne");
+        obj.setColTwo("ColumnTwo");
+        db.save(TableName.class, obj);
+    }
+    
+    @Test
+    public void testReconnect() {
+    	 CassandraDriver tmpdb = new CassandraDriver("cassandra", "cassandra", EmbeddedCassandraServerHelper.getHost(), EmbeddedCassandraServerHelper.getNativeTransportPort(), "cassandraunit", "junittest");
+    	 tmpdb.close();
+    	 TableName obj = tmpdb.getById(TableName.class, new TableName(20,21));
+
+         assertEquals(obj.getColOne(),"ColumnOne");
+         assertEquals(obj.getColTwo(),"ColumnTwo");
+    }
+    
 
     @AfterClass
     public static void shutdown() {

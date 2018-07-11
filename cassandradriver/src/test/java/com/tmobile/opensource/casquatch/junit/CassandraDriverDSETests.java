@@ -36,7 +36,7 @@ public class CassandraDriverDSETests {
 
     @BeforeClass
     public static void setUp() throws IOException, TTransportException {
-
+    	
     	/*
     	 * This assumes that thte local docker has solr running with a core created on table_name
     	 */
@@ -46,6 +46,7 @@ public class CassandraDriverDSETests {
         		.withKeyspace("junittest")
         		.withSolr()
         		.withSolrDC("dc1")
+        		.withoutDriverConfig()
         		.build();
     }
 

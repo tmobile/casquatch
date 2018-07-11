@@ -34,6 +34,11 @@ cassandraDriver.features.driverConfig=disabled
 EOF
 
 echo "---------------------------------------------"
+echo "Run Driver Tests"
+echo "---------------------------------------------"
+mvn -pl cassandradriver -q test
+
+echo "---------------------------------------------"
 echo "Running install"
 echo "---------------------------------------------"
 ./install.sh installTest
