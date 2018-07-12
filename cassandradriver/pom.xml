@@ -88,6 +88,7 @@
       <artifactId>commons-lang3</artifactId>
       <version>${apache-commons.version}</version>
     </dependency>
+
   </dependencies>
 
   <properties>
@@ -124,7 +125,7 @@
             <include>**/*Tests.java</include>
           </includes>
           <excludes>
-            <include>**/*DSETests.java</include>
+            <include>**/*DSE*Tests.java</include>
           </excludes>
         </configuration>
       </plugin>

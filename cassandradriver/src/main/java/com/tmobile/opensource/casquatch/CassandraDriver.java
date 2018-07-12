@@ -14,12 +14,17 @@
  */
 package com.tmobile.opensource.casquatch;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PreDestroy;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -29,6 +34,7 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.HostDistance;
 import com.datastax.driver.core.PoolingOptions;
+import com.datastax.driver.core.RemoteEndpointAwareJdkSSLOptions;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
@@ -95,12 +101,21 @@ public class CassandraDriver {
 				int delay;
 				int maxDelay;			
 			}	
+			class SSL {
+				class Keystore {
+					String path;
+					String password;
+				}
+				boolean node;
+				Keystore truststore = new Keystore();
+			}
 			Connections connections = new Connections();
 			Timeout timeout = new Timeout();
 			Reconnection reconnection = new Reconnection();
 			SpeculativeExecution speculativeExecution = new SpeculativeExecution();
 			Defaults defaults = new Defaults();
 			Features features = new Features();
+			SSL ssl = new SSL();
 			
 			String username;
 			String password;						
@@ -132,6 +147,7 @@ public class CassandraDriver {
 				this.features.solr=true;
 				this.defaults.solrDC="search";
 				this.defaults.saveNulls=false;
+				this.ssl.node=false;
 			}
 			
 			public String toString() {
@@ -401,6 +417,36 @@ public class CassandraDriver {
 			config.defaults.saveNulls=false;
 			return this;
 		}
+		
+	    /**
+	     * Build with ssl
+	     * @return Reference to Builder object
+	     */
+		public Builder withSSL() {
+			config.ssl.node=true;
+			return this;
+		}
+		
+	    /**
+	     * Build without ssl
+	     * @return Reference to Builder object
+	     */
+		public Builder withoutSSL() {
+			config.ssl.node=false;
+			return this;
+		}
+		
+	    /**
+	     * BBuild with defined truststore
+	     * @param path path to truststore
+	     * @param password truststore password
+	     * @return Reference to Builder object
+	     */
+		public Builder withTrustStore(String path, String password) {
+			config.ssl.truststore.path=path;
+			config.ssl.truststore.password=password;
+			return this;
+		}
 
 		
 	    /**
@@ -586,7 +632,7 @@ public class CassandraDriver {
      * @param loadBalancingPolicy Configured Load Balancing Policy
      * @return Cluster object for supplied details
      */
-    private Cluster createCluster(LoadBalancingPolicy loadBalancingPolicy) {
+    private Cluster createCluster(LoadBalancingPolicy loadBalancingPolicy) throws DriverException {
         //Set the local DC to use min 1 connection (34k threads) up to 3 max
         PoolingOptions poolingOptions = new PoolingOptions()
                 //.setNewConnectionThreshold(HostDistance.LOCAL, 200) //default
@@ -610,8 +656,8 @@ public class CassandraDriver {
         ExponentialReconnectionPolicy reconnectionPolicy = new ExponentialReconnectionPolicy(config.reconnection.delay, config.reconnection.maxDelay);
 
         RetryPolicy retryPolicy = FallthroughRetryPolicy.INSTANCE;
-
-        Cluster cluster = Cluster.builder()
+        
+        Cluster.Builder clusterBuilder = Cluster.builder()
                 .addContactPoints(config.contactPoints.split(","))
                 .withLoadBalancingPolicy(loadBalancingPolicy)
                 .withPort(config.port)
@@ -620,8 +666,36 @@ public class CassandraDriver {
                 .withPoolingOptions(poolingOptions)
                 .withSocketOptions(socketOptions)
                 .withReconnectionPolicy(reconnectionPolicy)
-                .withRetryPolicy(retryPolicy)
-                .build();
+                .withRetryPolicy(retryPolicy);
+        
+        if (config.ssl.node) {        	
+        	try {                
+        		if (!config.ssl.truststore.path.isEmpty()) {
+					KeyStore keyStore = KeyStore.getInstance("JKS");
+					InputStream trustStore = new FileInputStream(config.ssl.truststore.path);
+					keyStore.load(trustStore, config.ssl.truststore.password.toCharArray());
+					TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+					trustManagerFactory.init(keyStore);
+					trustStore.close();		
+	
+	                SSLContext sslContext = SSLContext.getInstance("TLS");
+	                sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
+	                		
+	                RemoteEndpointAwareJdkSSLOptions sslOptions = new RemoteEndpointAwareJdkSSLOptions(sslContext, null) {};
+		        	
+		        	clusterBuilder = clusterBuilder.withSSL(sslOptions);
+        		} 
+        		else {
+        			clusterBuilder  = clusterBuilder.withSSL();
+        		}
+        	}
+            catch (Exception e) {
+                DriverException driverException = new DriverException(e);
+                throw driverException;
+            }
+        }
+        
+        Cluster cluster = clusterBuilder.build();
         return cluster;
     }
 

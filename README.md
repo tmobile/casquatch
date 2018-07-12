@@ -136,6 +136,9 @@ This project is designed to provide a java abstraction layer for the Cassandra d
 | cassandraDriver.reconnection.maxDelay | | 300000 | Set max delay between reconnection attempts |
 | cassandraDriver.features.driverConfig | | enabled | Enable or Disable Driver Config table |
 | cassandraDriver.features.solr | | enabled | Enable or Disable Solr searches |
+| cassandraDriver.ssl.node | | disabled | Enable or disable client to node ssl |
+| cassandraDriver.ssl.truststore.path | | | Path to JKS containing trusted cluster certificate(s) |
+| cassandraDriver.ssl.truststore.password | | | Password of truststore |
 | security.user.name | | | SPRING CONFIG SERVER ONLY : Username |
 | security.user.password | | | SPRING CONFIG SERVER ONLY : Password |
 

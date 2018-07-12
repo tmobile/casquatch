@@ -54,6 +54,9 @@ public class CassandraDriverSpringConfiguration {
 	@Value("${cassandraDriver.reconnection.maxDelay:-1}") int reconnectionMaxDelay;
 	@Value("${cassandraDriver.features.driverConfig:#{null}}") String featuresDriverConfig;
 	@Value("${cassandraDriver.features.solr:#{null}}") String featuresSolr;
+	@Value("${cassandraDriver.ssl.node:#{null}}") String sslNode;
+	@Value("${cassandraDriver.ssl.truststore.path:#{null}}") String sslTruststorePath;
+	@Value("${cassandraDriver.ssl.truststore.password:#{null}}") String sslTruststorePassword;
 
     /**
      * Spring bean to auto configure CassandraDriver
@@ -154,6 +157,23 @@ public class CassandraDriverSpringConfiguration {
 
     	if(featuresSolr!=null && featuresSolr.equals("disabled")) {
     		cassandraDriverBuilder = cassandraDriverBuilder.withoutSolr();
+    	}
+
+    	if(sslNode!=null && sslNode.equals("enabled")) {
+    		cassandraDriverBuilder = cassandraDriverBuilder.withSSL();
+    	}
+
+    	if(sslNode!=null && sslNode.equals("disabled")) {
+    		cassandraDriverBuilder = cassandraDriverBuilder.withoutSSL();
+    	}
+
+    	if(sslTruststorePath!=null) {
+    		if(sslTruststorePassword!=null) {
+        		cassandraDriverBuilder = cassandraDriverBuilder.withTrustStore(sslTruststorePath, sslTruststorePassword);
+    		}
+    		else {
+        		cassandraDriverBuilder = cassandraDriverBuilder.withTrustStore(sslTruststorePath, "");
+    		}
     	}
 
     	if(defaultSolrDC!=null) {

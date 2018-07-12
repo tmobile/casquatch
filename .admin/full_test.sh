@@ -125,3 +125,69 @@ echo "---------------------------------------------"
 echo "Cleanup"
 echo "---------------------------------------------"
 docker stop installTestDSE > /dev/null 2>&1
+
+echo "---------------------------------------------"
+echo "Starting DSE (SSL) Tests"
+echo "---------------------------------------------"
+
+echo "---------------------------------------------"
+echo "Starting Docker (60 second pause to startup)"
+echo "---------------------------------------------"
+docker run -e DS_LICENSE=accept -p 9042:9042 -p 9142:9142 -d --name installTestDSE -h dse.local -d datastax/dse-server:$DSE_VERSION -s
+sleep 60
+
+echo "---------------------------------------------"
+echo "Configure SSL"
+echo "---------------------------------------------"
+export TRUSTSTORE_PATH=`pwd`/.admin/dsessl/.truststore
+docker cp .admin/dsessl/.keystore installTestDSE:/opt/dse/resources/dse/conf/.keystore
+docker cp .admin/dsessl/.truststore installTestDSE:/opt/dse/resources/dse/conf/.truststore
+docker cp .admin/dsessl/cassandra.yaml.$DSE_VERSION installTestDSE:/opt/dse/resources/cassandra/conf/cassandra.yaml
+cp .admin/dsessl/client.truststore config/client.truststore
+docker restart installTestDSE
+sleep 60
+
+echo "---------------------------------------------"
+echo "Installing Keyspace"
+echo "---------------------------------------------"
+docker exec -i installTestDSE cqlsh << EOF
+CREATE KEYSPACE junitTest WITH replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1}  AND durable_writes = true;
+CREATE TABLE junitTest.table_name (key_one int,key_two int,col_one text,col_two text,PRIMARY KEY ((key_one, key_two)));
+CREATE KEYSPACE springconfig WITH replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1}  AND durable_writes = true;
+CREATE TABLE springconfig.configuration (application text,profile text,label text,key text,value text,PRIMARY KEY ((application, profile), label, key)) WITH CLUSTERING ORDER BY (label ASC, key ASC);
+INSERT INTO springconfig.configuration (application,profile,label,key,value) values ('app','test','labelname','keyname','valuevalue');
+EOF
+
+echo "---------------------------------------------"
+echo "Run DSE Tests"
+echo "---------------------------------------------"
+export MAVEN_OPTS="-Djavax.net.ssl.trustStorePassword=cassandra -Djavax.net.ssl.trustStore=$TRUSTSTORE_PATH -Djavax.net.ssl.trustStoreType=jks"
+mvn -pl cassandradriver -q -Dtest=CassandraDriverDSESSLTests test
+
+echo "---------------------------------------------"
+echo "Configure Driver"
+echo "---------------------------------------------"
+cat << EOF > config/application.properties
+cassandraDriver.contactPoints=localhost
+cassandraDriver.localDC=dc1
+cassandraDriver.keyspace=springconfig
+cassandraDriver.features.driverConfig=disabled
+cassandraDriver.port=9142
+cassandraDriver.ssl.node=enabled
+cassandraDriver.ssl.truststore.path=$TRUSTSTORE_PATH
+cassandraDriver.ssl.truststore.password=cassandra
+EOF
+
+echo "---------------------------------------------"
+echo "Running install - Spring Config"
+echo "---------------------------------------------"
+./install.sh springconfig
+
+echo "---------------------------------------------"
+echo "Cleanup"
+echo "---------------------------------------------"
+pkill -f -9 cassandragenerator > /dev/null 2>&1
+rm -f config/application.properties
+rm -f config/client.truststore
+docker stop installTestDSE > /dev/null 2>&1
+docker rm installTestDSE > /dev/null 2>&1
