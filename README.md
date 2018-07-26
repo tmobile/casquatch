@@ -8,12 +8,14 @@
    3. [Add to Code](#add-to-code)
 4. [Configuration](#configuration)
 5. [Feature Details](#feature-details)
-   1. [Builder Configuration](#builder-configuration)
-   2. [Driver Config](#driver-config)
-   3. [Driver Cache](#driver-cache)
-   4. [Solr](#solr)
-   5. [Spring Config](#spring-config)
-6. [Release Notes](#release-notes)
+   1. [Code Generator](#code-generator)
+   2. [Builder Configuration](#builder-configuration)
+   3. [Driver Config](#driver-config)
+   4. [Driver Cache](#driver-cache)
+   5. [Solr](#solr)
+   6. [Spring Config](#spring-config)
+6. [FAQ](#FAQ)
+7. [Release Notes](#release-notes)
 
 
 ## Overview
@@ -143,6 +145,20 @@ This project is designed to provide a java abstraction layer for the Cassandra d
 | security.user.password | | | SPRING CONFIG SERVER ONLY : Password |
 
 ## Feature details
+
+### Code Generator
+The code generator reverse engineers the schema to create POJOs with Datastax annotations. This is used during the install script but can also be run manually by downloading the jar.
+* Configure Project as defined in [Configuration](#configuration) section
+* Run jar: ```java -jarCassandraGenerator-X.Y-RELEASE.war```
+* View an individual file:
+* UDT : ``` /generator/template/udtmodels/{schema}/{type}/{file_name}```
+* Table: ```/generator/template/models/{schema}/{table}/{file_name}```
+* Cachable Table (See [Driver Cache](#driver-cache) Below): ```/generator/template/models/{schema}/{table}/cachable/{file_name}```
+* Generate package of all models:
+  * Powershell: ```Invoke-WebRequest http://localhost:8080/generator/{KEYSPACE}/download/powershell -o run.ps1;./run.ps1```
+  * Bash: ```curl http://localhost:8080/generator/{KEYSPACE}/download/bash | bash```
+* Optionally install locally via maven: ```mvn install```
+
 ### Builder Configuration
 While Spring is the simplest method of configuration, the driver also supports the builder pattern for configuration. (See Javadoc CassandraDriver.Builder for specifics). This allows a driver to be built explicitly similar to the following. All settings will be defaulted as defined above with options to configure as necessary.
 
@@ -220,7 +236,15 @@ spring.cloud.config.username=spring_config_username
 spring.cloud.config.password=spring_config_password
 ```
 
+## FAQ
+### What Cassandra driver does Casquatch use?
+Casquatch uses the open source Datastax Driver (https://github.com/datastax/java-driver) which is compatible with both Apache Cassandra and Datastax Enterprise. If you wish to use the closed source driver you can do so by following the instructions at [Datastax Driver FAQ](https://docs.datastax.com/en/developer/java-driver-dse/1.6/faq/#how-do-i-use-this-driver-as-a-drop-in-replacement-for-cassandra-driver-core-when-it-is-a-dependency-of-another-project). Please make sure to use the compatible version as noted in the FAQ. For example to replace OSS Driver 3.4 use DSE driver 1.4.
+
 ## Release Notes
+### 1.3-RELEASE - TBD
+* Added SSL Support
+* Additional Documentation and Tests
+* Bugfix: Spring Config Server changes to run independently
 ### 1.2-RELEASE - Release 06/22/2018
 * Initial Open Source Release
 * Added Spring Config Server
