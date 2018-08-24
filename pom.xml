@@ -36,6 +36,7 @@
 
   <modules>
     <module>cassandradriver</module>
+    <module>cassandradriver-ee</module>
     <module>cassandragenerator</module>
     <module>springconfigserver</module>
   </modules>

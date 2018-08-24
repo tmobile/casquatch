@@ -238,11 +238,12 @@ spring.cloud.config.password=spring_config_password
 
 ## FAQ
 ### What Cassandra driver does Casquatch use?
-Casquatch uses the open source Datastax Driver (https://github.com/datastax/java-driver) which is compatible with both Apache Cassandra and Datastax Enterprise. If you wish to use the closed source driver you can do so by following the instructions at [Datastax Driver FAQ](https://docs.datastax.com/en/developer/java-driver-dse/1.6/faq/#how-do-i-use-this-driver-as-a-drop-in-replacement-for-cassandra-driver-core-when-it-is-a-dependency-of-another-project). Please make sure to use the compatible version as noted in the FAQ. For example to replace OSS Driver 3.4 use DSE driver 1.4.
+Casquatch uses the open source Datastax Driver (https://github.com/datastax/java-driver) which is compatible with both Apache Cassandra and Datastax Enterprise. If you wish to use the closed source driver you can do so by following the instructions at [Datastax Driver FAQ](https://docs.datastax.com/en/developer/java-driver-dse/1.6/faq/#how-do-i-use-this-driver-as-a-drop-in-replacement-for-cassandra-driver-core-when-it-is-a-dependency-of-another-project). Alternatively, you can use the CassandraDriver-EE ArtifactId that has already been configured with the correct versions and is simply a wrapper implementing the above.
 
 ## Release Notes
 ### 1.3-RELEASE - TBD
 * Added SSL Support
+* Added CassandraDriver-EE as a simple wrapper to inject the licensed driver.
 * Additional Documentation and Tests
 * Bugfix: Spring Config Server changes to run independently
 ### 1.2-RELEASE - Release 06/22/2018

@@ -32,7 +32,7 @@ rm -rf cassandramodels
 echo "---------------------------------------------"
 echo "Installing driver"
 echo "---------------------------------------------"
-#mvn -pl cassandradriver -q clean install
+mvn -pl cassandradriver -q clean install
 
 echo "---------------------------------------------"
 echo "Running Generator (Log at nohup.out)"

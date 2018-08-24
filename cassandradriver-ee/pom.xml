@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.tmobile.opensource.casquatch</groupId>
+  <artifactId>CassandraDriver-EE</artifactId>
+  <version>1.3-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>Project Casquatch - Cassandra Driver - Enterprise Edition</name>
+  <description>Wrapper of Cassandra Driver that uses the licensed Datastax Enterprise Driver</description>
+  <url>http://github.com/tmobile/casquatch</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+    <license>
+      <name>DataStax DSE Driver License</name>
+      <url>http://www.datastax.com/terms/datastax-dse-driver-license-terms</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Josh Turner</name>
+      <email>turner.josh@gmail.com</email>
+      <organization>T-Mobile Open Source</organization>
+      <organizationUrl>https://opensource.t-mobile.com/</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:ssh://github.com:tmobile/casquatch.git</connection>
+    <developerConnection>scm:git:ssh://github.com:tmobile/casquatch.git</developerConnection>
+    <url>https://github.com/tmobile/casquatch/tree/master</url>
+  </scm>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.tmobile.opensource.casquatch</groupId>
+      <artifactId>CassandraDriver</artifactId>
+      <version>1.3-SNAPSHOT</version>
+      <exclusions>
+           <exclusion>
+               <groupId>com.datastax.cassandra</groupId>
+               <artifactId>cassandra-driver-core</artifactId>
+           </exclusion>
+           <exclusion>
+               <groupId>com.datastax.cassandra</groupId>
+               <artifactId>cassandra-driver-mapping</artifactId>
+           </exclusion>
+       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.datastax.dse</groupId>
+      <artifactId>dse-java-driver-core</artifactId>
+      <version>${dse.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.datastax.dse</groupId>
+      <artifactId>dse-java-driver-mapping</artifactId>
+      <version>${dse.version}</version>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <dse.version>1.4.2</dse.version>
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
