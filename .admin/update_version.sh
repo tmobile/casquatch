@@ -10,5 +10,5 @@ sed -i 's/'$OLD_VERSION'/'$NEW_VERSION'/g' pom.xml
 sed -i 's/'$OLD_VERSION'/'$NEW_VERSION'/g' springconfigserver/pom.xml
 sed -i 's/'$OLD_VERSION'/'$NEW_VERSION'/g' cassandradriver/pom.xml
 sed -i 's/'$OLD_VERSION'/'$NEW_VERSION'/g' cassandragenerator/pom.xml
-sed -i 's/'$OLD_VERSION'/'$NEW_VERSION'/g' cassandragenerator/src/main/webapp/templates/pom_models.ftl
+sed -i 's/'$OLD_VERSION'/'$NEW_VERSION'/g' cassandragenerator/src/main/resources/templates/pom_models.ftl
 sed -i 's/'$OLD_VERSION'/'$NEW_VERSION'/g' install.sh
