@@ -93,5 +93,21 @@
       </plugin>
     </plugins>
   </build>
-
+  
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.datastax.cassandra</groupId>
+        <artifactId>cassandra-driver-core</artifactId>
+        <version>3.6.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.datastax.cassandra</groupId>
+        <artifactId>cassandra-driver-mapping</artifactId>
+        <version>3.6.0</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+    
+        
 </project>

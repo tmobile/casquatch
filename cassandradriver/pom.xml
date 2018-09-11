@@ -78,21 +78,20 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${apache-commons.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.cassandraunit</groupId>
       <artifactId>cassandra-unit</artifactId>
       <version>${cassandraunit.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>${apache-commons.version}</version>
-    </dependency>
-
   </dependencies>
 
   <properties>
-    <dse.version>3.4.0</dse.version>
+    <dse.version>3.6.0</dse.version>
     <logback.version>1.2.3</logback.version>
     <jackson.version>2.9.4</jackson.version>
     <junit.version>4.12</junit.version>
@@ -131,7 +130,7 @@
       </plugin>
     </plugins>
   </build>
-  
+
   <profiles>
     <profile>
       <id>release-sign-artifacts</id>
