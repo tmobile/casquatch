@@ -16,42 +16,36 @@
 package com.tmobile.opensource.casquatch.junit;
 
 import com.tmobile.opensource.casquatch.CassandraDriver;
-import com.tmobile.opensource.casquatch.exceptions.DriverException;
 import com.tmobile.opensource.casquatch.models.junittest.TableName;
-import org.apache.thrift.transport.TTransportException;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 import java.util.List;
 
-public class CassandraDriverDSETests {
-
-    private static CassandraDriver db;
-    private final static Logger logger = LoggerFactory.getLogger(CassandraDriverDSETests.class);
+public class CassandraDriverDockerSolrTests extends CassandraDriverTestSuite {
 
     @BeforeClass
-    public static void setUp() throws IOException, TTransportException {
-    	
-    	/*
-    	 * This assumes that thte local docker has solr running with a core created on table_name
-    	 */
-        db = new CassandraDriver.Builder()
+    public static void setUp(){
+        
+        CassandraDriver.Builder builder = new CassandraDriver.Builder()
         		.withContactPoints("localhost")
         		.withLocalDC("dc1")
-        		.withKeyspace("junittest")
         		.withSolr()
         		.withSolrDC("dc1")
         		.withoutDriverConfig()
-        		.build();
+        		.withReadTimeout(30000)
+        		.withPort(9042);
+        
+        db = builder.withKeyspace("system").build();
+        createSchema();
+        db.close();
+        
+        db = builder.withKeyspace("junittest").build();
+		db.execute("CREATE SEARCH INDEX IF NOT EXISTS ON junitTest.table_name;");
     }
 
     @Before
-    public void beforeGetAllBySolar() throws InterruptedException {
+    public void beforeGetAllBySolar() {
         TableName obj1 = new TableName(14, 1);
         obj1.setColOne("test");
         obj1.setColTwo("ColumnTwo");
@@ -66,19 +60,20 @@ public class CassandraDriverDSETests {
         obj3.setColOne("test 2");
         obj3.setColTwo("ColumnTwo - 2");
         db.save(TableName.class, obj3);
-        Thread.sleep(30000);
     }
 
     @Test
-    public void testGetAllBySolr() {
-    	List<TableName> results = db.getAllBySolr(TableName.class,"{'q': '*:*', 'fq': 'col_one: test'}");
+    public void testGetAllBySolr() throws InterruptedException {
+    	int lc=0;
+    	List<TableName> results;
+    	do {
+    		results = db.getAllBySolr(TableName.class,"{'q': '*:*', 'fq': 'col_one: test'}");
+    		lc++;
+    		Thread.sleep(5000);
+    	} while (!(results.size()>0 | lc > 10));
+    	
     	logger.debug("Found: "+results.size());
     	assert(results.size()>0);
 
-    }
-
-    @AfterClass
-    public static void shutdown() {
-        db.close();
     }
 }

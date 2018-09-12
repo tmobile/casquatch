@@ -15,71 +15,48 @@
 
 package com.tmobile.opensource.casquatch.junit;
 
-import com.tmobile.opensource.casquatch.CassandraDriver;
-import com.tmobile.opensource.casquatch.exceptions.DriverException;
-import com.tmobile.opensource.casquatch.models.junittest.TableName;
-import org.apache.thrift.transport.TTransportException;
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.List;
+import com.tmobile.opensource.casquatch.CassandraDriver;
+import com.tmobile.opensource.casquatch.exceptions.DriverException;
+import com.tmobile.opensource.casquatch.models.junittest.JunitUdt;
+import com.tmobile.opensource.casquatch.models.junittest.JunitUdtTable;
+import com.tmobile.opensource.casquatch.models.junittest.TableName;
 
-import static org.junit.Assert.assertTrue;
-
-public class CassandraDriverTests {
-
-    private static CassandraDriver db;
-    private final static Logger logger = LoggerFactory.getLogger(CassandraDriverTests.class);
-
-    @BeforeClass
-    public static void setUp() throws IOException, TTransportException {
-
-        EmbeddedCassandraServerHelper.startEmbeddedCassandra(EmbeddedCassandraServerHelper.CASSANDRA_RNDPORT_YML_FILE, EmbeddedCassandraServerHelper.DEFAULT_STARTUP_TIMEOUT);
-
-        //Create a system connection for creating keyspace
-        db = new CassandraDriver.Builder()
-        		.withContactPoints(EmbeddedCassandraServerHelper.getHost())
-        		.withPort(EmbeddedCassandraServerHelper.getNativeTransportPort())
-        		.withLocalDC("cassandraunit")
-        		.withKeyspace("system")
-        		.withoutDriverConfig()
-        		.build();
-        
-        try {
-            db.execute("drop keyspace junitTest");
-        } catch (DriverException e) {
-
-        }
-
-        db.execute("CREATE KEYSPACE junitTest WITH replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1}  AND durable_writes = true");
-        db.execute("CREATE TABLE junitTest.table_name (key_one int,key_two int,col_one text,col_two text,PRIMARY KEY ((key_one), key_two))");
-        db.execute("CREATE TABLE junitTest.driver_config (\n" +
-                "    table_name text PRIMARY KEY,\n" +
-                "    data_center text,\n" +
-                "    read_consistency text,\n" +
-                "    write_consistency text,\n" +
-                "    create_dttm timestamp,\n" +
-                "    create_user text,\n" +
-                "    mod_dttm timestamp,\n" +
-                "    mod_user text\n" +
-                ")");
-        //db.execute("insert into junitTest.driver_config (table_name,data_center) values('default','cassandraunit')");
-        //db.execute("insert into junitTest.driver_config (table_name,data_center) values('table_name','cassandraunit')");
-
-
-        //reconnect now that the tables and keyspace are created
-        db.close();
-        db = new CassandraDriver("cassandra", "cassandra", EmbeddedCassandraServerHelper.getHost(), EmbeddedCassandraServerHelper.getNativeTransportPort(), "cassandraunit", "junittest");
+public abstract class CassandraDriverTestSuite {
+    protected static CassandraDriver db;
+    protected final static Logger logger = LoggerFactory.getLogger(CassandraDriverDockerSolrTests.class);
+    
+    protected static void createSchema() {
+         db.execute("CREATE KEYSPACE IF NOT EXISTS junitTest WITH replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1}  AND durable_writes = true");
+         db.execute("CREATE TABLE IF NOT EXISTS junitTest.table_name (key_one int,key_two int,col_one text,col_two text,PRIMARY KEY ((key_one), key_two))");
+         db.execute("CREATE TABLE IF NOT EXISTS junitTest.driver_config (\n" +
+                 "    table_name text PRIMARY KEY,\n" +
+                 "    data_center text,\n" +
+                 "    read_consistency text,\n" +
+                 "    write_consistency text,\n" +
+                 "    create_dttm timestamp,\n" +
+                 "    create_user text,\n" +
+                 "    mod_dttm timestamp,\n" +
+                 "    mod_user text\n" +
+                 ")");
+         db.execute("CREATE TYPE IF NOT EXISTS junitTest.junit_udt (val1 text, val2 int)");
+         db.execute("CREATE TABLE IF NOT EXISTS junitTest.junit_udt_table (id uuid primary key, udt frozen<junit_udt>)");
     }
+
 
     @Test(expected = DriverException.class)
     public void testExecuteInvalidQueryException() {
@@ -104,11 +81,6 @@ public class CassandraDriverTests {
     			.withLocalDC("fail")
     			.withKeyspace("fake")
     			.build();
-    }
-    
-    @Test
-    public void testConstructor() {
-    	CassandraDriver db = new CassandraDriver("cassandra", "cassandra", EmbeddedCassandraServerHelper.getHost(), EmbeddedCassandraServerHelper.getNativeTransportPort(), "cassandraunit", "junittest");
     }
 
     @Test
@@ -314,28 +286,42 @@ public class CassandraDriverTests {
         db.delete(TableName.class, obj);
     }
     
-    @Before
-    public void beforeReconnect() {
-        TableName obj = new TableName(20,21);
-        obj.setColOne("ColumnOne");
-        obj.setColTwo("ColumnTwo");
-        db.save(TableName.class, obj);
+    private JunitUdtTable generateUDT() {    	
+    	JunitUdtTable obj = new JunitUdtTable(UUID.randomUUID());
+    	JunitUdt udt = new JunitUdt();
+    	udt.setVal1(UUID.randomUUID().toString());
+    	udt.setVal2(new Random().nextInt(100)+1);
+    	obj.setUdt(udt);
+    	return obj;
+    }
+
+    @Test
+    public void testSaveUDT() {    
+    	//Create and save
+    	JunitUdtTable testObj = generateUDT();
+        db.save(JunitUdtTable.class, testObj);
+        
+        //Validate
+        JunitUdtTable valObj = db.getById(JunitUdtTable.class,new JunitUdtTable(testObj.getId()));
+        assertEquals(valObj.getUdt().getVal1(),testObj.getUdt().getVal1());
+        assertEquals(valObj.getUdt().getVal2(),testObj.getUdt().getVal2());        
     }
     
     @Test
-    public void testReconnect() {
-    	 CassandraDriver tmpdb = new CassandraDriver("cassandra", "cassandra", EmbeddedCassandraServerHelper.getHost(), EmbeddedCassandraServerHelper.getNativeTransportPort(), "cassandraunit", "junittest");
-    	 tmpdb.close();
-    	 TableName obj = tmpdb.getById(TableName.class, new TableName(20,21));
+    public void testDeleteUDT() {
+    	//Create and save
+    	JunitUdtTable testObj = generateUDT();
+        db.save(JunitUdtTable.class, testObj);     
+        
+        //Delete        
+        db.delete(JunitUdtTable.class, new JunitUdtTable(testObj.getId()));
 
-         assertEquals(obj.getColOne(),"ColumnOne");
-         assertEquals(obj.getColTwo(),"ColumnTwo");
+        //Validate
+        assertFalse(db.existsById(JunitUdtTable.class, new JunitUdtTable(testObj.getId())));
     }
-    
 
     @AfterClass
     public static void shutdown() {
         db.close();
-        EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
     }
 }

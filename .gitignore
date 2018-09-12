@@ -9,3 +9,4 @@
 **/config/**
 **/application.properties
 cassandramodels/
+**/*.out

@@ -31,55 +31,22 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.List;
 
-public class CassandraDriverDSESSLTests {
-
-    private static CassandraDriver db;
-    private final static Logger logger = LoggerFactory.getLogger(CassandraDriverDSESSLTests.class);
+public class CassandraDriverDockerSSLTests extends CassandraDriverTestSuite {
 
     @BeforeClass
     public static void setUp() throws IOException, TTransportException {
     	
-    	/*
-    	 * This assumes that thte local docker has solr running with a core created on table_name
-    	 */
-        db = new CassandraDriver.Builder()
+    	CassandraDriver.Builder builder = new CassandraDriver.Builder()
         		.withContactPoints("localhost")
         		.withLocalDC("dc1")
-        		.withKeyspace("junittest")
         		.withoutDriverConfig()
         		.withSSL()
         		.withTrustStore("../config/client.truststore", "cassandra")
-        		.withPort(9142)
-        		.build();
-    }
-
-    @Before
-    public void beforeGetById() {
-        TableName obj = new TableName(5, 6);
-        obj.setColOne("ColumnOne");
-        obj.setColTwo("ColumnTwo");
-        db.save(TableName.class, obj);
-    }
-
-    @Test
-    public void testGetById() {
-        TableName obj = new TableName(5, 6);
-        obj = db.getById(TableName.class, obj);
-        
-        //Validate
-        TableName valObj = db.getById(TableName.class,new TableName(5,6));
-        assertEquals(valObj.getColOne(),"ColumnOne");
-        assertEquals(valObj.getColTwo(),"ColumnTwo");
-    }
-
-    @After
-    public void afterGetById() {
-        TableName obj = new TableName(5, 6);
-        db.delete(TableName.class, obj);
-    }
-
-    @AfterClass
-    public static void shutdown() {
+        		.withPort(9142);
+    	
+    	db = builder.withKeyspace("system").build();
+        createSchema();
         db.close();
+        db = builder.withKeyspace("junittest").build();
     }
 }
