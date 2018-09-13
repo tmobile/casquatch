@@ -213,7 +213,9 @@ b) Data is requested via get and the timeout has expired (default 15 minutes). T
 c) A set is called, then the same data is inserted to the cache
 
 ### Solr
-Datastax solr queries are available with the getAllBySolr(class,solrQuery). This requires that solr be set up and configured on the Cassandra database server. For details on the format of the solrQuery, please consult https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/search/siQuerySyntax.html#siQuerySyntax for details.
+Datastax solr queries are available with multiple interfaces. This requires that solr be set up and configured on the Cassandra database server.
+DSE 5.1 - Query by JSON with the getAllBySolr(class,solrQuery, For details on the format of the solrQuery, please consult https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/search/siQuerySyntax.html#siQuerySyntax for details.
+DSE 6.0 - Adds Query by Object and Query by CQL with getAllBySolr(class,object) and getAllBySolr(class,cql) respectively. See https://docs.datastax.com/en/dse/6.0/cql/cql/cql_using/search_index/siQuerySyntax.html for details
 
 ### Spring Config
 Casquatch contains an implementation of the Spring Config Server (https://cloud.spring.io/spring-cloud-config/single/spring-cloud-config.html) with a Cassandra backend using the included driver. Schema is available at springconfigserver/schema.cql.
@@ -267,8 +269,9 @@ This can be resolved by adding the following to your pom.xml
 * Added SSL Support
 * Added CassandraDriver-EE as a simple wrapper to inject the licensed driver.
 * Additional Documentation and Tests
-* Updated to latested Cassandra Driver (3.6.0)
-* Rewrote test suite to fully regression test multiple versions at once
+* Updated to latest Cassandra Driver (3.6.0)
+* Added support for Solr Query By Object and by CQL. Requires DSE Search >= 6.0
+* Rewrote test suite to fully regression test multiple versions
 * Bugfix: Spring Config Server changes to run independently
 ### 1.2-RELEASE - Release 06/22/2018
 * Initial Open Source Release

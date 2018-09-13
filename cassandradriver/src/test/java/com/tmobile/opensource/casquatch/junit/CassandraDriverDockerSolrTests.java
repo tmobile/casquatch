@@ -15,8 +15,12 @@
 
 package com.tmobile.opensource.casquatch.junit;
 
+import com.tmobile.opensource.casquatch.CassandraAdminDriver;
 import com.tmobile.opensource.casquatch.CassandraDriver;
+import com.tmobile.opensource.casquatch.exceptions.DriverException;
 import com.tmobile.opensource.casquatch.models.junittest.TableName;
+
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,20 +47,20 @@ public class CassandraDriverDockerSolrTests extends CassandraDriverTestSuite {
         db = builder.withKeyspace("junittest").build();
 		db.execute("CREATE SEARCH INDEX IF NOT EXISTS ON junitTest.table_name;");
     }
-
+    
     @Before
-    public void beforeGetAllBySolar() {
-        TableName obj1 = new TableName(14, 1);
+    public void beforeGetAllBySolr() {
+        TableName obj1 = new TableName(15, 1);
         obj1.setColOne("test");
         obj1.setColTwo("ColumnTwo");
         db.save(TableName.class, obj1);
 
-        TableName obj2 = new TableName(14, 2);
+        TableName obj2 = new TableName(15, 2);
         obj2.setColOne("test");
         obj2.setColTwo("ColumnTwo - 2");
         db.save(TableName.class, obj2);
 
-        TableName obj3 = new TableName(14, 3);
+        TableName obj3 = new TableName(15, 3);
         obj3.setColOne("test 2");
         obj3.setColTwo("ColumnTwo - 2");
         db.save(TableName.class, obj3);
@@ -64,6 +68,7 @@ public class CassandraDriverDockerSolrTests extends CassandraDriverTestSuite {
 
     @Test
     public void testGetAllBySolr() throws InterruptedException {
+
     	int lc=0;
     	List<TableName> results;
     	do {
@@ -72,8 +77,60 @@ public class CassandraDriverDockerSolrTests extends CassandraDriverTestSuite {
     		Thread.sleep(5000);
     	} while (!(results.size()>0 | lc > 10));
     	
-    	logger.debug("Found: "+results.size());
+    	logger.debug("testGetAllBySolr Found: "+results.size());
     	assert(results.size()>0);
 
     }
+
+    @Test
+    public void testGetAllBySolrObject() throws InterruptedException {
+    	
+    	//Verify that the version is at least 6.0
+    	CassandraAdminDriver adminDB = new CassandraAdminDriver(db);
+    	Integer dseVersion = Integer.parseInt(adminDB.getDatastaxSession().execute("select dse_version from system.local").one().getString(0).split("\\.")[0]);
+    	adminDB.close();
+    	Assume.assumeTrue(dseVersion >= 6);
+        
+        //Run Test
+    	int lc=0;
+    	
+    	TableName tmp = new TableName();
+    	tmp.setColOne("test");
+    	
+    	List<TableName> results;
+    	do {    		
+			results = db.getAllBySolr(TableName.class,tmp);
+    		lc++;
+    		Thread.sleep(5000);
+    	} while (!(results.size()>0 | lc > 10));
+    	
+    	logger.debug("testGetAllBySolrObject Found: "+results.size());
+    	assert(results.size()>0);
+
+    }
+
+    @Test
+    public void testGetAllBySolrCQL() throws InterruptedException {    	
+
+    	//Verify that the version is at least 6.0
+    	CassandraAdminDriver adminDB = new CassandraAdminDriver(db);
+    	Integer dseVersion = Integer.parseInt(adminDB.getDatastaxSession().execute("select dse_version from system.local").one().getString(0).split("\\.")[0]);
+    	adminDB.close();
+    	Assume.assumeTrue(dseVersion >= 6);
+
+    	int lc=0;
+    	
+    	List<TableName> results;
+    	do {    		
+			results = db.getAllBySolrCQL(TableName.class,"select * from table_name where col_one like 'test%'");
+    		lc++;
+    		Thread.sleep(5000);
+    	} while (!(results.size()>0 | lc > 10));
+    	
+    	logger.debug("testGetAllBySolrObject Found: "+results.size());
+    	assert(results.size()>0);
+
+    }
+    
+    
 }

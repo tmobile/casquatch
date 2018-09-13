@@ -39,6 +39,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SocketOptions;
+import com.datastax.driver.core.exceptions.InvalidQueryException;
 import com.datastax.driver.core.policies.ConstantSpeculativeExecutionPolicy;
 import com.datastax.driver.core.policies.DCAwareRoundRobinPolicy;
 import com.datastax.driver.core.policies.ExponentialReconnectionPolicy;
@@ -51,6 +52,7 @@ import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
 import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.MappingManager;
+import com.datastax.driver.mapping.Result;
 import com.datastax.driver.mapping.annotations.Table;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -501,6 +503,7 @@ public class CassandraDriver {
      * @param config driver configuration
      */
     protected CassandraDriver(Builder.Configuration config) {
+    	logger.debug("Using Driver Version: "+Cluster.getDriverVersion());
     	config.validate();
     	this.config = config;
         this.clusterMap = new HashMap<String, Cluster>();
@@ -696,6 +699,7 @@ public class CassandraDriver {
         }
         
         Cluster cluster = clusterBuilder.build();
+        
         return cluster;
     }
 
@@ -851,24 +855,24 @@ public class CassandraDriver {
     }
 
     /**
-     * Get an object by supplying a solr query
+     * Generate a solr query using annotations and reflection
      * @param <T> Domain Object for results
      * @param c Class of object
-     * @param solrQueryString string representing the solr query (See https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/search/siQuerySyntax.html#siQuerySyntax)
-     * @param limit limit the number of results
-     * @return List of Objects
+     * @param o Object containing values populated
+     * @return Select object
      * @throws DriverException - Driver exception mapped to error code
-     */
-    public <T extends AbstractCassandraTable> List<T> getAllBySolr(Class<T> c, String solrQueryString, int limit) throws DriverException {
-        if(!config.features.solr) {
-        	throw new DriverException(401,"Solr is disabled");
-        }    	
-    	logger.debug("Getting All from "+c.getAnnotation(Table.class).keyspace()+"."+c.getAnnotation(Table.class).name()+" with solar_query "+solrQueryString+" from "+getConnectionKey("solar"));
+     */    
+    protected <T extends AbstractCassandraTable> Select generateSolrQuery(Class<T> c, T o) throws DriverException {
         try {
-        	Select select = QueryBuilder.select().from(c.getAnnotation(Table.class).name()); 
-        	select.where().and(QueryBuilder.eq("solr_query", solrQueryString)).limit(limit);
-	       	logger.debug("Running Query: "+select.getQueryString());
-        	return this.getMapper(c).map(this.getSession(config.defaults.solrDC).execute(select)).all();
+        	Select select = QueryBuilder.select().from(c.getAnnotation(Table.class).name());        
+	       	for(Field val : c.getDeclaredFields()) {
+	       		 if(val.getAnnotationsByType(com.datastax.driver.mapping.annotations.Column.class).length > 0) {	       			
+	       			if(o.getClass().getMethod("get"+StringUtils.capitalize(val.getName())).invoke(o) != null) {
+	       				select.where().and(QueryBuilder.eq(val.getAnnotation(com.datastax.driver.mapping.annotations.Column.class).name(), o.getClass().getMethod("get"+StringUtils.capitalize(val.getName())).invoke(o)));
+	       			}
+	       		 }
+	         }
+        	return select;
         }
 	    catch (Exception e) {
 	        DriverException driverException = new DriverException(e);
@@ -876,9 +880,70 @@ public class CassandraDriver {
 	    }
     }
 
+    /**
+     * Helper function for solr queries
+     * @param <T> Domain Object for results
+     * @param c Class of object
+     * @param selct prepared select statement
+     * @return Object containing results
+     * @throws DriverException - Driver exception mapped to error code
+     */
+     private <T extends AbstractCassandraTable> Result<T> executeSolr(Class<T> c, Select select) throws DriverException {
+    	 if(!config.features.solr) {
+         	throw new DriverException(401,"Solr is disabled");
+         }    	
+         
+         try {
+ 	       	logger.debug("Running Query: "+select.getQueryString()+" in dc "+config.defaults.solrDC);       	
+         	return this.getMapper(c).map(this.getSession(config.defaults.solrDC).execute(select));
+         	
+         }
+         catch (InvalidQueryException e) {
+         	DriverException driverException;
+         	if(e.getMessage().contains("ALLOW FILTERING")) {
+         		driverException = new DriverException(402,"query requires DSE Search >= 6.0.2");
+         	}
+         	else {
+         		driverException = new DriverException(e);
+         	}
+         	throw driverException;
+         }
+ 	    catch (Exception e) {
+ 	        DriverException driverException = new DriverException(e);
+ 	        throw driverException;
+ 	    }
+    }
 
     /**
-     * Get an object by supplying a solr query. Defaults to limit of 10
+     * Get all Objects from Solr by supplying a populated object. Defaults to a limit of 10
+     * WARNING: This requires at least DSE Search 6.0
+     * @param <T> Domain Object for results
+     * @param c Class of object
+     * @param o partially populated object 
+     * @return List of Objects
+     * @throws DriverException - Driver exception mapped to error code
+     */
+    public <T extends AbstractCassandraTable> List<T> getAllBySolr(Class<T> c, T o) throws DriverException {
+        return getAllBySolr(c,o,10);
+    }
+
+    /**
+     * Get all Objects from Solr by supplying a populated object.
+     * WARNING: This requires at least DSE Search 6.0
+     * @param <T> Domain Object for results
+     * @param c Class of object
+     * @param o partially populated object
+     * @param limit limit the number of results
+     * @return List of Objects
+     * @throws DriverException - Driver exception mapped to error code
+     */
+    public <T extends AbstractCassandraTable> List<T> getAllBySolr(Class<T> c, T o, int limit) throws DriverException {
+        Select select = this.generateSolrQuery(c, o).limit(limit);
+        return this.executeSolr(c, select).all();
+    }
+
+    /**
+     * Get  a list of objects by supplying a solr query. Defaults to limit of 10
      * @param <T> Domain Object for results
      * @param c Class of object
      * @param solrQueryString string representing the solr query (See https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/search/siQuerySyntax.html#siQuerySyntax)
@@ -887,6 +952,54 @@ public class CassandraDriver {
      */
     public <T extends AbstractCassandraTable> List<T> getAllBySolr(Class<T> c, String solrQueryString) throws DriverException {
     	return getAllBySolr(c,solrQueryString,10);
+    }
+
+    /**
+     *  Get a list of objects by supplying a solr query
+     * @param <T> Domain Object for results
+     * @param c Class of object     * 
+     * @param solrQueryString string representing the solr query (See https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/search/siQuerySyntax.html#siQuerySyntax)
+     * @param limit limit the number of results
+     * @return List of Objects
+     * @throws DriverException - Driver exception mapped to error code
+     */
+    public <T extends AbstractCassandraTable> List<T> getAllBySolr(Class<T> c, String solrQueryString, int limit) throws DriverException {
+    	Select select = QueryBuilder.select().from(c.getAnnotation(Table.class).name()).where().and(QueryBuilder.eq("solr_query", solrQueryString)).limit(limit);
+        return this.executeSolr(c, select).all();
+    }
+
+    /**
+     * Get a list of objects from solr by specifying a query
+     * @param <T> Domain Object for results
+     * @param c Class of object     * 
+     * @param cql Raw CQL statement
+     * @return List of Objects
+     * @throws DriverException - Driver exception mapped to error code
+     */
+    public <T extends AbstractCassandraTable> List<T> getAllBySolrCQL(Class<T> c, String cql) throws DriverException {
+    	if(!config.features.solr) {
+         	throw new DriverException(401,"Solr is disabled");
+         }    	
+         
+         try {
+ 	       	logger.debug("Running Query: "+cql+" in dc "+config.defaults.solrDC);       	
+         	return this.getMapper(c).map(this.getSession(config.defaults.solrDC).execute(cql)).all();
+         	
+         }
+         catch (InvalidQueryException e) {
+         	DriverException driverException;
+         	if(e.getMessage().contains("ALLOW FILTERING")) {
+         		driverException = new DriverException(402,"query requires DSE Search >= 6.0.2");
+         	}
+         	else {
+         		driverException = new DriverException(e);
+         	}
+         	throw driverException;
+         }
+ 	    catch (Exception e) {
+ 	        DriverException driverException = new DriverException(e);
+ 	        throw driverException;
+ 	    }
     }
 
     /**

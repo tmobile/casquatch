@@ -106,14 +106,21 @@ public abstract class CassandraDriverTestSuite {
 
 
     @Test
-    public void testSaveAsync() {
+    public void testSaveAsync() throws InterruptedException {
         TableName obj = new TableName(3, 4);
         obj.setColOne("ColumnOne");
         obj.setColTwo("ColumnTwo");
         db.saveAsync(TableName.class, obj);
         
-        //Validate
-        TableName valObj = db.getById(TableName.class,new TableName(3,4));
+        //Validate in loop
+        int lc=0;    	
+        TableName valObj;
+    	do {    		
+    		valObj = db.getById(TableName.class,new TableName(3,4));
+    		lc++;
+    		Thread.sleep(100);
+    	} while (!(valObj != null | lc > 10));
+    	
         assertEquals(valObj.getColOne(),"ColumnOne");
         assertEquals(valObj.getColTwo(),"ColumnTwo");
     }
@@ -175,9 +182,16 @@ public abstract class CassandraDriverTestSuite {
     }
 
     @Test
-    public void testDeleteAsync() {
+    public void testDeleteAsync() throws InterruptedException {
         TableName obj = new TableName(9, 10);
         db.deleteAsync(TableName.class, obj);
+        
+        //Validate in loop
+        int lc=0;
+    	do {    		
+    		lc++;
+    		Thread.sleep(100);
+    	} while (!(db.existsById(TableName.class, new TableName(9,10)) | lc > 10));
         
         //validate
         assertFalse(db.existsById(TableName.class, new TableName(9,10)));
