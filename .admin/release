@@ -1,4 +1,46 @@
+#!/bin/sh
+# Runs the release process
+
+grep -q RELEASE pom.xml
+if [ $? -ne 0 ]; then
+  echo "Current version is not *-RELEASE"
+  echo "Please run .admin/update_version.sh first"
+  exit 1;
+fi
+
+git status | grep -q "nothing to commit, working tree clean"
+if [ $? -ne 0 ]; then
+  echo "Uncomitted files exists"
+  exit 1;
+fi;
+
+echo "Running full tests. Results in .admin/test.release.out and .admin/test.out"
+.admin/full_test.sh > .admin/test.release.out
+
+grep -q Failed .admin/test.release.out
+if [ $? -eq 0 ]; then
+  echo "Tests failed. Verify results in .admin/test.release.out"
+  exit 1;
+fi
+
 mvn javadoc:aggregate
 rm -rf docs
 mv target/site/apidocs/ docs
-mvn -P release-sign-artifacts package
+git add docs
+git commit -m "Updated docs for release" docs
+
+read -p "Please enter to stage for publishing"
+git checkout -b tmp-release
+git checkout master
+git merge tmp-release
+vi README.md
+git commit README.md
+git branch -D tmp-release
+mvn -pl cassandradriver -P release-sign-artifacts clean deploy
+mvn -pl cassandradriver-ee -P release-sign-artifacts clean deploy
+mvn -pl springconfigserver -P release-sign-artifacts clean deploy
+echo "Release is now staged (https://oss.sonatype.org/#nexus-search;quick~casquatch). You must manually do:"
+echo "mvn -pl component -P release-sign-artifacts nexus-staging:release"
+echo "or"
+echo "mvn -pl component -P release-sign-artifactsnexus-staging:drop"
+echo "Finally run git push to push release changes to github"

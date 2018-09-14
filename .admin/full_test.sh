@@ -81,7 +81,7 @@ configureDriver() {
   echo "---------------------------------------------"
   echo "Configure driver"
   echo "---------------------------------------------"
-  mkdir config 2>$OUTPUT
+  mkdir config 2>>$OUTPUT
 cat << EOF > config/application.properties
 cassandraDriver.contactPoints=localhost
 cassandraDriver.localDC=$DATACENTER
@@ -198,9 +198,18 @@ generateModels() {
   mvn -f pom_install.xml -pl cassandramodels -q clean install
 }
 
+#installCasquatch
+installCasquatch() {
+  mvn clean install
+}
+
 #basicTestSuite name
 #Runs the basic junit test suite
 basicTestSuite() {
+  echo -n "[$1][Install Casqutch]"
+  installCasquatch >> $OUTPUT 2>&1
+  showStatus $?
+
   echo -n "[$1][Run Docker Tests]"
   runTests cassandradriver CassandraDriverDockerTests >> $OUTPUT 2>&1
   showStatus $?
@@ -332,6 +341,8 @@ dseTests() {
   cleanup $container >> $OUTPUT 2>&1
   showStatus $?
 }
+
+mvn -pl cassandradriver clean install
 
 #Run all tests
 embeddedTests
