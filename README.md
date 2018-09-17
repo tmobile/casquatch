@@ -265,7 +265,7 @@ This can be resolved by adding the following to your pom.xml
 ```
 
 ## Release Notes
-### 1.3-RELEASE - TBD
+### 1.3-RELEASE - 09/17/2018
 * Added SSL Support
 * Added CassandraDriver-EE as a simple wrapper to inject the licensed driver.
 * Additional Documentation and Tests
@@ -273,7 +273,7 @@ This can be resolved by adding the following to your pom.xml
 * Added support for Solr Query By Object and by CQL. Requires DSE Search >= 6.0
 * Rewrote test suite to fully regression test multiple versions
 * Bugfix: Spring Config Server changes to run independently
-### 1.2-RELEASE - Release 06/22/2018
+### 1.2-RELEASE - 06/22/2018
 * Initial Open Source Release
 * Added Spring Config Server
 * Extended all tuning properties to be modified using a builder procedure or spring configuration
