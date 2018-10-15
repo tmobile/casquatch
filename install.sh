@@ -4,7 +4,7 @@
 #
 
 CASQUATCH_KEYSPACE=$(echo $1 | tr '[:upper:]' '[:lower:]')
-CASQUATCH_VERSION=1.3-RELEASE
+CASQUATCH_VERSION=1.4-SNAPSHOT
 
 if [ -z "$CASQUATCH_KEYSPACE" ]; then
   echo "ERROR: Please provide a keyspace. See README.md for more information.";
