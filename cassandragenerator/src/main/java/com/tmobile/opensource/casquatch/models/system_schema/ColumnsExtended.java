@@ -115,7 +115,7 @@ public class ColumnsExtended extends Columns {
                     rtnType = "ByteBuffer";
                     break;
                 case "boolean":
-                    rtnType = "boolean";
+                	rtnType = "Boolean";
                     break;
                 case "date":
                 	rtnType = "LocalDate";
@@ -309,6 +309,9 @@ public class ColumnsExtended extends Columns {
                     break;
                 case "bigint":
                 case "counter":
+                case "boolean":
+                	importList.add("java.lang.Boolean");
+                    break;
                 case "time":
                 	if(!forcePrimitive) {
                 		importList.add("java.lang.Long");
