@@ -1,4 +1,4 @@
-package com.tmobile.opensource.casquatch.models.${type.keyspaceName};
+package ${package};
 
 import com.datastax.driver.mapping.annotations.Field;
 import com.datastax.driver.mapping.annotations.UDT;
