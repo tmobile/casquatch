@@ -1,4 +1,4 @@
-package com.tmobile.opensource.casquatch.models.${keyspace};
+package ${package};
 
 import com.datastax.driver.mapping.annotations.Column;
 import com.datastax.driver.mapping.annotations.PartitionKey;

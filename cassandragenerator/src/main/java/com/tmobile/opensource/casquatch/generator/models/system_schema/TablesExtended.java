@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.tmobile.opensource.casquatch.models.system_schema;
+package com.tmobile.opensource.casquatch.generator.models.system_schema;
 
 import com.datastax.driver.mapping.annotations.Table;
 import com.datastax.driver.mapping.annotations.Transient;

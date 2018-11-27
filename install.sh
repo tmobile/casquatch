@@ -21,7 +21,7 @@ if ps -ef | grep -v grep | grep -s 8080; then
   exit 1;
 fi;
 
-echo "This will install the current driver as well as generator models for the $CASQUATCH_KEYSPACE keyspace. If ${CASQUATCH_KEYSPACE}_models exists it will be deleted"
+echo "This will install the current driver as well as generator models for the $CASQUATCH_KEYSPACE keyspace. If cassandramodels exists it will be deleted"
 read -p "Press enter to continue"
 echo "---------------------------------------------"
 echo "Cleaning up project"
@@ -35,20 +35,14 @@ echo "---------------------------------------------"
 mvn -pl cassandradriver -q clean install
 
 echo "---------------------------------------------"
-echo "Running Generator (Log at nohup.out)"
+echo "Compile Generator (Log at nohup.out)"
 echo "---------------------------------------------"
-nohup mvn -pl cassandragenerator spring-boot:run > nohup.out 2>&1 &
-echo "Waiting for startup"
-until grep -q "Started Application" nohup.out; do sleep 1; done;
+mvn -q -pl cassandragenerator package
 
 echo "---------------------------------------------"
 echo "Generating Models"
 echo "---------------------------------------------"
-mkdir cassandramodels
-cd cassandramodels
-curl http://localhost:8080/generator/${CASQUATCH_KEYSPACE}/download/bash | bash > /dev/null 2>&1
-pkill -f -9 cassandragenerator > /dev/null 2>&1
-cd ..
+java -jar cassandragenerator/target/CassandraGenerator-$CASQUATCH_VERSION.jar --properties=config/application.properties --package --output=cassandramodels  >> nohup.out 2>&1
 
 if [ ! -f cassandramodels/pom.xml ]; then
   echo "ERROR: Failed to generate models. Please check nohup.out for errors";
@@ -79,7 +73,7 @@ Please add the following to your pom.xml
     <version>$CASQUATCH_VERSION</version>
 </dependency>
 <dependency>
-    <groupId>com.tmobile.opensource.casquatch.${CASQUATCH_KEYSPACE}</groupId>
+    <groupId>com.tmobile.opensource.casquatch.models.${CASQUATCH_KEYSPACE}</groupId>
     <artifactId>CassandraGenerator-Models-${CASQUATCH_KEYSPACE}</artifactId>
     <version>$CASQUATCH_VERSION</version>
 </dependency>

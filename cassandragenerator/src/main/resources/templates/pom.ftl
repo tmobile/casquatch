@@ -3,12 +3,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.tmobile.opensource.casquatch.${schema}</groupId>
-	<artifactId>CassandraGenerator-Models-${schema}</artifactId>
+  <groupId>${package}</groupId>
+	<artifactId>CassandraGenerator-Models-${keyspace}</artifactId>
 	<version>1.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>CassandraGenerator Models - ${schema}</name>
+	<name>CassandraGenerator Models - ${keyspace}</name>
 	<description>CassandraGenerator</description>
 
     <dependencies>

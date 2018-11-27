@@ -55,16 +55,10 @@ This project is designed to provide a java abstraction layer for the Cassandra d
     cd cassandradriver
     mvn install
     ```
-  * Run Generator
+  * Run Code Generator
     ```
-    cd cassandragenerator
-    mvn spring-boot:run
-    ```
-  * Generate Models (Powershell)
-    ```
-    mkdir cassandramodels
+    java -jar cassandragenerator/target/CassandraGeneratorX-Y.jar --properties=config/application.properties --package --output=cassandramodels
     cd cassandramodels
-    Invoke-WebRequest http://localhost:8080/generator/<KEYSPACE>/download/powershell -o run.ps1;./run.ps1
     mvn install
     ```
   * Generator Javadocs
@@ -143,21 +137,30 @@ This project is designed to provide a java abstraction layer for the Cassandra d
 | cassandraDriver.ssl.truststore.password | | | Password of truststore |
 | security.user.name | | | SPRING CONFIG SERVER ONLY : Username |
 | security.user.password | | | SPRING CONFIG SERVER ONLY : Password |
+| cassandraGenerator.db.username | | cassandra | Database User |
+| cassandraGenerator.db.password | | cassandra | Database Password |
+| cassandraGenerator.db.contactPoints | Yes | | Comma separated list of contact points |
+| cassandraGenerator.db.port | | 9042 | Native port |
+| cassandraGenerator.db.datacenter | Yes | | Name of local data center |
+| cassandraGenerator.db.keyspace | Yes | | Database Keyspace |
+| cassandraGenerator.output.folder | | ./ | Folder for output files |
+| cassandraGenerator.output.overwrite | | false | Allow overwriting of files |
+| cassandraGenerator.output.mode | | console | file or console mode |
+| cassandraGenerator.package | | false | Structure output for a maven package |
+| cassandraGenerator.tables | | | CSV List of tables |
+| cassandraGenerator.cachableTables | | | CSV List of cachable tables |
+| cassandraGenerator.types | | | CSV List of types |
+| cassandraGenerator.packageName | | com.tmobile.opensource.casquatch.models.$KEYSPACE$ | Package name for generated code. Replaces $KEYSPACE$ with keyspace name |
 
 ## Feature details
 
 ### Code Generator
 The code generator reverse engineers the schema to create POJOs with Datastax annotations. This is used during the install script but can also be run manually by downloading the jar.
 * Configure Project as defined in [Configuration](#configuration) section
-* Run jar: ```java -jarCassandraGenerator-X.Y-RELEASE.war```
-* View an individual file:
-* UDT : ``` /generator/template/udtmodels/{schema}/{type}/{file_name}```
-* Table: ```/generator/template/models/{schema}/{table}/{file_name}```
-* Cachable Table (See [Driver Cache](#driver-cache) Below): ```/generator/template/models/{schema}/{table}/cachable/{file_name}```
-* Generate package of all models:
-  * Powershell: ```Invoke-WebRequest http://localhost:8080/generator/{KEYSPACE}/download/powershell -o run.ps1;./run.ps1```
-  * Bash: ```curl http://localhost:8080/generator/{KEYSPACE}/download/bash | bash```
-* Optionally install locally via maven: ```mvn install```
+* Generate using properties file: ```java -jar CassandraGenerator.jar --properties=application.properties```
+* Generate all tables in a keyspace providing minimum information: ```java -jar CassandraGenerator.jar --output=tmp --keyspace=myKeyspace --datacenter=dkr```
+* Generate a package for all tables in a keyspace providing additional information: ```java -jar CassandraGenerator.jar --output=tmp --contactPoints=localhost --port=9042 --keyspace=myKeyspace --datacenter=dkr --user=cassandra --password=cassandra --package --packageName=com.test.myapp --overwrite```
+* Optionally install locally via maven (if --package was used): ```mvn install```
 
 ### Builder Configuration
 While Spring is the simplest method of configuration, the driver also supports the builder pattern for configuration. (See Javadoc CassandraDriver.Builder for specifics). This allows a driver to be built explicitly similar to the following. All settings will be defaulted as defined above with options to configure as necessary.
@@ -265,6 +268,8 @@ This can be resolved by adding the following to your pom.xml
 ```
 
 ## Release Notes
+### 1.4-SNAPSHOT - TBD
+* Full rewrite of generator to switch from web to command line
 ### 1.3-RELEASE - 09/17/2018
 * Added SSL Support
 * Added CassandraDriver-EE as a simple wrapper to inject the licensed driver.

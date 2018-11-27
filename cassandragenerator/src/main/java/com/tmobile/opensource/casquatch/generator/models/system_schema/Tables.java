@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.tmobile.opensource.casquatch.models.system_schema;
+package com.tmobile.opensource.casquatch.generator.models.system_schema;
 
 import com.datastax.driver.mapping.annotations.ClusteringColumn;
 import com.datastax.driver.mapping.annotations.Column;
