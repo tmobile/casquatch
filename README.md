@@ -124,6 +124,9 @@ This project is designed to provide a java abstraction layer for the Cassandra d
 | cassandraDriver.connections.local.max | | 3 | Maximum number of local connections (Min and Max Required) |
 | cassandraDriver.connections.remote.min | | 1 | Minimum number of remote connections (Min and Max Required) |
 | cassandraDriver.connections.remote.max | | 1 | Maximum number of remote connections (Min and Max Required) |
+| cassandraDriver.loadBalancing.filter.token | | enabled | Toggle TokenAwareLoadBalancingPolicy |
+| cassandraDriver.loadBalancing.filter.dcs | | | Comma separated list of datacenters |
+| cassandraDriver.loadBalancing.filter.workloads | | | Comma separated list of workloads (EE Only) |
 | cassandraDriver.speculativeExecution.delay | | 500 | Number of ms to wait before implementing Speculative Execution |
 | cassandraDriver.speculativeExecution.executions | | 2 | Max number of Speculative Executions |
 | cassandraDriver.timeout.read | | 500 | Set read timeout in ms |
@@ -270,6 +273,8 @@ This can be resolved by adding the following to your pom.xml
 ## Release Notes
 ### 1.4-SNAPSHOT - TBD
 * Full rewrite of generator to switch from web to command line
+* Added functionality for filtering on either workload or DC
+* Minor - Added getVersion() which shows Casquatch and driver versions
 ### 1.3-RELEASE - 09/17/2018
 * Added SSL Support
 * Added CassandraDriver-EE as a simple wrapper to inject the licensed driver.

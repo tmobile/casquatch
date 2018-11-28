@@ -43,6 +43,7 @@ import com.tmobile.opensource.casquatch.CassandraDriver;
  *      4XX - Driver Exceptions
  *      <ul>
  *          <li>401 - Unconfigured Feature</li>
+ *          <li>402 - Unsupported Feature</li>
 *       </ul>
  *   </li>
  * </ul>

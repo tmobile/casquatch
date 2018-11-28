@@ -57,6 +57,9 @@ public class CassandraDriverSpringConfiguration {
 	@Value("${cassandraDriver.ssl.node:#{null}}") String sslNode;
 	@Value("${cassandraDriver.ssl.truststore.path:#{null}}") String sslTruststorePath;
 	@Value("${cassandraDriver.ssl.truststore.password:#{null}}") String sslTruststorePassword;
+	@Value("${cassandraDriver.loadBalancing.token:#{null}}") String loadBalancingToken;
+	@Value("${cassandraDriver.loadBalancing.filter.workloads:#{null}}") String loadBalancingFilterDatacenters;
+	@Value("${cassandraDriver.loadBalancing.filter.datacenters:#{null}}") String loadBalancingFilterWorkloads;
 
     /**
      * Spring bean to auto configure CassandraDriver
@@ -179,7 +182,23 @@ public class CassandraDriverSpringConfiguration {
     	if(defaultSolrDC!=null) {
     		cassandraDriverBuilder = cassandraDriverBuilder.withSolrDC(defaultSolrDC);
     	}
-
+    	
+    	
+    	if(loadBalancingToken!=null && loadBalancingToken.equals("enabled")) {
+    		cassandraDriverBuilder = cassandraDriverBuilder.withTokenAware();
+    	}
+    	
+    	if(loadBalancingToken!=null && loadBalancingToken.equals("disabled")) {
+    		cassandraDriverBuilder = cassandraDriverBuilder.withoutTokenAware();
+    	}
+    	
+    	if(loadBalancingFilterDatacenters !=null) {
+    		cassandraDriverBuilder = cassandraDriverBuilder.withDataCenters(loadBalancingFilterDatacenters);
+    	}
+    	
+    	if(loadBalancingFilterWorkloads !=null) {
+    		cassandraDriverBuilder = cassandraDriverBuilder.withDataCenters(loadBalancingFilterWorkloads);
+    	}
 
     	return cassandraDriverBuilder.build();
     }

@@ -18,9 +18,12 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.security.KeyStore;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.annotation.PreDestroy;
 import javax.net.ssl.SSLContext;
@@ -44,6 +47,7 @@ import com.datastax.driver.core.policies.ConstantSpeculativeExecutionPolicy;
 import com.datastax.driver.core.policies.DCAwareRoundRobinPolicy;
 import com.datastax.driver.core.policies.ExponentialReconnectionPolicy;
 import com.datastax.driver.core.policies.FallthroughRetryPolicy;
+import com.datastax.driver.core.policies.HostFilterPolicy;
 import com.datastax.driver.core.policies.LoadBalancingPolicy;
 import com.datastax.driver.core.policies.RetryPolicy;
 import com.datastax.driver.core.policies.SpeculativeExecutionPolicy;
@@ -72,7 +76,7 @@ import com.tmobile.opensource.casquatch.models.shared.DriverConfig;
 public class CassandraDriver {
 
 	public static class Builder {
-		private class Configuration {		
+		protected class Configuration {		
 			class SpeculativeExecution {
 				int delay;
 				int executions;
@@ -110,7 +114,27 @@ public class CassandraDriver {
 				}
 				boolean node;
 				Keystore truststore = new Keystore();
+			}			
+			class LoadBalancing {				
+				class Token {
+					boolean enabled;
+				}
+				class Filter {
+					class Workload {
+						List<String> workloads = new ArrayList<String>();
+						boolean enabled;
+					}
+					class DC {
+						List<String> datacenters = new ArrayList<String>();
+						boolean enabled;
+					}
+					Workload workload = new Workload();
+					DC dc = new DC();
+				}
+				Token token = new Token();
+				Filter filter = new Filter();
 			}
+			
 			Connections connections = new Connections();
 			Timeout timeout = new Timeout();
 			Reconnection reconnection = new Reconnection();
@@ -118,17 +142,18 @@ public class CassandraDriver {
 			Defaults defaults = new Defaults();
 			Features features = new Features();
 			SSL ssl = new SSL();
+			LoadBalancing loadBalancing = new LoadBalancing();
 			
 			String username;
 			String password;						
 			String localDC;			
 			String keyspace;			
 			int port;			
-			String contactPoints;	
+			List<String> contactPoints = new ArrayList<String>();
 			int useRemoteConnections;
 			
 			public Configuration() {
-				this.contactPoints = "localhost";
+				this.contactPoints.add("localhost");
 				this.port=9042;
 				this.username = "cassandra";
 				this.password = "cassandra";			
@@ -150,6 +175,9 @@ public class CassandraDriver {
 				this.defaults.solrDC="search";
 				this.defaults.saveNulls=false;
 				this.ssl.node=false;
+				this.loadBalancing.filter.dc.enabled=false;
+				this.loadBalancing.filter.workload.enabled=false;
+				this.loadBalancing.token.enabled=true;
 			}
 			
 			public String toString() {
@@ -170,11 +198,7 @@ public class CassandraDriver {
 		    		throw new DriverException(401,"Contact Points are required");
 		    		
 		    	if(this.keyspace == null || this.keyspace.isEmpty())
-		    		throw new DriverException(401,"Keyspace is required");
-		    	
-		    	if(this.localDC == null || this.localDC.isEmpty())
-		    		throw new DriverException(401,"Local DC is required");
-		    	
+		    		throw new DriverException(401,"Keyspace is required");		    	
 		    	
 		    	return true;
 				
@@ -242,10 +266,20 @@ public class CassandraDriver {
 		
 	    /**
 	     * Build with comma separated list of contact points
-	     * @param contactPoints connection contact points
+	     * @param contactPoints connection contact points separated by comma
 	     * @return Reference to Builder object
 	     */
 		public Builder withContactPoints(String contactPoints) {
+			config.contactPoints = Arrays.asList(contactPoints.split(","));
+			return this;
+		}
+		
+	    /**
+	     * Build with list of contact points
+	     * @param contactPoints connection contact points
+	     * @return Reference to Builder object
+	     */
+		public Builder withContactPoints(List<String> contactPoints) {
 			config.contactPoints = contactPoints;
 			return this;
 		}
@@ -403,6 +437,15 @@ public class CassandraDriver {
 		}
 		
 	    /**
+	     * Build with solr data center set to null
+	     * @return Reference to Builder object
+	     */
+		public Builder withoutSolrDC() {
+			config.defaults.solrDC=null;
+			return this;
+		}
+		
+	    /**
 	     * Build without saving nulls
 	     * @return Reference to Builder object
 	     */
@@ -447,6 +490,95 @@ public class CassandraDriver {
 		public Builder withTrustStore(String path, String password) {
 			config.ssl.truststore.path=path;
 			config.ssl.truststore.password=password;
+			return this;
+		}
+		
+	    /**
+	     * Build with token aware policy
+	     * @return Reference to Builder object
+	     */
+		public Builder withTokenAware() {
+			config.loadBalancing.token.enabled=true;
+			return this;
+		}
+		
+	    /**
+	     * Build without token aware policy
+	     * @return Reference to Builder object
+	     */
+		public Builder withoutTokenAware() {
+			config.loadBalancing.token.enabled=false;
+			return this;
+		}
+		
+	    /**
+	     * Build with workload filtering and allow the defined workload. If workload is Search then solrDC is cleared.
+	     * @param workload add workload list
+	     * @return Reference to Builder object
+	     */
+		public Builder withWorkload(String workload) {
+			config.loadBalancing.filter.workload.enabled=true;
+			config.loadBalancing.filter.workload.workloads.add(workload);
+			if(workload.equals("Search")) {
+				return this.withoutSolrDC();
+			}
+			else {
+				return this;				
+			}
+		}
+		
+	    /**
+	     * Build with workload filtering and use the list of workloads
+	     * @param workloads list of workloads
+	     * @return Reference to Builder object
+	     */
+		public Builder withWorkloads(List<String> workloads) {
+			config.loadBalancing.filter.workload.enabled=true;
+			config.loadBalancing.filter.workload.workloads = workloads;
+			return this;
+		}
+		
+	    /**
+	     * Build with workload filtering and use the list of workloads
+	     * @param workloads list of workloads separate by comma
+	     * @return Reference to Builder object
+	     */
+		public Builder withWorkloads(String workloads) {
+			config.loadBalancing.filter.workload.enabled=true;
+			config.loadBalancing.filter.workload.workloads = Arrays.asList(workloads.split(","));
+			return this;
+		}
+		
+	    /**
+	     * Build with data center filtering and allow the provided datacenter
+	     * @param datacenter add datacenter to list
+	     * @return Reference to Builder object
+	     */
+		public Builder withDataCenter(String datacenter) {
+			config.loadBalancing.filter.dc.enabled=true;
+			config.loadBalancing.filter.dc.datacenters.add(datacenter);
+			return this;
+		}
+		
+	    /**
+	     * Build with data center filtering and allow the provided datacenters
+	     * @param datacenters list of datacenters
+	     * @return Reference to Builder object
+	     */
+		public Builder withDataCenters(List<String> datacenters) {
+			config.loadBalancing.filter.dc.enabled=true;
+			config.loadBalancing.filter.dc.datacenters = datacenters;
+			return this;
+		}
+		
+	    /**
+	     * Build with data center filtering and allow the provided datacenters
+	     * @param datacenters list of datacenters separated by comma
+	     * @return Reference to Builder object
+	     */
+		public Builder withDataCenters(String datacenters) {
+			config.loadBalancing.filter.dc.enabled=true;
+			config.loadBalancing.filter.dc.datacenters = Arrays.asList(datacenters.split(","));
 			return this;
 		}
 
@@ -503,7 +635,7 @@ public class CassandraDriver {
      * @param config driver configuration
      */
     protected CassandraDriver(Builder.Configuration config) {
-    	logger.debug("Using Driver Version: "+Cluster.getDriverVersion());
+    	logger.info("Using Version: "+CassandraDriver.getVersion());
     	config.validate();
     	this.config = config;
         this.clusterMap = new HashMap<String, Cluster>();
@@ -532,6 +664,24 @@ public class CassandraDriver {
 				.withKeyspace(keyspace)
 				.getConfiguration()
 			);
+    }
+    
+    /**
+     * Returns the CassandraDriver version information
+     * @param key Key for the cluster connection
+     * @return Cluster object for key
+     */
+    public static String getVersion() {
+    	InputStream resourceAsStream = CassandraDriver.class.getResourceAsStream("/maven.properties");
+    	Properties properties = new Properties();
+    	try {
+    		properties.load(resourceAsStream);
+    		return "Casquatch "+(String) properties.get("version")+". Java Driver "+Cluster.getDriverVersion();
+    	}
+    	catch (Exception e) {
+    		throw new DriverException(e);
+    	}
+
     }
 
 	/**
@@ -582,6 +732,25 @@ public class CassandraDriver {
         }
         return sessionMap.get(key);
     }
+    
+    /**
+     * Gets the solr session
+     * @return Session object for solr
+     * @throws DriverException - Driver exception mapped to error code
+     */
+	protected Session getSolrSession() throws DriverException {
+		if(!config.features.solr) {
+			throw new DriverException(401,"Solr is disabled");
+		}    	
+		else if(config.loadBalancing.filter.workload.workloads.contains("Search") && config.defaults.solrDC.isEmpty()) {
+			logger.debug("Using default cluster as workload was defined as Solr");
+			return this.getSession("default");
+		}
+		else {
+			logger.debug("Using "+config.defaults.solrDC);
+			return this.getSession(config.defaults.solrDC);        		
+		} 
+	}
 
     /**
      * Get a mapping manager for the key
@@ -602,14 +771,42 @@ public class CassandraDriver {
      */
     private Cluster createHACluster(String localDC) {
         logger.info("Creating new HA cluster with local set to "+localDC);
-        //Define a DC and Token aware policy
-        TokenAwarePolicy loadBalancingPolicy = new TokenAwarePolicy(
-                DCAwareRoundRobinPolicy.builder()
-                        .withLocalDc(config.localDC)
-                        .withUsedHostsPerRemoteDc(config.useRemoteConnections)
-                        .allowRemoteDCsForLocalConsistencyLevel()
-                        .build()
-        );
+        
+        DCAwareRoundRobinPolicy.Builder dcAwareRoundRobinPolicyBuilder = DCAwareRoundRobinPolicy.builder();
+        
+        if(localDC!=null) {
+        	dcAwareRoundRobinPolicyBuilder = dcAwareRoundRobinPolicyBuilder.withLocalDc(localDC);
+        }
+        
+        if(config.useRemoteConnections > 0) {
+        	dcAwareRoundRobinPolicyBuilder = 
+    			dcAwareRoundRobinPolicyBuilder
+    				.withUsedHostsPerRemoteDc(config.useRemoteConnections)
+    				.allowRemoteDCsForLocalConsistencyLevel();
+        }
+        
+        LoadBalancingPolicy loadBalancingPolicy = dcAwareRoundRobinPolicyBuilder.build();
+        
+        if(config.loadBalancing.token.enabled) {
+        	loadBalancingPolicy = new TokenAwarePolicy(loadBalancingPolicy);
+        }
+        
+        if(config.loadBalancing.filter.dc.enabled) {
+        	loadBalancingPolicy = HostFilterPolicy.fromDCWhiteList(loadBalancingPolicy,config.loadBalancing.filter.dc.datacenters);
+        }
+        
+        if(config.loadBalancing.filter.workload.enabled) {
+        	try {
+				Class<?> workloadFilterClass = Class.forName("com.tmobile.opensource.casquatch.policies.WorkloadFilterPolicy");
+				Class<?>[] formalparameters = { LoadBalancingPolicy.class, List.class };
+				Object[] effectiveParameters = new Object[] { loadBalancingPolicy, config.loadBalancing.filter.workload.workloads };
+				loadBalancingPolicy = (LoadBalancingPolicy) workloadFilterClass.getMethod("fromWorkloadList", formalparameters ).invoke(null, effectiveParameters);
+			} catch (Exception e) {
+				throw new DriverException(402,"Workload filter requires Casquatch-EE");
+			}
+        	
+        	//loadBalancingPolicy = WorkloadFilterPolicy.fromWorkloadList(loadBalancingPolicy,  config.loadBalancing.filter.workload.workloads);
+        }
 
         return createCluster(loadBalancingPolicy);
     }
@@ -621,12 +818,14 @@ public class CassandraDriver {
      */
     private Cluster createSingleDCCluster(String datacenter) {
         logger.info("Creating new Single DC cluster with datacenter set to "+datacenter);
-        TokenAwarePolicy loadBalancingPolicy = new TokenAwarePolicy(
-                DCAwareRoundRobinPolicy.builder()
-                        .withLocalDc(datacenter)
-                        .build()
-        );
-
+        
+        LoadBalancingPolicy loadBalancingPolicy = DCAwareRoundRobinPolicy.builder()
+                .withLocalDc(datacenter)
+                .build();
+        
+        if(config.loadBalancing.token.enabled) {
+        	loadBalancingPolicy = new TokenAwarePolicy(loadBalancingPolicy);
+        }
         return createCluster(loadBalancingPolicy);
     }
 
@@ -661,7 +860,7 @@ public class CassandraDriver {
         RetryPolicy retryPolicy = FallthroughRetryPolicy.INSTANCE;
         
         Cluster.Builder clusterBuilder = Cluster.builder()
-                .addContactPoints(config.contactPoints.split(","))
+                .addContactPoints(config.contactPoints.toArray(new String[0]))
                 .withLoadBalancingPolicy(loadBalancingPolicy)
                 .withPort(config.port)
                 .withSpeculativeExecutionPolicy(speculativeExecutionPolicy)
@@ -888,14 +1087,10 @@ public class CassandraDriver {
      * @return Object containing results
      * @throws DriverException - Driver exception mapped to error code
      */
-     private <T extends AbstractCassandraTable> Result<T> executeSolr(Class<T> c, Select select) throws DriverException {
-    	 if(!config.features.solr) {
-         	throw new DriverException(401,"Solr is disabled");
-         }    	
-         
+     private <T extends AbstractCassandraTable> Result<T> executeSolr(Class<T> c, Select select) throws DriverException {	
          try {
- 	       	logger.debug("Running Query: "+select.getQueryString()+" in dc "+config.defaults.solrDC);       	
-         	return this.getMapper(c).map(this.getSession(config.defaults.solrDC).execute(select));
+ 	       	logger.debug("Running Query: "+select.getQueryString()+" against Solr");       	
+         	return this.getMapper(c).map(this.getSolrSession().execute(select));
          	
          }
          catch (InvalidQueryException e) {
@@ -977,14 +1172,9 @@ public class CassandraDriver {
      * @throws DriverException - Driver exception mapped to error code
      */
     public <T extends AbstractCassandraTable> List<T> getAllBySolrCQL(Class<T> c, String cql) throws DriverException {
-    	if(!config.features.solr) {
-         	throw new DriverException(401,"Solr is disabled");
-         }    	
-         
          try {
- 	       	logger.debug("Running Query: "+cql+" in dc "+config.defaults.solrDC);       	
-         	return this.getMapper(c).map(this.getSession(config.defaults.solrDC).execute(cql)).all();
-         	
+    		logger.debug("Running Query: "+cql+" against Solr");       	
+    		return this.getMapper(c).map(this.getSolrSession().execute(cql)).all();	       		
          }
          catch (InvalidQueryException e) {
          	DriverException driverException;
@@ -1010,28 +1200,25 @@ public class CassandraDriver {
      * @return count of results
      * @throws DriverException - Driver exception mapped to error code
      */    
-    public <T extends AbstractCassandraTable> Long getCountBySolr(Class<T> c, String solrQueryString) throws DriverException {
-    	if(!config.features.solr) {
-        	throw new DriverException(401,"Solr is disabled");
-        }         
+    public <T extends AbstractCassandraTable> Long getCountBySolr(Class<T> c, String solrQueryString) throws DriverException {    
         logger.debug("Getting All from "+c.getAnnotation(Table.class).keyspace()+".”+c.getAnnotation(Table.class).name()+” with solar_query "+solrQueryString+" from "+getConnectionKey("solar"));
         try {
             Select select = QueryBuilder.select().countAll().from(c.getAnnotation(Table.class).name());
             select.where().and(QueryBuilder.eq("solr_query", solrQueryString));
-                logger.debug("Running Query: "+select.getQueryString());
-                ResultSet result = this.getSession(config.defaults.solrDC).execute(select);
-                if(result != null) {
-                    List<Row> rowList = result.all();
-                    if(rowList != null && rowList.size()>0) {
-                        return new Long(rowList.get(0).getLong(0));
-                    }
-                    else {
-                        return new Long(0);
-                    }
+            logger.debug("Running Query: "+select.getQueryString());
+            ResultSet result = this.getSolrSession().execute(select);
+            if(result != null) {
+                List<Row> rowList = result.all();
+                if(rowList != null && rowList.size()>0) {
+                    return new Long(rowList.get(0).getLong(0));
                 }
                 else {
                     return new Long(0);
                 }
+            }
+            else {
+                return new Long(0);
+            }
         }
          catch (Exception e) {
              DriverException driverException = new DriverException(e);

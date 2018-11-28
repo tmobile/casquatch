@@ -3,6 +3,7 @@
 # Runs through tests of the full flow and project
 #
 DATACENTER=dc1
+DATACENTER2=dc2
 OUTPUT=.admin/test.out
 
 #startDockerCassandra name version
@@ -19,6 +20,36 @@ startDockerCassandra() {
   fi;
 }
 
+
+#startDockerDSECluster name version
+#Start up a datastax cassandra cluster with mulitple nodes for the given version
+startDockerCassandraCluster() {
+  echo "---------------------------------------------"
+  echo "Starting Docker Cassandra Cluster"
+  echo "---------------------------------------------"
+  NAME=$1
+  VERSION=$2
+  docker network create ${NAME}_default --label casquatch_test=${NAME}
+  docker run --network ${NAME}_default --rm -e CASSANDRA_DC=$DATACENTER -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch -d --name ${NAME}_seed_1 --label casquatch_test=${NAME} -d cassandra:$VERSION
+  if [ $? -eq 0 ]; then
+    retryLoop "docker exec -it ${NAME}_seed_1 dsetool status 2>/dev/null | grep rack1 | grep -q UN" 120
+  else
+    $?
+  fi;
+  docker run --network ${NAME}_default --rm -e CASSANDRA_DC=$DATACENTER2 -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch -e CASSANDRA_SEEDS=${NAME}_seed_1 -d --name ${NAME}_search_1 --label casquatch_test=${NAME} -d cassandra:$VERSION
+  if [ $? -eq 0 ]; then
+    retryLoop "docker exec -it ${NAME}_seed_1 nodetool status 2>/dev/null | grep rack1 | grep -c UN | grep -q '2'" 300
+  else
+    $?
+  fi;
+  docker run --network ${NAME}_default --rm -e CASSANDRA_DC=$DATACENTER2 -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch -e CASSANDRA_SEEDS=${NAME}_seed_1 -d --name ${NAME}_search_2 --label casquatch_test=${NAME} -d cassandra:$VERSION
+  if [ $? -eq 0 ]; then
+    retryLoop "docker exec -it ${NAME}_seed_1 nodetool status 2>/dev/null | grep rack1 | grep -c UN | grep -q '3'" 300
+  else
+    $?
+  fi;
+}
+
 #startDockerDSE name version
 #Start up datastax cassandra with solr enabled for the given version
 startDockerDSE() {
@@ -28,6 +59,35 @@ startDockerDSE() {
   docker run --rm -e DS_LICENSE=accept -p 9042:9042 -p 9142:9142 -d --name $1 -h dse.local --label casquatch_test=$1 -d datastax/dse-server:$2 -s
   if [ $? -eq 0 ]; then
     retryLoop "docker exec -it $1 dsetool status 2>/dev/null | grep rack1 | grep -q 'UN'" 120
+  else
+    $?
+  fi;
+}
+
+#startDockerDSECluster name version
+#Start up a datastax cassandra cluster with mulitple nodes for the given version
+startDockerDSECluster() {
+  echo "---------------------------------------------"
+  echo "Starting DSE Docker Cluster"
+  echo "---------------------------------------------"
+  NAME=$1
+  VERSION=$2
+  docker network create ${NAME}_default --label casquatch_test=${NAME}
+  docker run --network ${NAME}_default --rm -e DS_LICENSE=accept -e DC=$DATACENTER -d --name ${NAME}_seed_1 --label casquatch_test=${NAME} -d datastax/dse-server:$VERSION
+  if [ $? -eq 0 ]; then
+    retryLoop "docker exec -it ${NAME}_seed_1 dsetool status 2>/dev/null | grep rack1 | grep -q UN" 120
+  else
+    $?
+  fi;
+  docker run --network ${NAME}_default --rm -e DS_LICENSE=accept -e DC=$DATACENTER2 -e SEEDS=${NAME}_seed_1 -d --name ${NAME}_search_1 --label casquatch_test=${NAME} -d datastax/dse-server:$VERSION -s
+  if [ $? -eq 0 ]; then
+    retryLoop "docker exec -it ${NAME}_seed_1 dsetool status 2>/dev/null | grep rack1 | grep -c UN | grep -q '2'" 300
+  else
+    $?
+  fi;
+  docker run --network ${NAME}_default --rm -e DS_LICENSE=accept -e DC=$DATACENTER2 -e SEEDS=${NAME}_seed_1 -d --name ${NAME}_search_2 --label casquatch_test=${NAME} -d datastax/dse-server:$VERSION -s
+  if [ $? -eq 0 ]; then
+    retryLoop "docker exec -it ${NAME}_seed_1 dsetool status 2>/dev/null | grep rack1 | grep -c UN | grep -q '3'" 300
   else
     $?
   fi;
@@ -126,6 +186,7 @@ cleanup() {
   pkill -f  springconfig
   docker ps -flabel=casquatch_test -q | xargs -I % docker kill %
   docker container ls -al -flabel=casquatch_test -q | xargs -I % docker rm %
+  docker network ls -flabel=casquatch_test -q | xargs -I % docker network rm %
   mvn clean
   mvn -f pom_install.xml -pl cassandramodels -q clean install
   rm -rf cassandramodels
@@ -163,7 +224,7 @@ retryLoop() {
   timeout=$2
   lc=0
   retcode=-1
-  sleep=5
+  sleep=10
   until [ $retcode -eq 0 ]; do
     if [ $lc -gt $((timeout/sleep)) ]; then
       return 1
@@ -278,6 +339,19 @@ embeddedTests() {
   showStatus $?
 }
 
+runClusterTests() {
+  NAME=$1
+  mvn -q -pl cassandradriver -P cluster-tests clean package
+  docker cp cassandradriver/target/CassandraDriver-*-test-jar-with-dependencies.jar ${NAME}_seed_1:/cassandra-driver-cluster-tests.jar
+  docker exec -it ${NAME}_seed_1 java -jar /cassandra-driver-cluster-tests.jar
+}
+
+runClusterEETests() {
+  mvn -q -pl cassandradriver-ee -P cluster-tests clean package
+  docker cp cassandradriver-ee/target/CassandraDriver-*-test-jar-with-dependencies.jar ${NAME}_search_1:/cassandra-driver-cluster-ee-tests.jar
+  docker exec -it ${NAME}_search_1 java -jar /cassandra-driver-cluster-ee-tests.jar
+}
+
 #cassandraTests version
 #run all tests for open source cassandra on the specified version
 cassandraTests() {
@@ -295,6 +369,18 @@ cassandraTests() {
   basicTestSuite  $container
   generatorTestSuite $container
   springTestSuite $container
+
+  echo "[$container][Cleanup]" \\c
+  cleanup $container >> $OUTPUT 2>&1
+  showStatus $?
+
+  echo "[$container][Start Cassandra Cluster]" \\c
+  startDockerCassandraCluster $container $version >> $OUTPUT 2>&1
+  showStatus $?
+
+  echo "[$container][Run Cluster Tests]" \\c
+  runClusterTests $container >> $OUTPUT 2>&1
+  showStatus $?
 
   echo "[$container][Cleanup]" \\c
   cleanup $container >> $OUTPUT 2>&1
@@ -323,6 +409,18 @@ dseTests() {
 
   echo "[$container][Run JUnit Enterprise Driver Tests]" \\c
   runTests cassandradriver-ee CassandraDriverEEDockerTests >> $OUTPUT 2>&1
+  showStatus $?
+
+  echo "[$container][Cleanup]" \\c
+  cleanup $container >> $OUTPUT 2>&1
+  showStatus $?
+
+  echo "[$container][Start DSE Cluster]" \\c
+  startDockerDSECluster $container $version >> $OUTPUT 2>&1
+  showStatus $?
+
+  echo "[$container][Run EE Cluster Tests]" \\c
+  runClusterEETests $container >> $OUTPUT 2>&1
   showStatus $?
 
   echo "[$container][Cleanup]" \\c
