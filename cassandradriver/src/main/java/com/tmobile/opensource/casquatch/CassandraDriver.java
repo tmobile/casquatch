@@ -18,6 +18,8 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.security.KeyStore;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +64,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.tmobile.opensource.casquatch.exceptions.DriverException;
 import com.tmobile.opensource.casquatch.models.AbstractCassandraTable;
 import com.tmobile.opensource.casquatch.models.shared.DriverConfig;
+import com.tmobile.opensource.casquatch.policies.DCFilterPolicy;
+import com.tmobile.opensource.casquatch.policies.WorkloadFilterPolicy;
 
 /**
  * This object provides a standard interface for connecting to Cassandra clusters within SDE.
@@ -72,7 +76,7 @@ import com.tmobile.opensource.casquatch.models.shared.DriverConfig;
 public class CassandraDriver {
 
 	public static class Builder {
-		private class Configuration {		
+		protected class Configuration {		
 			class SpeculativeExecution {
 				int delay;
 				int executions;
@@ -110,7 +114,27 @@ public class CassandraDriver {
 				}
 				boolean node;
 				Keystore truststore = new Keystore();
+			}			
+			class LoadBalancing {				
+				class Token {
+					boolean enabled;
+				}
+				class Filter {
+					class Workload {
+						List<String> workloads = new ArrayList<String>();
+						boolean enabled;
+					}
+					class DC {
+						List<String> datacenters = new ArrayList<String>();
+						boolean enabled;
+					}
+					Workload workload = new Workload();
+					DC dc = new DC();
+				}
+				Token token = new Token();
+				Filter filter = new Filter();
 			}
+			
 			Connections connections = new Connections();
 			Timeout timeout = new Timeout();
 			Reconnection reconnection = new Reconnection();
@@ -118,17 +142,18 @@ public class CassandraDriver {
 			Defaults defaults = new Defaults();
 			Features features = new Features();
 			SSL ssl = new SSL();
+			LoadBalancing loadBalancing = new LoadBalancing();
 			
 			String username;
 			String password;						
 			String localDC;			
 			String keyspace;			
 			int port;			
-			String contactPoints;	
+			List<String> contactPoints = new ArrayList<String>();
 			int useRemoteConnections;
 			
 			public Configuration() {
-				this.contactPoints = "localhost";
+				this.contactPoints.add("localhost");
 				this.port=9042;
 				this.username = "cassandra";
 				this.password = "cassandra";			
@@ -150,6 +175,9 @@ public class CassandraDriver {
 				this.defaults.solrDC="search";
 				this.defaults.saveNulls=false;
 				this.ssl.node=false;
+				this.loadBalancing.filter.dc.enabled=false;
+				this.loadBalancing.filter.workload.enabled=false;
+				this.loadBalancing.token.enabled=true;
 			}
 			
 			public String toString() {
@@ -170,11 +198,7 @@ public class CassandraDriver {
 		    		throw new DriverException(401,"Contact Points are required");
 		    		
 		    	if(this.keyspace == null || this.keyspace.isEmpty())
-		    		throw new DriverException(401,"Keyspace is required");
-		    	
-		    	if(this.localDC == null || this.localDC.isEmpty())
-		    		throw new DriverException(401,"Local DC is required");
-		    	
+		    		throw new DriverException(401,"Keyspace is required");		    	
 		    	
 		    	return true;
 				
@@ -242,10 +266,20 @@ public class CassandraDriver {
 		
 	    /**
 	     * Build with comma separated list of contact points
-	     * @param contactPoints connection contact points
+	     * @param contactPoints connection contact points separated by comma
 	     * @return Reference to Builder object
 	     */
 		public Builder withContactPoints(String contactPoints) {
+			config.contactPoints = Arrays.asList(contactPoints.split(","));
+			return this;
+		}
+		
+	    /**
+	     * Build with list of contact points
+	     * @param contactPoints connection contact points
+	     * @return Reference to Builder object
+	     */
+		public Builder withContactPoints(List<String> contactPoints) {
 			config.contactPoints = contactPoints;
 			return this;
 		}
@@ -449,6 +483,90 @@ public class CassandraDriver {
 			config.ssl.truststore.password=password;
 			return this;
 		}
+		
+	    /**
+	     * Build with token aware policy
+	     * @return Reference to Builder object
+	     */
+		public Builder withTokenAware() {
+			config.loadBalancing.token.enabled=true;
+			return this;
+		}
+		
+	    /**
+	     * Build without token aware policy
+	     * @return Reference to Builder object
+	     */
+		public Builder withoutTokenAware() {
+			config.loadBalancing.token.enabled=false;
+			return this;
+		}
+		
+	    /**
+	     * Build with workload filtering and allow the defined workload
+	     * @param workload add workload list
+	     * @return Reference to Builder object
+	     */
+		public Builder withWorkload(String workload) {
+			config.loadBalancing.filter.workload.enabled=true;
+			config.loadBalancing.filter.workload.workloads.add(workload);
+			return this;
+		}
+		
+	    /**
+	     * Build with workload filtering and use the list of workloads
+	     * @param workloads list of workloads
+	     * @return Reference to Builder object
+	     */
+		public Builder withWorkloads(List<String> workloads) {
+			config.loadBalancing.filter.workload.enabled=true;
+			config.loadBalancing.filter.workload.workloads = workloads;
+			return this;
+		}
+		
+	    /**
+	     * Build with workload filtering and use the list of workloads
+	     * @param workloads list of workloads separate by comma
+	     * @return Reference to Builder object
+	     */
+		public Builder withWorkloads(String workloads) {
+			config.loadBalancing.filter.workload.enabled=true;
+			config.loadBalancing.filter.workload.workloads = Arrays.asList(workloads.split(","));
+			return this;
+		}
+		
+	    /**
+	     * Build with data center filtering and allow the provided datacenter
+	     * @param datacenter add datacenter to list
+	     * @return Reference to Builder object
+	     */
+		public Builder withDataCenter(String datacenter) {
+			config.loadBalancing.filter.dc.enabled=true;
+			config.loadBalancing.filter.dc.datacenters.add(datacenter);
+			return this;
+		}
+		
+	    /**
+	     * Build with data center filtering and allow the provided datacenters
+	     * @param datacenters list of datacenters
+	     * @return Reference to Builder object
+	     */
+		public Builder withDataCenters(List<String> datacenters) {
+			config.loadBalancing.filter.dc.enabled=true;
+			config.loadBalancing.filter.dc.datacenters = datacenters;
+			return this;
+		}
+		
+	    /**
+	     * Build with data center filtering and allow the provided datacenters
+	     * @param datacenters list of datacenters separated by comma
+	     * @return Reference to Builder object
+	     */
+		public Builder withDataCenters(String datacenters) {
+			config.loadBalancing.filter.dc.enabled=true;
+			config.loadBalancing.filter.dc.datacenters = Arrays.asList(datacenters.split(","));
+			return this;
+		}
 
 		
 	    /**
@@ -602,14 +720,33 @@ public class CassandraDriver {
      */
     private Cluster createHACluster(String localDC) {
         logger.info("Creating new HA cluster with local set to "+localDC);
-        //Define a DC and Token aware policy
-        TokenAwarePolicy loadBalancingPolicy = new TokenAwarePolicy(
-                DCAwareRoundRobinPolicy.builder()
-                        .withLocalDc(config.localDC)
-                        .withUsedHostsPerRemoteDc(config.useRemoteConnections)
-                        .allowRemoteDCsForLocalConsistencyLevel()
-                        .build()
-        );
+        
+        DCAwareRoundRobinPolicy.Builder dcAwareRoundRobinPolicyBuilder = DCAwareRoundRobinPolicy.builder();
+        
+        if(localDC!=null) {
+        	dcAwareRoundRobinPolicyBuilder = dcAwareRoundRobinPolicyBuilder.withLocalDc(localDC);
+        }
+        
+        if(config.useRemoteConnections > 0) {
+        	dcAwareRoundRobinPolicyBuilder = 
+    			dcAwareRoundRobinPolicyBuilder
+    				.withUsedHostsPerRemoteDc(config.useRemoteConnections)
+    				.allowRemoteDCsForLocalConsistencyLevel();
+        }
+        
+        LoadBalancingPolicy loadBalancingPolicy = dcAwareRoundRobinPolicyBuilder.build();
+        
+        if(config.loadBalancing.token.enabled) {
+        	loadBalancingPolicy = new TokenAwarePolicy(loadBalancingPolicy);
+        }
+        
+        if(config.loadBalancing.filter.workload.enabled) {
+        	loadBalancingPolicy = WorkloadFilterPolicy.builder(loadBalancingPolicy).withFilters(config.loadBalancing.filter.workload.workloads).build();
+        }
+        
+        if(config.loadBalancing.filter.dc.enabled) {
+        	loadBalancingPolicy = DCFilterPolicy.builder(loadBalancingPolicy).withFilters(config.loadBalancing.filter.dc.datacenters).build();
+        }
 
         return createCluster(loadBalancingPolicy);
     }
@@ -621,12 +758,14 @@ public class CassandraDriver {
      */
     private Cluster createSingleDCCluster(String datacenter) {
         logger.info("Creating new Single DC cluster with datacenter set to "+datacenter);
-        TokenAwarePolicy loadBalancingPolicy = new TokenAwarePolicy(
-                DCAwareRoundRobinPolicy.builder()
-                        .withLocalDc(datacenter)
-                        .build()
-        );
-
+        
+        LoadBalancingPolicy loadBalancingPolicy = DCAwareRoundRobinPolicy.builder()
+                .withLocalDc(datacenter)
+                .build();
+        
+        if(config.loadBalancing.token.enabled) {
+        	loadBalancingPolicy = new TokenAwarePolicy(loadBalancingPolicy);
+        }
         return createCluster(loadBalancingPolicy);
     }
 
@@ -661,7 +800,7 @@ public class CassandraDriver {
         RetryPolicy retryPolicy = FallthroughRetryPolicy.INSTANCE;
         
         Cluster.Builder clusterBuilder = Cluster.builder()
-                .addContactPoints(config.contactPoints.split(","))
+                .addContactPoints(config.contactPoints.toArray(new String[0]))
                 .withLoadBalancingPolicy(loadBalancingPolicy)
                 .withPort(config.port)
                 .withSpeculativeExecutionPolicy(speculativeExecutionPolicy)
