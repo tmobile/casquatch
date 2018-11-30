@@ -212,6 +212,47 @@
         </repository>
       </distributionManagement>
     </profile>
+    <profile>
+      <id>cluster-filter-tests</id>
+      <build>
+        <plugins>
+        <plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-surefire-plugin</artifactId>
+  <configuration>
+    <skipTests>true</skipTests>
+  </configuration>
+</plugin>
+		      <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/test/assembly/test-jar-with-dependencies.xml</descriptor>
+					</descriptors>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>com.tmobile.opensource.casquatch.junit.runner.FilterTests</mainClass>
+            </manifest>
+          </archive>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
+  
+  
+  
+
 
 </project>
