@@ -13,6 +13,8 @@ import ${import};
 
 /**
  * Generated: Generated class for ${keyspace}.${table}
+ *
+ * CQL: ${cql}
  */ 
 @Table(
     keyspace = "${keyspace}",
