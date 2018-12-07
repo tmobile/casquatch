@@ -37,9 +37,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.datastax.driver.core.TableMetadata;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmobile.opensource.casquatch.CassandraAdminDriver;
 import com.tmobile.opensource.casquatch.CassandraDriver;
 import com.tmobile.opensource.casquatch.generator.models.system_schema.ColumnsExtended;
 import com.tmobile.opensource.casquatch.generator.models.system_schema.TypesExtended;
@@ -57,6 +59,7 @@ public class CassandraGenerator {
 	public static int MODE_FILE = 1;
 	
 	private CassandraDriver db;
+	private CassandraAdminDriver adminDB;
 	private Configuration fmConfig;
 	private Builder.Configuration config;
 	
@@ -592,6 +595,7 @@ public class CassandraGenerator {
 				      .withLocalDC(config.db.datacenter)
 				      .withoutDriverConfig()
 				      .build();
+		this.adminDB = new CassandraAdminDriver(db);
     }
 	
     /**
@@ -688,6 +692,8 @@ public class CassandraGenerator {
 		
 		logger.info("Creating models for table "+keyspace+"."+table);
 		
+		String cql = adminDB.getDatastaxSession().getCluster().getMetadata().getKeyspace(keyspace).getTable(table).asCQLQuery();
+		
 		List<ColumnsExtended> columns = db.executeAll(ColumnsExtended.class, "select keyspace_name, table_name, column_name, clustering_order, kind, position, type from system_schema.columns where keyspace_name = '"+keyspace.toLowerCase()+"' and table_name = '"+table.toLowerCase()+"'");
         Collections.sort(columns, Comparator.comparing(ColumnsExtended::getPosition));
         
@@ -722,6 +728,7 @@ public class CassandraGenerator {
         input.put("partitionKeys", partitionKeys);
         input.put("clusteringKeys", clusteringKeys);
         input.put("columns", columns);
+        input.put("cql", cql);
         
         String fileName = TablesExtended.format(table,true)+".java"; 
         if(config.pkg) {

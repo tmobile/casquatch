@@ -22,6 +22,8 @@ import java.math.BigInteger;
 
 /**
  * Generated: Generated class for ${keyspace}.${table}
+ *
+ * CQL: ${cql}
  */ 
 @Table(
     keyspace = "${keyspace}",
