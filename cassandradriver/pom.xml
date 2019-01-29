@@ -93,7 +93,7 @@
   <properties>
     <dse.version>3.6.0</dse.version>
     <logback.version>1.2.3</logback.version>
-    <jackson.version>2.9.5</jackson.version>
+    <jackson.version>2.9.8</jackson.version>
     <junit.version>4.12</junit.version>
     <spring-context.version>5.0.4.RELEASE</spring-context.version>
     <spring-boot.version>1.5.10.RELEASE</spring-boot.version>
