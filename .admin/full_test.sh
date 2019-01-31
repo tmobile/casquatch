@@ -122,8 +122,8 @@ cleanup() {
   echo "---------------------------------------------"
   echo "Cleanup"
   echo "---------------------------------------------"
-  pkill -f -9 cassandragenerator
-  pkill -f -9 springconfig
+  pkill -f  cassandragenerator
+  pkill -f  springconfig
   docker ps -flabel=casquatch_test -q | xargs -I % docker kill %
   docker container ls -al -flabel=casquatch_test -q | xargs -I % docker rm %
   mvn clean
@@ -149,9 +149,9 @@ showStatus() {
   GREEN="\033[1;32m"
   NOCOLOR="\033[0m"
   if [ $1 -eq 0 ]; then
-    echo -e "${GREEN}[Success]${NOCOLOR}"
+    echo "${GREEN}[Success]${NOCOLOR}"
   else
-    echo -e "${RED}[Fail]${NOCOLOR}"
+    echo "${RED}[Fail]${NOCOLOR}"
     exit;
   fi
 }
@@ -176,41 +176,33 @@ retryLoop() {
   sleep $((sleep*2))
 }
 
-#startGenerator
-#start up the code generator
-startGenerator() {
-  nohup mvn -pl cassandragenerator spring-boot:run > nohup.out 2>&1 &
-  retryLoop "grep -q 'Started Application' nohup.out" 120
+#buildGenerator
+#compiles the generator
+buildGenerator() {
+  mvn -f pom.xml -pl cassandragenerator -q clean package
 }
 
-#downloadGeneratorModels
-#downloads models from running generator
-downloadGeneratorModels() {
-  mkdir cassandramodels
-  cd cassandramodels
-  curl -s http://localhost:8080/generator/installTest/download/bash | bash >> ../$OUTPUT 2>&1
-  cd ..
-}
 
 #generateModels
 #Generates the downloaded models
 generateModels() {
+  java -jar cassandragenerator/target/CassandraGenerator-*.jar  --keyspace=installTest --datacenter=$DATACENTER --package --output=cassandramodels
   mvn -f pom_install.xml -pl cassandramodels -q clean install
 }
 
 #installCasquatch
 installCasquatch() {
-  mvn clean install
+  mvn -q clean install
 }
 
 #basicTestSuite name
 #Runs the basic junit test suite
 basicTestSuite() {
-  echo -n "[$1][Install Casqutch]"
+  echo "[$1][Install Casqutch]" \\c
   installCasquatch >> $OUTPUT 2>&1
   showStatus $?
 
-  echo -n "[$1][Run Docker Tests]"
+  echo "[$1][Run Docker Tests]" \\c
   runTests cassandradriver CassandraDriverDockerTests >> $OUTPUT 2>&1
   showStatus $?
 }
@@ -218,23 +210,15 @@ basicTestSuite() {
 #generatorTestSuite
 #Test suite for code generator
 generatorTestSuite() {
-  echo -n "[$1][Install Keyspace]"
+  echo "[$1][Install Keyspace]" \\c
   installKeyspace $1 >> $OUTPUT 2>&1
   showStatus $?
 
-  echo -n "[$1][Configure Driver]"
-  configureDriver installTest >> $OUTPUT 2>&1
+  echo "[$1][Build Generator]" \\c
+  buildGenerator >> $OUTPUT 2>&1
   showStatus $?
 
-  echo -n "[$1][Start Generator]"
-  startGenerator >> $OUTPUT 2>&1
-  showStatus $?
-
-  echo -n "[$1][Download Models]"
-  downloadGeneratorModels >> $OUTPUT 2>&1
-  showStatus $?
-
-  echo -n "[$1][Generate Models]"
+  echo "[$1][Generate Models]" \\c
   generateModels >> $OUTPUT 2>&1
   showStatus $?
 
@@ -244,19 +228,19 @@ generatorTestSuite() {
 #test suite for spring
 springTestSuite() {
 
-  echo -n "[$1][Install Spring Config Server Keyspace]"
+  echo "[$1][Install Spring Config Server Keyspace]" \\c
   installSpringKeyspace $1 >> $OUTPUT 2>&1
   showStatus $?
 
-  echo -n "[$1][Configure Driver - Spring Config Server]"
+  echo "[$1][Configure Driver - Spring Config Server]" \\c
   configureDriver springconfig >> $OUTPUT 2>&1
   showStatus $?
 
-  echo -n "[$1][Start Spring Config Server]"
+  echo "[$1][Start Spring Config Server]" \\c
   startSpringConfig >> $OUTPUT 2>&1
   showStatus $?
 
-  echo -n "[$1][Test Spring Config Server]"
+  echo "[$1][Test Spring Config Server]" \\c
   testSpringConfig >> $OUTPUT 2>&1
   showStatus $?
 }
@@ -264,7 +248,7 @@ springTestSuite() {
 #solrTestSuite
 #test suite for solr
 solrTestSuite() {
-  echo -n "[$1][Run JUnit Solr Tests]"
+  echo "[$1][Run JUnit Solr Tests]" \\c
   runTests cassandradriver CassandraDriverDockerSolrTests >> $OUTPUT 2>&1
   showStatus $?
 }
@@ -272,11 +256,11 @@ solrTestSuite() {
 #sslTestSuite
 #test suite for DSE SSL
 sslTestSuite() {
-  echo -n "[$1][Config SSL]"
+  echo "[$1][Config SSL]" \\c
   configureDSESSL $1 $version >> $OUTPUT 2>&1
   showStatus $?
 
-  echo -n "[$1][Run JUnit SSL Tests]"
+  echo "[$1][Run JUnit SSL Tests]" \\c
   export MAVEN_OPTS="-Djavax.net.ssl.trustStorePassword=cassandra -Djavax.net.ssl.trustStore=$TRUSTSTORE_PATH -Djavax.net.ssl.trustStoreType=jks"
   runTests cassandradriver CassandraDriverDockerSSLTests >> $OUTPUT 2>&1
   showStatus $?
@@ -285,7 +269,11 @@ sslTestSuite() {
 #embeddedTests
 #basic embeded tests
 embeddedTests() {
-  echo -n "[Embedded][Run JUnitTests]"
+  echo "[Embedded][Install Casqutch]" \\c
+  installCasquatch >> $OUTPUT 2>&1
+  showStatus $?
+
+  echo "[Embedded][Run JUnitTests]" \\c
   runTests cassandradriver CassandraDriverEmbeddedTests >> $OUTPUT 2>&1
   showStatus $?
 }
@@ -296,11 +284,11 @@ cassandraTests() {
   version=$1
   container="Cassandra-"$version
 
-  echo -n "[$container][Cleanup]"
+  echo "[$container][Cleanup]" \\c
   cleanup $container >> $OUTPUT 2>&1
   showStatus $?
 
-  echo -n "[$container][Start Docker]"
+  echo "[$container][Start Docker]" \\c
   startDockerCassandra $container $version >> $OUTPUT 2>&1
   showStatus $?
 
@@ -308,7 +296,7 @@ cassandraTests() {
   generatorTestSuite $container
   springTestSuite $container
 
-  echo -n "[$container][Cleanup]"
+  echo "[$container][Cleanup]" \\c
   cleanup $container >> $OUTPUT 2>&1
   showStatus $?
 }
@@ -319,11 +307,11 @@ dseTests() {
   version=$1
   container="DSE-"$version
 
-  echo -n "[$container][Cleanup]"
+  echo "[$container][Cleanup]" \\c
   cleanup $container >> $OUTPUT 2>&1
   showStatus $?
 
-  echo -n "[$container][Start Docker]"
+  echo "[$container][Start Docker]" \\c
   startDockerDSE $container $version >> $OUTPUT 2>&1
   showStatus $?
 
@@ -333,20 +321,19 @@ dseTests() {
   solrTestSuite $container
   sslTestSuite $container
 
-  echo -n "[$container][Run JUnit Enterprise Driver Tests]"
+  echo "[$container][Run JUnit Enterprise Driver Tests]" \\c
   runTests cassandradriver-ee CassandraDriverEEDockerTests >> $OUTPUT 2>&1
   showStatus $?
 
-  echo -n "[$container][Cleanup]"
+  echo "[$container][Cleanup]" \\c
   cleanup $container >> $OUTPUT 2>&1
   showStatus $?
 }
-
-mvn -pl cassandradriver clean install
 
 #Run all tests
 embeddedTests
 cassandraTests 3.0
 cassandraTests 3.11
-dseTests 5.1.10
-dseTests 6.0.2
+dseTests 5.1.12
+dseTests 6.0.4
+dseTests 6.7.0
