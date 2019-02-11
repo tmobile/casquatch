@@ -15,77 +15,31 @@
 package com.tmobile.opensource.casquatch.policies;
 
 import com.datastax.driver.core.Host;
+import com.datastax.driver.core.policies.HostFilterPolicy;
 import com.datastax.driver.core.policies.LoadBalancingPolicy;
+import com.google.common.base.Predicate;
+import com.tmobile.opensource.casquatch.exceptions.DriverException;
 
-import java.util.List;
+public class WorkloadFilterPolicy extends HostFilterPolicy{
+    
+    /**
+     * Placeholder. Functionality only available in Casquatch-EE
+     * @param childPolicy the wrapped policy
+     * @param predicate a defined host pridicate
+     */
+    private WorkloadFilterPolicy(LoadBalancingPolicy childPolicy, Predicate<Host> predicate) {
+      super(childPolicy, predicate);
+      throw new DriverException(402,"Workload Filter Policy requires Casquatch-EE");
+    }
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class WorkloadFilterPolicy extends GenericFilterPolicy {
-
-	private static final Logger logger = LoggerFactory.getLogger(WorkloadFilterPolicy.class);
-	
-	/**
-	* Workload Filter policy constructor
-	* @param childPolicy wrapped policy
-	* @param filters list of filters to apply
-	*/
-	private WorkloadFilterPolicy(
-		LoadBalancingPolicy childPolicy,
-		List<String> filters) {
-		super(childPolicy,filters);
-	}
-	
-	/**
-	* helper function for builder
-	* @param childPolicy wrapped policy
-	* @return Builder object
-	*/
-	public static Builder builder(LoadBalancingPolicy childPolicy) {
-		return new Builder(childPolicy);
-	} 
-	
-	/**
-	* Filters hosts
-	* @param host host to check
-	* @param boolean for allowed
-	*/
-	@SuppressWarnings("deprecation")
-	protected Boolean allowHost(Host host) {
-		if(this.filters.size()==0) {
-			this.filters.add(host.getDseWorkload());
-		}
-		if(this.filters.contains(host.getDseWorkload())) {    	  
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	
-	/**
-	* Helper builder object to create a workload aware policy.
-	*/
-	public static class Builder extends GenericFilterPolicy.Builder {
-	
-		/**
-		* Basic constructor. Calls parent
-		* @param childPolicy wrapped policy
-		*/
-		public Builder(LoadBalancingPolicy childPolicy) {
-			super(childPolicy);
-		}
-		
-		/**
-		* Builds a new filter policy using the configured options
-		* @return the new policy object
-		*/
-		public WorkloadFilterPolicy build() {
-			return new WorkloadFilterPolicy(childPolicy, filters);
-		}
-	}
-
+    /**
+     * Placeholder. Functionality only available in Casquatch-EE     *
+     * @param childPolicy the wrapped policy.
+     * @param workloads List of workloads which must match to be passed through
+     */
+    public static WorkloadFilterPolicy fromWorkloadList(LoadBalancingPolicy childPolicy, Iterable<String> workloads) {
+        throw new DriverException(402,"Workload Filter Policy requires Casquatch-EE");
+    }
 }
 
 

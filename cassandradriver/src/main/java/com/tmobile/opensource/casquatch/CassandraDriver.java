@@ -46,6 +46,7 @@ import com.datastax.driver.core.policies.ConstantSpeculativeExecutionPolicy;
 import com.datastax.driver.core.policies.DCAwareRoundRobinPolicy;
 import com.datastax.driver.core.policies.ExponentialReconnectionPolicy;
 import com.datastax.driver.core.policies.FallthroughRetryPolicy;
+import com.datastax.driver.core.policies.HostFilterPolicy;
 import com.datastax.driver.core.policies.LoadBalancingPolicy;
 import com.datastax.driver.core.policies.RetryPolicy;
 import com.datastax.driver.core.policies.SpeculativeExecutionPolicy;
@@ -64,7 +65,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.tmobile.opensource.casquatch.exceptions.DriverException;
 import com.tmobile.opensource.casquatch.models.AbstractCassandraTable;
 import com.tmobile.opensource.casquatch.models.shared.DriverConfig;
-import com.tmobile.opensource.casquatch.policies.DCFilterPolicy;
 import com.tmobile.opensource.casquatch.policies.WorkloadFilterPolicy;
 
 /**
@@ -741,11 +741,11 @@ public class CassandraDriver {
         }
         
         if(config.loadBalancing.filter.workload.enabled) {
-        	loadBalancingPolicy = WorkloadFilterPolicy.builder(loadBalancingPolicy).withFilters(config.loadBalancing.filter.workload.workloads).build();
+        	loadBalancingPolicy = HostFilterPolicy.fromDCWhiteList(loadBalancingPolicy,config.loadBalancing.filter.dc.datacenters);
         }
         
         if(config.loadBalancing.filter.dc.enabled) {
-        	loadBalancingPolicy = DCFilterPolicy.builder(loadBalancingPolicy).withFilters(config.loadBalancing.filter.dc.datacenters).build();
+        	loadBalancingPolicy = WorkloadFilterPolicy.fromWorkloadList(loadBalancingPolicy,  config.loadBalancing.filter.workload.workloads);
         }
 
         return createCluster(loadBalancingPolicy);
