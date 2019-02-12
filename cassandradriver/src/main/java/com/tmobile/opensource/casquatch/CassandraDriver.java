@@ -17,12 +17,14 @@ package com.tmobile.opensource.casquatch;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.annotation.PreDestroy;
 import javax.net.ssl.SSLContext;
@@ -65,7 +67,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.tmobile.opensource.casquatch.exceptions.DriverException;
 import com.tmobile.opensource.casquatch.models.AbstractCassandraTable;
 import com.tmobile.opensource.casquatch.models.shared.DriverConfig;
-import com.tmobile.opensource.casquatch.policies.WorkloadFilterPolicy;
 
 /**
  * This object provides a standard interface for connecting to Cassandra clusters within SDE.
@@ -621,7 +622,7 @@ public class CassandraDriver {
      * @param config driver configuration
      */
     protected CassandraDriver(Builder.Configuration config) {
-    	logger.debug("Using Driver Version: "+Cluster.getDriverVersion());
+    	logger.info("Using Version: "+CassandraDriver.getVersion());
     	config.validate();
     	this.config = config;
         this.clusterMap = new HashMap<String, Cluster>();
@@ -650,6 +651,24 @@ public class CassandraDriver {
 				.withKeyspace(keyspace)
 				.getConfiguration()
 			);
+    }
+    
+    /**
+     * Returns the CassandraDriver version information
+     * @param key Key for the cluster connection
+     * @return Cluster object for key
+     */
+    public static String getVersion() {
+    	InputStream resourceAsStream = CassandraDriver.class.getResourceAsStream("/maven.properties");
+    	Properties properties = new Properties();
+    	try {
+    		properties.load(resourceAsStream);
+    		return "Casquatch "+(String) properties.get("version")+". Java Driver "+Cluster.getDriverVersion();
+    	}
+    	catch (Exception e) {
+    		throw new DriverException(e);
+    	}
+
     }
 
 	/**
@@ -740,12 +759,21 @@ public class CassandraDriver {
         	loadBalancingPolicy = new TokenAwarePolicy(loadBalancingPolicy);
         }
         
-        if(config.loadBalancing.filter.workload.enabled) {
+        if(config.loadBalancing.filter.dc.enabled) {
         	loadBalancingPolicy = HostFilterPolicy.fromDCWhiteList(loadBalancingPolicy,config.loadBalancing.filter.dc.datacenters);
         }
         
-        if(config.loadBalancing.filter.dc.enabled) {
-        	loadBalancingPolicy = WorkloadFilterPolicy.fromWorkloadList(loadBalancingPolicy,  config.loadBalancing.filter.workload.workloads);
+        if(config.loadBalancing.filter.workload.enabled) {
+        	try {
+				Class<?> workloadFilterClass = Class.forName("com.tmobile.opensource.casquatch.policies.WorkloadFilterPolicy");
+				Class<?>[] formalparameters = { LoadBalancingPolicy.class, List.class };
+				Object[] effectiveParameters = new Object[] { loadBalancingPolicy, config.loadBalancing.filter.workload.workloads };
+				loadBalancingPolicy = (LoadBalancingPolicy) workloadFilterClass.getMethod("fromWorkloadList", formalparameters ).invoke(null, effectiveParameters);
+			} catch (Exception e) {
+				throw new DriverException(402,"Workload filter requires Casquatch-EE");
+			}
+        	
+        	//loadBalancingPolicy = WorkloadFilterPolicy.fromWorkloadList(loadBalancingPolicy,  config.loadBalancing.filter.workload.workloads);
         }
 
         return createCluster(loadBalancingPolicy);

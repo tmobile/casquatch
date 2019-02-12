@@ -24,7 +24,6 @@ import com.tmobile.opensource.casquatch.exceptions.DriverException;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,62 +32,59 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CassandraDriverDockerFilterTests {
+public class CassandraDriverEEDockerFilterTests extends CassandraDriverDockerFilterTests {
 
-   private static final Logger logger = LoggerFactory.getLogger(CassandraDriverDockerFilterTests.class);
-	
-   @BeforeClass
-   public static void setUp() {
-   }
-   
-   private Boolean datacenterTest(List<String> datacenters) {
+   private static final Logger logger = LoggerFactory.getLogger(CassandraDriverEEDockerFilterTests.class);
+      
+   private Boolean workloadTest(List<String> workloads) {
 	   CassandraAdminDriver db = 
 			   new CassandraAdminDriver(
 					   CassandraDriver.builder()
 					   .withContactPoints("localhost")
 					   .withKeyspace("system")
-					   .withDataCenters(datacenters)
+					   .withWorkloads(workloads)
 					   .build()
 						);
 		   List<Host> hostList = db.getDatastaxSession().getCluster().getMetadata().getAllHosts().stream().filter(h -> db.getDatastaxSession().getCluster().getConfiguration().getPolicies().getLoadBalancingPolicy().distance(h) != HostDistance.IGNORED).collect(Collectors.toList());
 		   db.close();
-		   
-		   for(Host host: hostList) {			   
-			   if(datacenters.contains(host.getDatacenter())) {
-				   logger.trace(host.getAddress()+" : "+host.getDatacenter()+" matched");
+		   for(Host host: hostList) {
+			   if(host.getDseWorkloads().stream().anyMatch(workloads :: contains)) {
+				   logger.trace(host.getAddress()+" : "+host.getDseWorkloads()+" matched");
 			   }
 			   else {
-				   logger.error(host.getAddress()+" : "+host.getDatacenter()+" not matched. Expected "+datacenters.toString());
+				   logger.error("workload does not match filters "+host.getAddress()+" has "+host.getDseWorkloads()+" not matched.  Expetected "+workloads.toString());
 				   return false;
 			   }
-		   }
+		   }	
 		   return true;
    }
    
+   
    @Test
-   public void testDatacenterFilterOne() {
-	   List<String> datacenters = Arrays.asList("dc1");
+   public void testWorkloadFilterOne() {
 	   
-	   if(!datacenterTest(datacenters)) {
-		   fail("datacenter test failed for "+datacenters.toString());
+	   List<String> workloads = Arrays.asList("Search");
+	   
+	   if(!workloadTest(workloads)) {
+		   fail("Workload test failed to filter for "+workloads.toString());
 	   }
    }
    
    @Test
-   public void testDatacenterFilterMulti() {
-	   List<String> datacenters = Arrays.asList("dc1","dc2");
+   public void testWorkloadFilterMulti() {
+	   List<String> workloads = Arrays.asList("Cassandra","Search");
 	   
-	   if(!datacenterTest(datacenters)) {
-		   fail("datacenter test failed for "+datacenters.toString());
+	   if(!workloadTest(workloads)) {
+		   fail("Workload test failed to filter for "+workloads.toString());
 	   }
-   }   
+   } 
 
    @Test(expected=DriverException.class)
-   public void testDatacenterFilterBad() {
-	   List<String> datacenters = Arrays.asList("notadatacenter");
-		   
-	   if(datacenterTest(datacenters)) {
-		   fail("datacenter test failed for "+datacenters.toString());
+   public void testWorkloadFilterBad() {
+   	   List<String> workloads = Arrays.asList("NotAWorkload");
+	   
+	   if(workloadTest(workloads)) {
+		   fail("Workload test was ailed to filter for "+workloads.toString());
 	   }
    }
 }

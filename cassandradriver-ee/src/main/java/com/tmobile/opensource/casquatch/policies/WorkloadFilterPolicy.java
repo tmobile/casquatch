@@ -14,17 +14,17 @@
  */
 package com.tmobile.opensource.casquatch.policies;
 
-import com.datastax.driver.core.Host;
-import com.datastax.driver.core.policies.LoadBalancingPolicy;
-import com.datastax.driver.core.policies.HostFilterPolicy;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSet;
-
 import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.datastax.driver.core.Host;
+import com.datastax.driver.core.policies.LoadBalancingPolicy;
+import com.datastax.driver.core.policies.HostFilterPolicy;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * A load balancing policy wrapper that ensure that only hosts running a specified workload list  are permitted
@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
  * @see HostFilterPolicy
  */
 public class WorkloadFilterPolicy extends HostFilterPolicy {
+
+  private static final Logger logger = LoggerFactory.getLogger(WorkloadFilterPolicy.class);
 
   /**
    * Private constructor to create based on predicate from withWorkloadList
@@ -53,25 +55,33 @@ public class WorkloadFilterPolicy extends HostFilterPolicy {
    *
    * @param childPolicy the wrapped policy.
    * @param workloads List of workloads which must match to be passed through
+   * @return WorkloadFilterPolicy load balancing policy object with the filter applied
    */
-  public static WorkloadFilterPolicy fromWorkloadList(LoadBalancingPolicy childPolicy, Iterable<String> workloads) {
+  public static WorkloadFilterPolicy fromWorkloadList(LoadBalancingPolicy childPolicy, List<String> workloads) {
     return new WorkloadFilterPolicy(childPolicy,hostWorkloadPredicate(workloads));
   }
-  
+
   /**
-   * Predicate to apply the given workload list
-   * @param workloads List of workloads which must match
-   * @return a predicate to check if workloads match
-   */
+   * Private predicate function to filter hosts
+   * @param workloads List of workloads which must match to be passed through
+   * @return predicate to filter hosts
+   */  
   private static Predicate<Host> hostWorkloadPredicate(Iterable<String> workloads) {
 	    final ImmutableSet<String> _workloads = ImmutableSet.copyOf(workloads);
 	    return new Predicate<Host>() {
 	      @Override
 	      public boolean apply(Host host) {
-	    	  return host.getDseWorkloads().containsAll(_workloads);
+	    	logger.debug(host.getAddress()+" has "+host.getDseWorkloads()+". Testing for "+workloads.toString());
+	        Set<String> hostWorkloads = host.getDseWorkloads();
+	        if(hostWorkloads == null ) {
+	        	return false;
+	        }
+	        else {
+	        	return _workloads.stream().anyMatch(hostWorkloads::contains);
+	        }
 	      }
 	    };
-	  }
+  }
 
 }
 
