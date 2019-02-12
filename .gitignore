@@ -10,3 +10,4 @@
 **/application.properties
 cassandramodels/
 **/*.out
+**/.DS_Store
