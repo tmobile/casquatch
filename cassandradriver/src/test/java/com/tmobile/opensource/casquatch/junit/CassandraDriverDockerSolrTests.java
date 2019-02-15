@@ -31,20 +31,22 @@ public class CassandraDriverDockerSolrTests extends CassandraDriverTestSuite {
     @BeforeClass
     public static void setUp(){
         
-        CassandraDriver.Builder builder = new CassandraDriver.Builder()
+        db = CassandraDriver.builder()
         		.withContactPoints("localhost")
         		.withLocalDC("dc1")
         		.withSolr()
         		.withSolrDC("dc1")
         		.withoutDriverConfig()
         		.withReadTimeout(30000)
-        		.withPort(9042);
+        		.withPort(9042)
+        		.withKeyspace("system")
+        		.build();
         
-        db = builder.withKeyspace("system").build();
         createSchema();
         db.close();
         
-        db = builder.withKeyspace("junittest").build();
+        db = CassandraDriver.builder().clone(db).withKeyspace("junittest").build();
+
 		db.execute("CREATE SEARCH INDEX IF NOT EXISTS ON junitTest.table_name;");
     }
     

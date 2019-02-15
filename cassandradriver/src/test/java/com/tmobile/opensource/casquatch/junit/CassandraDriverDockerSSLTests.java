@@ -36,17 +36,17 @@ public class CassandraDriverDockerSSLTests extends CassandraDriverTestSuite {
     @BeforeClass
     public static void setUp() throws IOException, TTransportException {
     	
-    	CassandraDriver.Builder builder = new CassandraDriver.Builder()
+    	db = CassandraDriver.builder()
         		.withContactPoints("localhost")
         		.withLocalDC("dc1")
         		.withoutDriverConfig()
         		.withSSL()
         		.withTrustStore("../config/client.truststore", "cassandra")
-        		.withPort(9142);
-    	
-    	db = builder.withKeyspace("system").build();
+        		.withPort(9142)
+        		.withKeyspace("system")
+        		.build();
         createSchema();
         db.close();
-        db = builder.withKeyspace("junittest").build();
+        db = CassandraDriver.builder().clone(db).withKeyspace("junittest").build();
     }
 }

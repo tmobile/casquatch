@@ -23,17 +23,16 @@ public class CassandraDriverDockerTests extends CassandraDriverTestSuite {
     @BeforeClass
     public static void setUp() {
 
-    	CassandraDriver.Builder builder = new CassandraDriver.Builder()
+    	db = CassandraDriver.builder()
         		.withContactPoints("localhost")
         		.withLocalDC("dc1")
         		.withoutDriverConfig()
         		.withReadTimeout(30000)
-        		.withPort(9042);
-        
-        db = builder.withKeyspace("system").build();
+        		.withPort(9042)
+        		.withKeyspace("system").build();        
         createSchema();
         db.close();
         
-        db = builder.withKeyspace("junittest").build();
+        db = CassandraDriver.builder().clone(db).withKeyspace("junittest").build();
     }
 }

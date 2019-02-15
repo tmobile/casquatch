@@ -211,7 +211,38 @@ public class CassandraDriver {
 	     * CassandraDriver Builder constructor. Configures default settings.
 	     */
 		public Builder() {
-			config = new Builder.Configuration();		
+			config = new Builder.Configuration();	
+			
+		}
+		
+	    /**
+	     * Builder with tuned defaults
+	     * @return Reference to Builder object
+	     */	
+		public static Builder withDefaults() {
+			return new Builder();
+		}
+		
+		/**
+	     * Builder with Cassandra workload tuned defaults
+	     * @return Reference to Builder object
+	     */		
+		public static Builder withCassandraDefaults() {
+			return Builder.withDefaults()
+					.withWorkload("Cassandra")
+					.withoutSolr();
+		}
+		
+	    /**
+	     * Builder with Solr workload tuned defaults
+	     * @return Reference to Builder object
+	     */		
+		public static Builder withSolrDefaults() {
+			return Builder.withDefaults()
+					.withWorkload("Search")
+					.withoutSolrDC()
+					.withReadTimeout(12000)
+					.withDefaultConsistencyLevel("LOCAL_ONE");
 		}
 		
 	    /**
@@ -509,6 +540,15 @@ public class CassandraDriver {
 		public Builder withoutTokenAware() {
 			config.loadBalancing.token.enabled=false;
 			return this;
+		}/**
+	     * Build without data center filtering
+	     * @param datacenter add datacenter to list
+	     * @return Reference to Builder object
+	     */
+		public Builder withoutWorkloadFilter() {
+			config.loadBalancing.filter.workload.enabled=false;
+			config.loadBalancing.filter.workload.workloads.clear();
+			return this;
 		}
 		
 	    /**
@@ -546,6 +586,17 @@ public class CassandraDriver {
 		public Builder withWorkloads(String workloads) {
 			config.loadBalancing.filter.workload.enabled=true;
 			config.loadBalancing.filter.workload.workloads = Arrays.asList(workloads.split(","));
+			return this;
+		}
+		
+	    /**
+	     * Build without data center filtering
+	     * @param datacenter add datacenter to list
+	     * @return Reference to Builder object
+	     */
+		public Builder withoutDataCenterFilter() {
+			config.loadBalancing.filter.dc.enabled=false;
+			config.loadBalancing.filter.dc.datacenters.clear();
 			return this;
 		}
 		
@@ -597,6 +648,15 @@ public class CassandraDriver {
 	     */
 		public CassandraDriver build() {
 			return CassandraDriver.buildFrom(getConfiguration());
+		}
+		
+	    /**
+	     * Build the defined CassandraDriver
+	     * @return CassandraDriver Configured driver object
+	     */
+		public Builder clone(CassandraDriver driver) {
+			this.config = driver.config;
+			return this;
 		}
 	}
 

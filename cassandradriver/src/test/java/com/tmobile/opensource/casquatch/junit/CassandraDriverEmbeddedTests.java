@@ -43,7 +43,7 @@ public class CassandraDriverEmbeddedTests extends CassandraDriverTestSuite {
     public static void setUp() throws ConfigurationException, TTransportException, IOException {
 		EmbeddedCassandraServerHelper.startEmbeddedCassandra(EmbeddedCassandraServerHelper.CASSANDRA_RNDPORT_YML_FILE, EmbeddedCassandraServerHelper.DEFAULT_STARTUP_TIMEOUT);
         //Create a system connection for creating keyspace
-        db = new CassandraDriver.Builder()
+        db = CassandraDriver.builder()
         		.withContactPoints(EmbeddedCassandraServerHelper.getHost())
         		.withPort(EmbeddedCassandraServerHelper.getNativeTransportPort())
         		.withLocalDC("cassandraunit")
