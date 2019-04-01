@@ -695,7 +695,11 @@ public class CassandraGenerator {
 		String cql = adminDB.getDatastaxSession().getCluster().getMetadata().getKeyspace(keyspace).getTable(table).asCQLQuery();
 		
 		List<ColumnsExtended> columns = db.executeAll(ColumnsExtended.class, "select keyspace_name, table_name, column_name, clustering_order, kind, position, type from system_schema.columns where keyspace_name = '"+keyspace.toLowerCase()+"' and table_name = '"+table.toLowerCase()+"'");
-        Collections.sort(columns, Comparator.comparing(ColumnsExtended::getPosition));
+       
+		// Remove if column is solr_query
+		columns.removeIf(col -> col.getColumnName().equals("solr_query"));
+       
+		Collections.sort(columns, Comparator.comparing(ColumnsExtended::getPosition));
         
 
         List<ColumnsExtended> partitionKeys = new ArrayList<>();
