@@ -5,7 +5,7 @@
 
   <groupId>${package}</groupId>
 	<artifactId>CassandraGenerator-Models-${keyspace}</artifactId>
-	<version>1.4-SNAPSHOT</version>
+	<version>1.4-RELEASE</version>
 	<packaging>jar</packaging>
 
 	<name>CassandraGenerator Models - ${keyspace}</name>
@@ -15,7 +15,7 @@
         <dependency>
             <groupId>com.tmobile.opensource.casquatch</groupId>
             <artifactId>CassandraDriver</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.4-RELEASE</version>
         </dependency>
     </dependencies>
 
