@@ -932,7 +932,7 @@ public class CassandraDriver {
         
         if (config.ssl.node) {        	
         	try {                
-        		if (!config.ssl.truststore.path.isEmpty()) {
+        		if (config.ssl.truststore.path!= null && !config.ssl.truststore.path.isEmpty()) {
 					KeyStore keyStore = KeyStore.getInstance("JKS");
 					InputStream trustStore = new FileInputStream(config.ssl.truststore.path);
 					keyStore.load(trustStore, config.ssl.truststore.password.toCharArray());
