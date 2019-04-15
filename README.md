@@ -271,11 +271,16 @@ This can be resolved by adding the following to your pom.xml
 ```
 
 ## Release Notes
-### 1.4-SNAPSHOT - TBD
-* Full rewrite of generator to switch from web to command line
-* Added functionality for filtering on either workload or DC
-* Minor - Added getVersion() which shows Casquatch and driver versions
+### 1.4-RELEASE - 04/12/18
+* New Feature: Addded workload and dc filtering policies
+* New Feature: Build includes clone as well as multiple default configuration templates.
+* Rewrote CassandraGenerator as CLI Utility with customization options
+* Added CQL Create Table statements as comments in generated code
+* Added getVersion() which shows Casquatch and driver versions
+* Updated Jackson-Databind to 2.9.8
 * Updated Datastax Driver to 3.7.1 EE to 1.8.1
+* Bugfix: Boolean type interpretted as UDT in CassandraGenerator
+* Bugfix: Excluded solr_query from models in CassandraGenerator
 ### 1.3-RELEASE - 09/17/2018
 * Added SSL Support
 * Added CassandraDriver-EE as a simple wrapper to inject the licensed driver.

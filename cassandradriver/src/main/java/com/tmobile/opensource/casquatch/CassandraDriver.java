@@ -540,9 +540,10 @@ public class CassandraDriver {
 		public Builder withoutTokenAware() {
 			config.loadBalancing.token.enabled=false;
 			return this;
-		}/**
-	     * Build without data center filtering
-	     * @param datacenter add datacenter to list
+		}
+		
+		/**
+	     * Build without workload filtering
 	     * @return Reference to Builder object
 	     */
 		public Builder withoutWorkloadFilter() {
@@ -591,7 +592,6 @@ public class CassandraDriver {
 		
 	    /**
 	     * Build without data center filtering
-	     * @param datacenter add datacenter to list
 	     * @return Reference to Builder object
 	     */
 		public Builder withoutDataCenterFilter() {
@@ -652,6 +652,7 @@ public class CassandraDriver {
 		
 	    /**
 	     * Build the defined CassandraDriver
+	     * @param driver Reference to a configured driver object
 	     * @return CassandraDriver Configured driver object
 	     */
 		public Builder clone(CassandraDriver driver) {
@@ -727,8 +728,7 @@ public class CassandraDriver {
     }
     
     /**
-     * Returns the CassandraDriver version information
-     * @param key Key for the cluster connection
+     * Returns the CassandraDriver version information-
      * @return Cluster object for key
      */
     public static String getVersion() {

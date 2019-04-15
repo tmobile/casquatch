@@ -141,9 +141,10 @@ public class CassandraGenerator {
 		}
 		
 		/**
-	     * Build with username
-	     * @param username database username
+	     * Build with properties file
+	     * @param propertiesFile path to file
 	     * @return Reference to Builder object
+	     * @throws Exception passed exception
 	     */
 		public Builder withProperties(String propertiesFile) throws Exception {
 			logger.info("Loading properties from "+propertiesFile);
@@ -279,6 +280,7 @@ public class CassandraGenerator {
 	     * Build from command line arguments
 	     * @param args argument object
 	     * @return Reference to Builder object
+	     * @throws Exception passed exception
 	     */
 		public Builder withArgs(ApplicationArguments args) throws Exception {
 			
@@ -389,7 +391,7 @@ public class CassandraGenerator {
 		
 	    /**
 	     * Build with datacenter
-	     * @param localDC database localDC
+	     * @param datacenter datacenter name
 	     * @return Reference to Builder object
 	     */
 		public Builder withDatacenter(String datacenter) {
@@ -429,7 +431,6 @@ public class CassandraGenerator {
 		
 	    /**
 	     * Build without overwriting output
-	     * @param keyspace database keyspace
 	     * @return Reference to Builder object
 	     */
 		public Builder withoutOverwriteOutput() {
@@ -525,6 +526,7 @@ public class CassandraGenerator {
 	    /**
 	     * Build the defined CassandraDriver
 	     * @return CassandraDriver Configured driver object
+	     * @throws Exception passed exception
 	     */
 		public CassandraGenerator build() throws Exception {
 			return CassandraGenerator.buildFrom(getConfiguration());
@@ -601,7 +603,6 @@ public class CassandraGenerator {
     /**
      * Default constructor
      * @throws Exception passed exception
-     * @return builder Instance of CassandraGenerator.Builder
      */   
 	public CassandraGenerator() throws Exception {
 		this(new Builder().getConfiguration());		
@@ -686,6 +687,7 @@ public class CassandraGenerator {
     * Generates a single table
     * @param keyspace provided keyspace
     * @param table name of table
+    * @param cacheable flag if table should be cacheable
     * @throws Exception passed exception
     */ 
 	public void table(String keyspace, String table, Boolean cacheable) throws Exception {
