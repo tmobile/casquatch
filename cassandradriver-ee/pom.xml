@@ -81,7 +81,7 @@
   </dependencies>
 
   <properties>
-    <dse.version>1.6.9</dse.version>
+    <dse.version>1.8.1</dse.version>
     <java.version>1.8</java.version>
     <junit.version>4.12</junit.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -195,7 +195,7 @@
           <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
         </repository>
       </distributionManagement>
-    </profile> 
+    </profile>
 	<profile>
 		<id>cluster-tests</id>
 		<build>

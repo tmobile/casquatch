@@ -275,6 +275,7 @@ This can be resolved by adding the following to your pom.xml
 * Full rewrite of generator to switch from web to command line
 * Added functionality for filtering on either workload or DC
 * Minor - Added getVersion() which shows Casquatch and driver versions
+* Updated Datastax Driver to 3.7.1 EE to 1.8.1
 ### 1.3-RELEASE - 09/17/2018
 * Added SSL Support
 * Added CassandraDriver-EE as a simple wrapper to inject the licensed driver.

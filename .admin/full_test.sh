@@ -102,7 +102,7 @@ configureDSESSL() {
   export TRUSTSTORE_PATH=`pwd`/.admin/dsessl/.truststore
   docker cp .admin/dsessl/.keystore $1:/opt/dse/resources/dse/conf/.keystore
   docker cp .admin/dsessl/.truststore $1:/opt/dse/resources/dse/conf/.truststore
-  docker cp .admin/dsessl/cassandra.yaml.$2 $1:/opt/dse/resources/cassandra/conf/cassandra.yaml
+  docker cp .admin/dsessl/cassandra.yaml.`echo $2 | awk -F. '{print $1"."$2}'` $1:/opt/dse/resources/cassandra/conf/cassandra.yaml
   cp .admin/dsessl/client.truststore config/client.truststore
   docker restart $1
   retryLoop "docker exec -it $1 dsetool status 2>/dev/null | grep rack1 | grep -q 'UN'" 120
@@ -432,6 +432,6 @@ dseTests() {
 embeddedTests
 cassandraTests 3.0
 cassandraTests 3.11
-dseTests 5.1.12
-dseTests 6.0.4
-dseTests 6.7.0
+dseTests 5.1.13
+dseTests 6.0.6
+dseTests 6.7.2
