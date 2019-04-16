@@ -271,7 +271,7 @@ This can be resolved by adding the following to your pom.xml
 ```
 
 ## Release Notes
-### 1.4-RELEASE - 04/12/18
+### 1.4-RELEASE - 04/16/18
 * New Feature: Addded workload and dc filtering policies
 * New Feature: Build includes clone as well as multiple default configuration templates.
 * Rewrote CassandraGenerator as CLI Utility with customization options
