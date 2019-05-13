@@ -11,3 +11,5 @@
 cassandramodels/
 **/*.out
 **/.DS_Store
+**/*.iml
+**/.idea
