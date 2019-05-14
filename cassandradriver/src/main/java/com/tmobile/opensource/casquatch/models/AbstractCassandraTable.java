@@ -17,6 +17,11 @@ package com.tmobile.opensource.casquatch.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmobile.opensource.casquatch.exceptions.DriverException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Method;
 
 /**
  * Interface for Cassandra Tables to require getID for generic usage
@@ -25,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @since   2018-02-26
  */
 public abstract class AbstractCassandraTable {
+    protected final static Logger logger = LoggerFactory.getLogger(AbstractCassandraTable.class);
 
 
     /**
@@ -34,12 +40,47 @@ public abstract class AbstractCassandraTable {
     @JsonIgnore
     public abstract Object[] getID();
 
+    /**
+     * Return object as json string
+     */
     public String toString() {
         try {
             return new ObjectMapper().writeValueAsString(this);
         } catch (JsonProcessingException e) {
             return "Unable to convert to JSON";
         }
+    }
+
+    /**
+     * Compare two objects for equality
+     * @param obj object to compare to
+     */
+    public boolean equals(Object obj) {
+        if(obj==null) {
+            return false;
+        }
+        else if(!this.getClass().equals(obj.getClass())) {
+            logger.trace("Class does not match "+this.getClass()+" != "+obj.getClass());
+            return false;
+        }
+        else {
+            Class c = this.getClass();
+            for (Method method : c.getDeclaredMethods()) {
+                if (method.getName().startsWith("get") &&
+                        !method.isAnnotationPresent(com.fasterxml.jackson.annotation.JsonIgnore.class) &&
+                        !method.isAnnotationPresent(com.datastax.driver.mapping.annotations.Transient.class)) {
+                    try {
+                        if (!method.invoke(obj).equals(method.invoke(this))) {
+                            logger.trace("No match on " + method.getName());
+                            return false;
+                        }
+                    } catch (Exception e) {
+                        throw new DriverException(e);
+                    }
+                }
+            }
+        }
+        return true;
     }
 
 }

@@ -19,6 +19,9 @@ import org.slf4j.LoggerFactory;
 
 import com.tmobile.opensource.casquatch.CassandraDriver;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This exception class provides a wrapper for the underlying exceptions which then map to custom error codes.
  *
@@ -36,6 +39,8 @@ import com.tmobile.opensource.casquatch.CassandraDriver;
  *      <ul>
  *          <li>301 - DML Query Exception</li>
  *          <li>302 - DDL Query Exception</li>
+ *          <li>303 - Invalid Query Exception</li>
+ *          <li>304 - Internal Driver Exception</li>
  *          <li>399 - Unknown Exception</li>
 *       </ul>
  *   </li>
@@ -152,6 +157,10 @@ public class DriverException extends RuntimeException {
         else if (exception instanceof com.datastax.driver.core.exceptions.InvalidQueryException) {
             this.setCode(303);
             this.setMessage("Invalid Query Exception: "+this.getException().getMessage());
+        }
+        else if (exception instanceof com.datastax.driver.core.exceptions.DriverInternalError) {
+            this.setCode(304);
+            this.setMessage("Internal Driver Exception: "+exception.getCause());
         }
         else {
             this.setCode(399);

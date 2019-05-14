@@ -66,7 +66,24 @@
       <artifactId>spring-boot-autoconfigure</artifactId>
       <version>${spring-boot.version}</version>
     </dependency>
-      <dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-test-autoconfigure</artifactId>
+      <version>${spring-boot.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <version>${spring-boot.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>${spring-web.version}</version>
+    </dependency>
+    <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>${logback.version}</version>
@@ -88,6 +105,25 @@
       <version>${cassandraunit.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>uk.co.jemos.podam</groupId>
+      <artifactId>podam</artifactId>
+      <version>${podam.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>${spring-web.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>${javax.version}</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <properties>
@@ -97,8 +133,11 @@
     <junit.version>4.12</junit.version>
     <spring-context.version>5.0.4.RELEASE</spring-context.version>
     <spring-boot.version>1.5.10.RELEASE</spring-boot.version>
+    <spring-web.version>5.0.7.RELEASE</spring-web.version>
     <cassandraunit.version>3.3.0.2</cassandraunit.version>
     <apache-commons.version>3.7</apache-commons.version>
+    <podam.version>7.2.3.RELEASE</podam.version>
+    <javax.version>3.0.1</javax.version>
     <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
