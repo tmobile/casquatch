@@ -9,11 +9,12 @@
 4. [Configuration](#configuration)
 5. [Feature Details](#feature-details)
    1. [Code Generator](#code-generator)
-   2. [Builder Configuration](#builder-configuration)
-   3. [Driver Config](#driver-config)
-   4. [Driver Cache](#driver-cache)
-   5. [Solr](#solr)
-   6. [Spring Config](#spring-config)
+   2. [DAO Generator](#dao-generator)
+   3. [Builder Configuration](#builder-configuration)
+   4. [Driver Config](#driver-config)
+   5. [Driver Cache](#driver-cache)
+   6. [Solr](#solr)
+   7. [Spring Config](#spring-config)
 6. [FAQ](#FAQ)
 7. [Release Notes](#release-notes)
 
@@ -165,6 +166,9 @@ The code generator reverse engineers the schema to create POJOs with Datastax an
 * Generate a package for all tables in a keyspace providing additional information: ```java -jar CassandraGenerator.jar --output=tmp --contactPoints=localhost --port=9042 --keyspace=myKeyspace --datacenter=dkr --user=cassandra --password=cassandra --package --packageName=com.test.myapp --overwrite```
 * Optionally install locally via maven (if --package was used): ```mvn install```
 
+### DAO generator
+This is an experimental feature and subject to change. The goal of the DAO Generator is to expose Casquatch APIs through a generated Spring Application. All APIs are wrapped in Request/Response Objects. Generate with in the same way as [Code Generator](#code-generator) with the addition of --dao
+
 ### Builder Configuration
 While Spring is the simplest method of configuration, the driver also supports the builder pattern for configuration. (See Javadoc CassandraDriver.Builder for specifics). This allows a driver to be built explicitly similar to the following. All settings will be defaulted as defined above with options to configure as necessary.
 
@@ -271,6 +275,8 @@ This can be resolved by adding the following to your pom.xml
 ```
 
 ## Release Notes
+### 1.5-RELEASE - TBD
+* New Feature: Added DAO Generator
 ### 1.4-RELEASE - 04/16/18
 * New Feature: Addded workload and dc filtering policies
 * New Feature: Build includes clone as well as multiple default configuration templates.
