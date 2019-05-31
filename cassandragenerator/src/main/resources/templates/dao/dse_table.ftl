@@ -5,7 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.tmobile.opensource.casquatch.CassandraDriver;
-import com.tmobile.opensource.casquatch.models.dao.AbstractCassandraDAO;
+import com.tmobile.opensource.casquatch.dao.AbstractCassandraDAO;
 import ${package}.${className};
 
 @RestController

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.tmobile.opensource.casquatch.models.dao;
+package com.tmobile.opensource.casquatch.dao;
 
 import com.tmobile.opensource.casquatch.CassandraDriver;
 import com.tmobile.opensource.casquatch.models.AbstractCassandraTable;

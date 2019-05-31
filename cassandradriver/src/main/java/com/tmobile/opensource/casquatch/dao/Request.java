@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.tmobile.opensource.casquatch.models.dao;
+package com.tmobile.opensource.casquatch.dao;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
