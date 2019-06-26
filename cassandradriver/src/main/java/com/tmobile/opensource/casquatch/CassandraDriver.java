@@ -928,7 +928,8 @@ public class CassandraDriver {
                 .withPoolingOptions(poolingOptions)
                 .withSocketOptions(socketOptions)
                 .withReconnectionPolicy(reconnectionPolicy)
-                .withRetryPolicy(retryPolicy);
+                .withRetryPolicy(retryPolicy)
+				.withoutJMXReporting();
         
         if (config.ssl.node) {        	
         	try {                
