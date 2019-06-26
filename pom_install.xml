@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.tmobile.opensource.casquatch</groupId>
     <artifactId>Casquatch</artifactId>
-    <version>1.4-RELEASE</version>
+    <version>1.4.1-SNAPSHOT</version>
     <dependencyManagement></dependencyManagement>
     <packaging>pom</packaging>
 

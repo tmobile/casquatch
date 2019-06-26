@@ -5,7 +5,7 @@
 
   <groupId>com.tmobile.opensource.casquatch</groupId>
 	<artifactId>CassandraGenerator</artifactId>
-	<version>1.4-RELEASE</version>
+	<version>1.4.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
   <name>Project Casquatch - Cassandra Generator</name>
@@ -71,7 +71,7 @@
     <dependency>
       <groupId>com.tmobile.opensource.casquatch</groupId>
       <artifactId>CassandraDriver</artifactId>
-      <version>1.4-RELEASE</version>
+      <version>1.4.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
