@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# Helper script to update the version number
+#
+
+OLD_VERSION=$1
+NEW_VERSION=$2
+
+sed -i .updateloglevel 's/Logger name="com.tmobile.opensource.casquatch" level=".*"/Logger name="com.tmobile.opensource.casquatch" level="'$1'"/g' casquatch-*/src/*/resources/logback.xml
+
+find . -name '*.updateloglevel' -exec rm {} \;

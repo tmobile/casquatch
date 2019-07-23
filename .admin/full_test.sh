@@ -4,15 +4,18 @@
 #
 DATACENTER=dc1
 DATACENTER2=dc2
+KEYSPACE=fulltest
 OUTPUT=.admin/test.out
+PORT="90"$(( ( RANDOM % 50 )  + 42 ))
+VERSION=2.0-SNAPSHOT
 
 #startDockerCassandra name version
 #Start up open source cassandra for the given version
 startDockerCassandra() {
   echo "---------------------------------------------"
-  echo "Starting Cassandra Docker (30 second pause to startup)"
+  echo "Starting Cassandra Docker with DC=$DATACENTER"
   echo "---------------------------------------------"
-  docker run --rm  -p 9042:9042 -d -e CASSANDRA_DC=$DATACENTER --label casquatch_test=$1 --name $1 -d cassandra:$2
+  docker run --rm  -p $PORT:9042 -d -e CASSANDRA_DC=$DATACENTER -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch --label casquatch_test=$1 --name $1 -d cassandra:$2
   if [ $? -eq 0 ]; then
     retryLoop "docker exec -it $1 nodetool status 2>/dev/null | grep rack1 | grep -q 'UN'" 120
   else
@@ -56,7 +59,7 @@ startDockerDSE() {
   echo "---------------------------------------------"
   echo "Starting DSE Docker"
   echo "---------------------------------------------"
-  docker run --rm -e DS_LICENSE=accept -p 9042:9042 -p 9142:9142 -d --name $1 -h dse.local --label casquatch_test=$1 -d datastax/dse-server:$2 -s
+  docker run --rm -e DS_LICENSE=accept -p $PORT:9042 -p 9142:9142 -d --name $1 -h dse.local --label casquatch_test=$1 -d datastax/dse-server:$2 -s
   if [ $? -eq 0 ]; then
     retryLoop "docker exec -it $1 dsetool status 2>/dev/null | grep rack1 | grep -q 'UN'" 120
   else
@@ -115,10 +118,7 @@ installKeyspace() {
   echo "Installing Keyspace"
   echo "---------------------------------------------"
   docker exec -i $1 cqlsh << EOF
-CREATE KEYSPACE IF NOT EXISTS installTest WITH replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1}  AND durable_writes = true;
-CREATE TYPE IF NOT EXISTS installTest.test_udt (val1 text, val2 int);
-CREATE TABLE IF NOT EXISTS installTest.test_udt_table (id uuid primary key, udt frozen<test_udt>);
-CREATE TABLE IF NOT EXISTS installTest.table_name (key_one int,key_two int,col_one text,col_two text,PRIMARY KEY ((key_one, key_two)));
+CREATE KEYSPACE IF NOT EXISTS $KEYSPACE WITH replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1}  AND durable_writes = true;
 EOF
 }
 
@@ -143,10 +143,12 @@ configureDriver() {
   echo "---------------------------------------------"
   mkdir config 2>>$OUTPUT
 cat << EOF > config/application.properties
-cassandraDriver.contactPoints=localhost
-cassandraDriver.localDC=$DATACENTER
-cassandraDriver.keyspace=$1
-cassandraDriver.features.driverConfig=disabled
+casquatch.basic.contact-points.0=localhost:$PORT
+casquatch.basic.load-balancing-policy.local-datacenter=$DATACENTER
+casquatch.basic.session-keyspace=$1
+casquatch.generator.createPackage=true
+casquatch.generator.outputFolder=cassandramodels
+casquatch.generator.file=true
 EOF
   if [ "$1" == "springconfig" ]; then
   cat << EOF >> config/application.properties
@@ -163,7 +165,7 @@ runTests() {
   echo "---------------------------------------------"
   echo "Run Tests $1:$2"
   echo "---------------------------------------------"
-  mvn -pl $1 -q -Dtest=$2 test
+  mvn -pl $1 -q -Dconfig.file=../config/application.properties -Dtest=$2 test
 }
 
 #startSpringConfig
@@ -182,13 +184,10 @@ cleanup() {
   echo "---------------------------------------------"
   echo "Cleanup"
   echo "---------------------------------------------"
-  pkill -f  cassandragenerator
-  pkill -f  springconfig
   docker ps -flabel=casquatch_test -q | xargs -I % docker kill %
   docker container ls -al -flabel=casquatch_test -q | xargs -I % docker rm %
   docker network ls -flabel=casquatch_test -q | xargs -I % docker network rm %
   mvn clean
-  mvn -f pom_install.xml -pl cassandramodels -q clean install
   rm -rf cassandramodels
   rm -rf config/application.properties
 }
@@ -240,41 +239,56 @@ retryLoop() {
 #buildGenerator
 #compiles the generator
 buildGenerator() {
-  mvn -f pom.xml -pl cassandragenerator -q clean package
+  echo "---------------------------------------------"
+  echo "Building Generator"
+  echo "---------------------------------------------"
+  mvn -pl casquatch-generator -q clean package
 }
 
 
 #generateModels
-#Generates the downloaded models
+#Generates the models
 generateModels() {
-  java -jar cassandragenerator/target/CassandraGenerator-*.jar  --keyspace=installTest --datacenter=$DATACENTER --package --output=cassandramodels
-  mvn -f pom_install.xml -pl cassandramodels -q clean install
+  echo "---------------------------------------------"
+  echo "Generating Models"
+  echo "---------------------------------------------"
+  java -Dconfig.file=config/application.properties -jar casquatch-generator/target/casquatch-generator-$VERSION.jar
+}
+
+#testModels
+#test the generated models
+testModels() {
+  echo "---------------------------------------------"
+  echo "Testing Models"
+  echo "---------------------------------------------"
+  cd cassandramodels
+  mvn -q clean test
+  cd ..
 }
 
 #installCasquatch
 installCasquatch() {
+  echo "---------------------------------------------"
+  echo "Installing Casquatch"
+  echo "---------------------------------------------"
   mvn -q clean install
 }
 
 #basicTestSuite name
 #Runs the basic junit test suite
 basicTestSuite() {
-  echo "[$1][Install Casqutch]" \\c
+  echo "[$1][Install Casquatch]" \\c
   installCasquatch >> $OUTPUT 2>&1
   showStatus $?
 
   echo "[$1][Run Docker Tests]" \\c
-  runTests cassandradriver CassandraDriverDockerTests >> $OUTPUT 2>&1
+  runTests casquatch-driver-tests *ExternalTests >> $OUTPUT 2>&1
   showStatus $?
 }
 
 #generatorTestSuite
 #Test suite for code generator
 generatorTestSuite() {
-  echo "[$1][Install Keyspace]" \\c
-  installKeyspace $1 >> $OUTPUT 2>&1
-  showStatus $?
-
   echo "[$1][Build Generator]" \\c
   buildGenerator >> $OUTPUT 2>&1
   showStatus $?
@@ -283,12 +297,16 @@ generatorTestSuite() {
   generateModels >> $OUTPUT 2>&1
   showStatus $?
 
+  echo "[$1][Test Models]" \\c
+  testModels >> $OUTPUT 2>&1
+  showStatus $?
+
 }
 
 #springTestSuite
 #test suite for spring
 springTestSuite() {
-
+  #TODO
   echo "[$1][Install Spring Config Server Keyspace]" \\c
   installSpringKeyspace $1 >> $OUTPUT 2>&1
   showStatus $?
@@ -309,6 +327,7 @@ springTestSuite() {
 #solrTestSuite
 #test suite for solr
 solrTestSuite() {
+  #TODO
   echo "[$1][Run JUnit Solr Tests]" \\c
   runTests cassandradriver CassandraDriverDockerSolrTests >> $OUTPUT 2>&1
   showStatus $?
@@ -317,6 +336,7 @@ solrTestSuite() {
 #sslTestSuite
 #test suite for DSE SSL
 sslTestSuite() {
+  #TODO
   echo "[$1][Config SSL]" \\c
   configureDSESSL $1 $version >> $OUTPUT 2>&1
   showStatus $?
@@ -328,18 +348,19 @@ sslTestSuite() {
 }
 
 #embeddedTests
-#basic embeded tests
+#basic embedded tests
 embeddedTests() {
-  echo "[Embedded][Install Casqutch]" \\c
+  echo "[Embedded][Install Casquatch]" \\c
   installCasquatch >> $OUTPUT 2>&1
   showStatus $?
 
   echo "[Embedded][Run JUnitTests]" \\c
-  runTests cassandradriver CassandraDriverEmbeddedTests >> $OUTPUT 2>&1
+  mvn -pl casquatch-driver-tests -q -Dtest=*EmbeddedTests test >> $OUTPUT 2>&1
   showStatus $?
 }
 
 runClusterTests() {
+  #TODO
   NAME=$1
   mvn -q -pl cassandradriver -P cluster-tests clean package
   docker cp cassandradriver/target/CassandraDriver-*-test-jar-with-dependencies.jar ${NAME}_seed_1:/cassandra-driver-cluster-tests.jar
@@ -347,6 +368,7 @@ runClusterTests() {
 }
 
 runClusterEETests() {
+  #TODO
   mvn -q -pl cassandradriver-ee -P cluster-tests clean package
   docker cp cassandradriver-ee/target/CassandraDriver-*-test-jar-with-dependencies.jar ${NAME}_search_1:/cassandra-driver-cluster-ee-tests.jar
   docker exec -it ${NAME}_search_1 java -jar /cassandra-driver-cluster-ee-tests.jar
@@ -366,25 +388,34 @@ cassandraTests() {
   startDockerCassandra $container $version >> $OUTPUT 2>&1
   showStatus $?
 
+  echo "[$container][Install Keyspace]" \\c
+  installKeyspace $container >> $OUTPUT 2>&1
+  showStatus $?
+
+  echo "[$container][Configure Driver]" \\c
+  configureDriver $KEYSPACE >> $OUTPUT 2>&1
+  showStatus $?
+
   basicTestSuite  $container
   generatorTestSuite $container
-  springTestSuite $container
+#  springTestSuite $container
 
   echo "[$container][Cleanup]" \\c
   cleanup $container >> $OUTPUT 2>&1
   showStatus $?
 
-  echo "[$container][Start Cassandra Cluster]" \\c
-  startDockerCassandraCluster $container $version >> $OUTPUT 2>&1
-  showStatus $?
-
-  echo "[$container][Run Cluster Tests]" \\c
-  runClusterTests $container >> $OUTPUT 2>&1
-  showStatus $?
-
-  echo "[$container][Cleanup]" \\c
-  cleanup $container >> $OUTPUT 2>&1
-  showStatus $?
+#  TODO
+#  echo "[$container][Start Cassandra Cluster]" \\c
+#  startDockerCassandraCluster $container $version >> $OUTPUT 2>&1
+#  showStatus $?
+#
+#  echo "[$container][Run Cluster Tests]" \\c
+#  runClusterTests $container >> $OUTPUT 2>&1
+#  showStatus $?
+#
+#  echo "[$container][Cleanup]" \\c
+#  cleanup $container >> $OUTPUT 2>&1
+#  showStatus $?
 }
 
 #dseTests version
@@ -401,31 +432,40 @@ dseTests() {
   startDockerDSE $container $version >> $OUTPUT 2>&1
   showStatus $?
 
+  echo "[$container][Install Keyspace]" \\c
+  installKeyspace $container >> $OUTPUT 2>&1
+  showStatus $?
+
+  echo "[$container][Configure Driver]" \\c
+  configureDriver $KEYSPACE >> $OUTPUT 2>&1
+  showStatus $?
+
   basicTestSuite $container
   generatorTestSuite $container
-  springTestSuite $container
-  solrTestSuite $container
-  sslTestSuite $container
+  #TODO
+#  springTestSuite $container
+#  solrTestSuite $container
+#  sslTestSuite $container
 
-  echo "[$container][Run JUnit Enterprise Driver Tests]" \\c
-  runTests cassandradriver-ee CassandraDriverEEDockerTests >> $OUTPUT 2>&1
-  showStatus $?
-
-  echo "[$container][Cleanup]" \\c
-  cleanup $container >> $OUTPUT 2>&1
-  showStatus $?
-
-  echo "[$container][Start DSE Cluster]" \\c
-  startDockerDSECluster $container $version >> $OUTPUT 2>&1
-  showStatus $?
-
-  echo "[$container][Run EE Cluster Tests]" \\c
-  runClusterEETests $container >> $OUTPUT 2>&1
-  showStatus $?
+#  echo "[$container][Run JUnit Enterprise Driver Tests]" \\c
+#  runTests cassandradriver-ee CassandraDriverEEDockerTests >> $OUTPUT 2>&1
+#  showStatus $?
 
   echo "[$container][Cleanup]" \\c
   cleanup $container >> $OUTPUT 2>&1
   showStatus $?
+  #TODO
+#  echo "[$container][Start DSE Cluster]" \\c
+#  startDockerDSECluster $container $version >> $OUTPUT 2>&1
+#  showStatus $?
+#
+#  echo "[$container][Run EE Cluster Tests]" \\c
+#  runClusterEETests $container >> $OUTPUT 2>&1
+#  showStatus $?
+#
+#  echo "[$container][Cleanup]" \\c
+#  cleanup $container >> $OUTPUT 2>&1
+#  showStatus $?
 }
 
 #Run all tests

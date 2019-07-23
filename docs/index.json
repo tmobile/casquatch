@@ -1,0 +1,239 @@
+[
+{
+	"uri": "http://tmobile.github.io/casquatch/overview/",
+	"title": "Overview",
+	"tags": [],
+	"description": "",
+	"content": " Chapter 1 Overview Project Casquatch\n"
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/overview/overview/",
+	"title": "Overview",
+	"tags": [],
+	"description": "",
+	"content": " Project Casquatch is a java abstraction layer for the Cassandra database allowing developers to interact with the database through generated POJOs via simple get, save, delete, procedures without writing a single line of CQL.\n"
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/overview/license/",
+	"title": "License",
+	"tags": [],
+	"description": "",
+	"content": " We recognize that there is a wide range of platforms, and T-Mobile can\u0026rsquo;t address them all. This is why we open sourced Casquatch \u0026ndash; we hope the community will be able to expand how Casquatch is used. As with any tool, consult with your IT department before using in production.\n All code samples included are for demonstration purposes only.\n Licensed under Apache 2.0\n  "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/",
+	"title": "Features",
+	"tags": [],
+	"description": "",
+	"content": " Chapter 2 Features Details on Casquatch Features\n"
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/summary/",
+	"title": "Summary",
+	"tags": [],
+	"description": "",
+	"content": " Built on top of Datastax Driver utilizing supported APIs Configurable Failover Policy Entity Code Generator from database metadata Data Cache Object Based API Optional Spring Integration Optional Rest API Uses prepared statements for performance gains and type safe queries Significantly reduces code development effort and reduces code duplication Customizations available through standard application.properties Support to query Solr via solr_query or via Object Annotation Processing to generate entity specific classes  "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/examples/",
+	"title": "Examples",
+	"tags": [],
+	"description": "",
+	"content": " Chapter 3 Examples Example projects using Casquatch\n"
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/releasenotes/",
+	"title": "Release Notes",
+	"tags": [],
+	"description": "",
+	"content": " Chapter 4 Release Notes Release Notes\n"
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/",
+	"title": "",
+	"tags": [],
+	"description": "",
+	"content": " Welcome Casquatch is a java abstraction layer for the Cassandra database allowing developers to interact with the database through generated POJOs via simple get, save, delete, procedures without writing a single line of CQL.\n"
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/releasenotes/v1.0/",
+	"title": "1.0-RELEASE",
+	"tags": [],
+	"description": "",
+	"content": " Changes  Initial Release  Release Date: 03/05/2018 Github: N/A Maven Central: N/A "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/releasenotes/v1.1/",
+	"title": "1.1-RELEASE",
+	"tags": [],
+	"description": "",
+	"content": " Changes  Added ASync versions of most calls Added Solr Supports Added getAllById - Allows getting all of a partition with multiple clustering keys Added CassandraAdminDriver - Allows a direct driver connection for advanced use cases Merged generator and driver into one project Added this documentation Added automated installer script Improved exception handling General bugfixes and code cleanup  Release Date: 04/05/2018 Github: N/A Maven Central: N/A "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/releasenotes/v1.1.1/",
+	"title": "1.1.1-RELEASE",
+	"tags": [],
+	"description": "",
+	"content": " Changes  Model Generator Bug Fixes Additional additional types in generator Backwards compatibility to 5.0 Added Full UDT Support Switched from preferring primitives to preferring classes. Multiple bugs with UDT and tombstone creation  Release Date: 05/02/2018 Github: N/A Maven Central: N/A "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/releasenotes/v1.2/",
+	"title": "1.2-RELEASE",
+	"tags": [],
+	"description": "",
+	"content": " Changes  Initial Open Source Release Added Spring Config Server Extended all tuning properties to be modified using a builder procedure or spring configuration Moved all spring references into CassandraDriverSpringConfiguration Moved from log4j to logback to match spring Renamed package and group ids for open source Added licensing and documentation for open source  Release Date: 06/22/2018 Github: 1.2-RELEASE Maven Central: CassandraDriver \u0026lt;dependency\u0026gt; \u0026lt;groupId\u0026gt;com.tmobile.opensource.casquatch\u0026lt;/groupId\u0026gt; \u0026lt;artifactId\u0026gt;CassandraDriver\u0026lt;/artifactId\u0026gt; \u0026lt;version\u0026gt;1.2-RELEASE\u0026lt;/version\u0026gt; \u0026lt;/dependency\u0026gt;  "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/releasenotes/v1.3/",
+	"title": "1.3-RELEASE",
+	"tags": [],
+	"description": "",
+	"content": " Changes  Added SSL Support Added CassandraDriver-EE as a simple wrapper to inject the licensed driver. Additional Documentation and Tests Updated to latest Cassandra Driver (3.6.0) Added support for Solr Query By Object and by CQL. Requires DSE Search \u0026gt;= 6.0 Rewrote test suite to fully regression test multiple versions Bugfix: Spring Config Server changes to run independently  Release Date: 09/17/2018 Github: 1.3-RELEASE Maven Central: CassandraDriver \u0026lt;dependency\u0026gt; \u0026lt;groupId\u0026gt;com.tmobile.opensource.casquatch\u0026lt;/groupId\u0026gt; \u0026lt;artifactId\u0026gt;CassandraDriver\u0026lt;/artifactId\u0026gt; \u0026lt;version\u0026gt;1.3-RELEASE\u0026lt;/version\u0026gt; \u0026lt;/dependency\u0026gt;  "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/releasenotes/v1.4/",
+	"title": "1.4-RELEASE",
+	"tags": [],
+	"description": "",
+	"content": " Changes  New Feature: Addded workload and dc filtering policies New Feature: Build includes clone as well as multiple default configuration templates. Rewrote CassandraGenerator as CLI Utility with customization options Added CQL Create Table statements as comments in generated code Added getVersion() which shows Casquatch and driver versions Updated Jackson-Databind to 2.9.8 Updated Datastax Driver to 3.7.1 EE to 1.8.1 Bugfix: Boolean type interpretted as UDT in CassandraGenerator Bugfix: Excluded solr_query from models in CassandraGenerator  Release Date: 04/16/19 Github: 1.4-RELEASE Maven Central: CassandraDriver \u0026lt;dependency\u0026gt; \u0026lt;groupId\u0026gt;com.tmobile.opensource.casquatch\u0026lt;/groupId\u0026gt; \u0026lt;artifactId\u0026gt;CassandraDriver\u0026lt;/artifactId\u0026gt; \u0026lt;version\u0026gt;1.4-RELEASE\u0026lt;/version\u0026gt; \u0026lt;/dependency\u0026gt;  "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/releasenotes/v1.5/",
+	"title": "1.5-SNAPSHOT",
+	"tags": [],
+	"description": "",
+	"content": " Changes  New Feature: Added DAO Generator  Release Date: TBD Github: 1.5-SNAPSHOT Maven Central: TBD "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/api/",
+	"title": "API",
+	"tags": [],
+	"description": "",
+	"content": " Concepts The core of Casquatch is the object based API. Full documentation can be seen at CasquatchDao. The concept is that objects are generated from database metadata via the Code Generator then they can be passed generically to apis such as getById(class,object) or save(class,object)\nQuery Options APIs are all overloaded to additionally take QueryOptions object to specify items such as consistency or limit. See Query Options for more information\nExample GetById TableName object = db.getById(TableName.class, new TableName(1,2);); GetAllById List\u0026lt;TableName\u0026gt; objectList = db.getAllById(TableName.class, new TableName(1);); Save TableName object = new TableName(1,2); db.save(TableName.class, object); Delete TableName object = new TableName(1,2); db.delete(TableName.class, object); "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/annotations/",
+	"title": "Annotations",
+	"tags": [],
+	"description": "",
+	"content": " Concept Annotation processing allows the compile to build class files based on provided annotations. This allows for clean consistent generated code to be built for each entity as required.\nOverride The generators are defined such that any generated source will first check for the existence of the same class file. Thus you can copy a file out from target/generated-sources and place it within your project to customize and use as desired.\nAnnotations CasquatchEntity This is the core annotation for referencing a Casquatch Entity. This is used to trigger the creation of the implementation for AbstractStatementFactory used by CasquatchDao. This annotation will typically be added only on Entities which should be created by Code Generator\nCasquatchType This is the annotation for referencing a Casquatch Type which represents a CQL User Defined Type. This is used to trigger the creation of the implementation for AbstractTypeFactory used by AbstractStatementFactory. This annotation will typically be added only on Types which should be created by Code Generator\nCasquatchSpring This annotation must be placed on the main application class within a Spring project to integrate Casquatch as it imports CasquatchSpringBeans\nMaven Configuration Configure the pom.xml to reference casquatch-driver-processor for annotation processing \u0026lt;build\u0026gt; \u0026lt;plugins\u0026gt; \u0026lt;plugin\u0026gt; \u0026lt;groupId\u0026gt;org.apache.maven.plugins\u0026lt;/groupId\u0026gt; \u0026lt;artifactId\u0026gt;maven-compiler-plugin\u0026lt;/artifactId\u0026gt; \u0026lt;configuration\u0026gt; \u0026lt;source\u0026gt;${java.version}\u0026lt;/source\u0026gt; \u0026lt;target\u0026gt;${java.version}\u0026lt;/target\u0026gt; \u0026lt;annotationProcessorPaths\u0026gt; \u0026lt;path\u0026gt; \u0026lt;groupId\u0026gt;com.tmobile.opensource.casquatch\u0026lt;/groupId\u0026gt; \u0026lt;artifactId\u0026gt;casquatch-driver-processor\u0026lt;/artifactId\u0026gt; \u0026lt;version\u0026gt;${casquatch.version}\u0026lt;/version\u0026gt; \u0026lt;/path\u0026gt; \u0026lt;/annotationProcessorPaths\u0026gt; \u0026lt;/configuration\u0026gt; \u0026lt;/plugin\u0026gt; \u0026lt;/plugins\u0026gt; \u0026lt;/build\u0026gt;\n"
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/builder/",
+	"title": "Builder Configuration",
+	"tags": [],
+	"description": "",
+	"content": " Concept CasquatchDao provides a CasquatchDaoBuilder via a static CasquatchDao.builder() method. The builder is designed to include all configuration properties converted from . format to method names as follows:\ncasquatch.basic.session.keyspace becomes builder.withBasicSessionKeyspace(String keyspace);\nExamples Basic Driver CasquatchDao casquatchDao = CasquatchDao.builder() .withBasicContactPoints(\u0026#34;127.0.0.1:9042\u0026#34;) .withBasicLoadBalancingPolicyLocalDatacenter(\u0026#34;DC1\u0026#34;) .withBasicSessionKeyspace(\u0026#34;demo\u0026#34;) .build(); Basic Driver with Authentication CasquatchDao casquatchDao = CasquatchDao.builder() .withBasicContactPoints(\u0026#34;127.0.0.1:9042\u0026#34;) .withBasicLoadBalancingPolicyLocalDatacenter(\u0026#34;DC1\u0026#34;) .withBasicSessionKeyspace(\u0026#34;demo\u0026#34;) .withAdvancedAuthProviderUsername(\u0026#34;cassandra\u0026#34;) .withAdvancedAuthProviderPassword(\u0026#34;cassandra\u0026#34;) .build(); Advanced Example CasquatchDao casquatchDao = CasquatchDao.builder() .withBasicContactPoints(\u0026#34;127.0.0.1:9042\u0026#34;) .withBasicLoadBalancingPolicyLocalDatacenter(\u0026#34;DC1\u0026#34;) .withBasicSessionKeyspace(\u0026#34;demo\u0026#34;) .withAdvancedAuthProviderUsername(\u0026#34;cassandra\u0026#34;) .withAdvancedAuthProviderPassword(\u0026#34;cassandra\u0026#34;) .startProfile(\u0026#34;remote\u0026#34;) .withBasicLoadBalancingPolicyLocalDatacenter(\u0026#34;DC2\u0026#34;) .endProfile() .withFailoverPolicyProfile(\u0026#34;remote\u0026#34;) .withBasicRequestTimeout(\u0026#34;2 seconds\u0026#34;) .build(); "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/categories/",
+	"title": "Categories",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/codegenerator/",
+	"title": "Code Generator",
+	"tags": [],
+	"description": "",
+	"content": " Concept The code generator reverse engineers the schema to create POJOs Entities by evaluating the session metadata.\nConfiguration  See Generator Configuration for configuration information  Examples  Generate using properties file: java -Dconfig.file=/path/to/config.properties -jar CassandraGenerator.jar  Generate all tables in a keyspace providing minimum information: java -Dcasquatch.generator.outputFolder=tmp -Dcasquatch.generator.keyspace=myKeyspace -Dcasquatch.generator.datacenter=datacenter1 -jar CassandraGenerator.jar Generate a package for all tables in a keyspace providing additional information: java -Dcasquatch.generator.outputFolder=tmp -Dcasquatch.generator.keyspace=myKeyspace -Dcasquatch.generator.datacenter=datacenter1 -Dcasquatch.generator.username=cassandra -Dcasquatch.generator.password=cassandra -Dcasquatch.generator.createPackage=true -Dcasquatch.generator.packageName=com.demo.mykeyspace -jar CassandraGenerator.jar  "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/configuration/",
+	"title": "Configuration",
+	"tags": [],
+	"description": "",
+	"content": " Concepts Casquatch configuration is designed as an extension of the underlying Datastax Reference Configuration which utilizes TypeSafe Config and implements the standard behavior.\nOrder of Precedence Profiles are loaded in the following order:\n datastax-java-driver casquatch-defaults casquatch config from prefix (CasquatchDaoBuilder.withPrefix) config provided by CasquatchDaoBuilder  "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/casquatchdriver/",
+	"title": "Configuration - Driver",
+	"tags": [],
+	"description": "",
+	"content": " Concept This an extension of Reference Configuration. This page will highlight a subset of the properties as well as all non-default values. Please use the reference page for further details.\nBasic Properties    Property Default Description     casquatch.basic.contact-points 127.0.0.1:9042 A list of contact point ips and ports. If providing in properties file   casquatch.basic.session-keyspace  Keyspace for the connection   casquatch.basic.load-balancing-policy.local-datacenter  local datacenter for connect   casquatch.advanced.auth-provider.username cassandra Username for connection   casquatch.advanced.auth-provider.password cassandra Password for connection    Failover Policy    Property Default Description     casquatch.failover-policy.class DefaultFailoverPolicy Provides a failover policy to fail to a second profile.   casquatch.failover-policy.profile  Name of profile to failover to in the vent of failure    See Failover Policy for more information\nQuery Options    Property Default Description     casquatch.query-options.allow-non-primary-keys false Default to disallow queries with non primary keys.   casquatch.query-options.null-saving-strategy DO_NOT_SET Default of whether to persist nulls   casquatch.query-options.limit 10 Default row limit when doing a getAll   casquatch.query-options.profile  Default execution profile   casquatch.solr-query-options.allow-non-primary-keys true Default to allow queries with non primary keys.   casquatch.solr-query-options.null-saving-strategy DO_NOT_SET Default of whether to persist nulls   casquatch.solr-query-options.limit 10 Default row limit when doing a getAll   casquatch.solr-query-options.profile  Default execution profile    See Query Options for more information\nAdvanced Properties    Property Default Description     casquatch.basic.request.timeout 500 milliseconds Set the request time out duration   casquatch.basic.request.consistency LOCAL_QUORUM Default consistency level for queries   casquatch.basic.request.page-size  Default page size   casquatch.basic.load-balancing-policy.class  Class to provide a custom load balancer policy   casquatch.basic.load-balancing-policy.filter.class  Class to provide a custom filtering policy   casquatch.max-requests-per-connection 1024 Maximum number of requests per connection   casquatch.advanced.connection.init-query-timeout 12000 How long to wait for a heartbeat   casquatch.advanced.connection.pool.local.size 3 Size of the local connection pool   casquatch.advanced.reconnect-on-init true Attempt reconnect if all contact points are unavailable   casquatch.advanced.reconnection-policy.class ExponentialReconnectionPolicy Reconnection policy to use   casquatch.advanced.reconnection-policy.base-delay 500 milliseconds Delay between reconnections   casquatch.advanced.reconnection-policy.max-delay 300 seconds Maximum delay   casquatch.advanced.retry-policy.class DefaultRetryPolicy Reconnection policy to use   casquatch.advanced.speculative-execution-policy.class ConstantSpeculativeExecutionPolicy Speculative execution policy to use   casquatch.advanced.speculative-execution-policy.max-executions = 2 Maximum number of executions    casquatch.advanced.speculative-execution-policy.delay = 500 milliseconds Delay before reexecuting the query    casquatch.advanced.auth-provider.class PlainTextAuthProvider Authentication provider   casquatch.ssl-engine-factory.class DefaultSslEngineFactory SSL Class   casquatch.ssl-engine-factory.cipher-suites [ \u0026ldquo;TLS_RSA_WITH_AES_128_CBC_SHA\u0026rdquo;, \u0026ldquo;TLS_RSA_WITH_AES_256_CBC_SHA\u0026rdquo; ] Default cipher suites   casquatch.ssl-engine-factory.hostname-validation true Hostname validation   casquatch.ssl-engine-factory.truststore-path  Path to truststore   casquatch.ssl-engine-factory.truststore-password  Truststore password   casquatch.ssl-engine-factory.keystore-path  Path to Keystore   casquatch.ssl-engine-factory.keystore-password  Keystore password   casquatch.profiles.ddl.basic.request.timeout 2 seconds Provides a DDL profile with greater timeout    Debugging To enable debug logging and dump configured properties to the log, please enable the following: com.tmobile.opensource.casquatch.ConfigLoader=DEBUG\n"
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/casquatchgenerator/",
+	"title": "Configuration - Generator",
+	"tags": [],
+	"description": "",
+	"content": "Properties can be passed either through a -D parameter or in a properties file along with -Dconfig.file=\n   Property Type Required Default Description     casquatch.generator.username String   Authentication Username   casquatch.generator.password String   Authentication Password   casquatch.generator.keyspace String Yes  Keyspace to parse   casquatch.generator.datacenter String  Yes    casquatch.generator.contactPoints String Array No 127.0.0.1:9042 Cassandra Contact Point   casquatch.generator.tables String Array No  Provide a list of tables. All tables are processed if not supplied   casquatch.generator.console Boolean No false Toggle console output   casquatch.generator.file Boolean No false Toggle file output   casquatch.generator.outputFolder String No  Required if file=true. Defines location to write generated files   casquatch.generator.overwrite Boolean No false Toggle overwriting of files in outputFolder   casquatch.generator.createPackage Boolean No false If createPackage=true then pom.xml and src folder structure will be added   casquatch.generator.packageName String No com.tmobile.opensource.casquatch.models Package name for source files   config.file String No Specify a path to a config file to place parameters     "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/configurespring/",
+	"title": "Configure Spring",
+	"tags": [],
+	"description": "",
+	"content": " Base Configuration First configure according to Maven Configuration\nAdd dependency for Casquatch-Driver-Spring \u0026lt;dependency\u0026gt; \u0026lt;groupId\u0026gt;com.tmobile.opensource.casquatch\u0026lt;/groupId\u0026gt; \u0026lt;artifactId\u0026gt;casquatch-driver-spring\u0026lt;/artifactId\u0026gt; \u0026lt;version\u0026gt;${casquatch.version}\u0026lt;/version\u0026gt; \u0026lt;/dependency\u0026gt; Add Annotation Find @SpringBootApplication and add this line: @CasquatchSpring\nUse Autowired CasquatchDao bean where needed @Autowired private CasquatchDao db; "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/drivercache/",
+	"title": "Driver Cache",
+	"tags": [],
+	"description": "",
+	"content": " Concept The DriverCache interface is a very simply lazy caching mechanism to allow for objects to be queried with a predefined timeout.\nThe cache is updated in the following conditions: a) Data is requested via get and it does not exist in cache. It is then queried from the database. b) Data is requested via get and the timeout has expired (default 15 minutes). This is treated the same as a cache miss and data is thus queried from the Database c) A set is called, then the same data is inserted to the cache\nExample @Autowired CasquatchDao casquatchDao; DatabaseCache\u0026lt;MyObj\u0026gt; myObjCache = casquatchDao.getCache(MyObj.cache) MyObj obj = myObjCache.get(\u0026#39;key1.key2\u0026#39;); "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/failover/",
+	"title": "Failover",
+	"tags": [],
+	"description": "",
+	"content": " Concept Casquatch is designed to support failing over database queries from one datacenter to another. This generally causes increased latency and weaker consistency in exchange for improved availability.\nMethod Casquatch APIs are designed to build statements which then get passed to execute or executeASync as appropriate. If an exception is caught then it is passed to the class defined by casquatch.failover-policy.class which implements FailoverPolicy. This interface takes a statement and an exception to determine if it should be replayed on the remote site. If so, then it is attempted again with the profile defined in casquatch.failover-policy.profile. This parameter supports being nested in additional profiles allowing chained failovers as required.\n"
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/examples/loadtest/",
+	"title": "Load Test",
+	"tags": [],
+	"description": "",
+	"content": " Overview This is an example project that generates random data then writes, reads, and compares the data. It is a command line application that does not utilize spring\nGithub: springrest Schema CREATE KEYSPACE loadtest WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'} AND durable_writes = true; CREATE TABLE loadtest.table_name ( key_one int, key_two int, col_one text, col_two text, PRIMARY KEY (key_one, key_two) ); EOF  Configuration casquatch { basic { contact-points = [ \u0026quot;127.0.0.1:9071\u0026quot; ] session-keyspace = loadtest load-balancing-policy.local-datacenter=datacenter1 } generator { console=false file=true overwrite=true outputFolder=. packageName=com.tmobile.opensource.casquatch.examples createPackage=false contactPoints=${casquatch.basic.contact-points} keyspace=${casquatch.basic.session-keyspace} datacenter=${casquatch.basic.load-balancing-policy.local-datacenter} } } loadtest { doRead=true doWrite=true doCheck=true create=false delay=1 loops=1 entities=[TableName] keyspace=${casquatch.basic.session-keyspace} datacenter=${casquatch.basic.load-balancing-policy.local-datacenter} }  "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/mavenconfiguration/",
+	"title": "Maven Configuration",
+	"tags": [],
+	"description": "",
+	"content": " Add version property \u0026lt;casquatch.version\u0026gt;X.Y-RELEASE\u0026lt;/casquatch.version\u0026gt; Add dependency for Driver \u0026lt;dependency\u0026gt; \u0026lt;groupId\u0026gt;com.tmobile.opensource.casquatch\u0026lt;/groupId\u0026gt; \u0026lt;artifactId\u0026gt;casquatch-driver\u0026lt;/artifactId\u0026gt; \u0026lt;version\u0026gt;${casquatch.version}\u0026lt;/version\u0026gt; \u0026lt;/dependency\u0026gt; Optional: Add test dependency for Driver \u0026lt;dependency\u0026gt; \u0026lt;groupId\u0026gt;com.tmobile.opensource.casquatch\u0026lt;/groupId\u0026gt; \u0026lt;artifactId\u0026gt;casquatch-driver-tests\u0026lt;/artifactId\u0026gt; \u0026lt;version\u0026gt;${casquatch.version}\u0026lt;/version\u0026gt; \u0026lt;scope\u0026gt;test\u0026lt;/scope\u0026gt; \u0026lt;/dependency\u0026gt; Add annotation processing See Annotations for more information \u0026lt;build\u0026gt; \u0026lt;plugins\u0026gt; \u0026lt;plugin\u0026gt; \u0026lt;groupId\u0026gt;org.apache.maven.plugins\u0026lt;/groupId\u0026gt; \u0026lt;artifactId\u0026gt;maven-compiler-plugin\u0026lt;/artifactId\u0026gt; \u0026lt;configuration\u0026gt; \u0026lt;source\u0026gt;${java.version}\u0026lt;/source\u0026gt; \u0026lt;target\u0026gt;${java.version}\u0026lt;/target\u0026gt; \u0026lt;annotationProcessorPaths\u0026gt; \u0026lt;path\u0026gt; \u0026lt;groupId\u0026gt;com.tmobile.opensource.casquatch\u0026lt;/groupId\u0026gt; \u0026lt;artifactId\u0026gt;casquatch-driver-processor\u0026lt;/artifactId\u0026gt; \u0026lt;version\u0026gt;${casquatch.version}\u0026lt;/version\u0026gt; \u0026lt;/path\u0026gt; \u0026lt;/annotationProcessorPaths\u0026gt; \u0026lt;/configuration\u0026gt; \u0026lt;/plugin\u0026gt; \u0026lt;/plugins\u0026gt; \u0026lt;/build\u0026gt;\n"
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/queryoptions/",
+	"title": "Query Options",
+	"tags": [],
+	"description": "",
+	"content": " Concept In order to provide a fluid model of specifying QueryOptions, a QueryOptions object is provided which is immutable and chainable. See Query Options for more information. All CasquatchDao query APIs are overloaded allowing for this object to be passed.\nOptions  All Columns - Indicates if a query should be built referencing only the keys or all columns. If all columns is used and the query method does not support non key columns then this will reuslt in an exception. Consistency Level - Specify a per query consistency level Limit - Specify the number of rows to return TTL - Set a TTL for the query Profile - Excecution profile to use. See (Execution Profiles)[https://docs.datastax.com/en/developer/java-driver/4.1/manual/core/configuration/#execution-profiles] for more information  "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/restapi/",
+	"title": "Rest API",
+	"tags": [],
+	"description": "",
+	"content": " Concepts A spring rest controller can be generated automatically tieing in to core Casquatch APIs\nImplementation Implementation requires a boolean flag set on CasquatchSpring as follows @CasquatchSpring(generateRestApi=true)\nExample See Spring Rest for a working implementation\n"
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/features/solr/",
+	"title": "Solr",
+	"tags": [],
+	"description": "",
+	"content": " Concept Datastax solr queries are available with multiple interfaces. This requires that solr be set up and configured on the Cassandra database server.\nJSON (Requires DSE 5.1+) Query by JSON with the getAllBySolr(class,solrQuery), For details on the format of the solrQuery, please consult DSE 5.1 - Search index filter syntax for details.\nObject (Requires DSE 6.0+) Adds Query by Object with getAllBySolr(class,object). See DSE 6.0 - Search index filter syntax for details\n"
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/examples/springconfigserver/",
+	"title": "Spring Config Server",
+	"tags": [],
+	"description": "",
+	"content": " Overview This is a project that implements Spring Config Server using the Casquatch Driver. Entity was generated via [casquatch-generator]()\nGithub: springconfigserver Schema CREATE KEYSPACE springconfigserver WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'} AND durable_writes = true; CREATE TABLE springconfigserver.configuration ( application text, profile text, label text, key text, value text, PRIMARY KEY ((application, profile), label, key) ) WITH CLUSTERING ORDER BY (label ASC, key ASC); EOF  Configuration casquatch { basic { contact-points = [ \u0026quot;127.0.0.1:9071\u0026quot; ] session-keyspace = springrest load-balancing-policy.local-datacenter=datacenter1 } generator { console=false file=true overwrite=true outputFolder=. packageName=com.tmobile.opensource.casquatch.examples createPackage=false contactPoints=${casquatch.basic.contact-points} keyspace=${casquatch.basic.session-keyspace} datacenter=${casquatch.basic.load-balancing-policy.local-datacenter} } } server.servlet.context-path=/${casquatch.basic.session-keyspace}  "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/examples/springrest/",
+	"title": "Spring Rest",
+	"tags": [],
+	"description": "",
+	"content": " Overview This is a simple project that utilizes Spring and Casquatch to provide a Rest API for a given schema. Entity was generated via the Code Generator\nGithub: springrest Schema CREATE KEYSPACE springrest WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'} AND durable_writes = true; CREATE TABLE springrest.table_name ( key_one int, key_two int, col_one text, col_two text, PRIMARY KEY (key_one, key_two) ); EOF  Configuration casquatch { basic { contact-points = [ \u0026quot;127.0.0.1:9071\u0026quot; ] session-keyspace = springrest load-balancing-policy.local-datacenter=datacenter1 } generator { console=false file=true overwrite=true outputFolder=. packageName=com.tmobile.opensource.casquatch.examples createPackage=false contactPoints=${casquatch.basic.contact-points} keyspace=${casquatch.basic.session-keyspace} datacenter=${casquatch.basic.load-balancing-policy.local-datacenter} } } server.servlet.context-path=/${casquatch.basic.session-keyspace}  "
+},
+{
+	"uri": "http://tmobile.github.io/casquatch/tags/",
+	"title": "Tags",
+	"tags": [],
+	"description": "",
+	"content": ""
+}]

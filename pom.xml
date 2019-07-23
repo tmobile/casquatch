@@ -5,8 +5,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.tmobile.opensource.casquatch</groupId>
-  <artifactId>Casquatch</artifactId>
-  <version>1.5-SNAPSHOT</version>
+  <artifactId>casquatch-parent</artifactId>
+  <version>2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Project Casquatch</name>
@@ -35,10 +35,184 @@
   </scm>
 
   <modules>
+    <!--
     <module>cassandradriver</module>
     <module>cassandradriver-ee</module>
     <module>cassandragenerator</module>
     <module>springconfigserver</module>
+    -->
+    <module>casquatch-driver</module>
+    <module>casquatch-driver-spring</module>
+    <module>casquatch-driver-processor</module>
+    <module>casquatch-driver-tests</module>
+    <module>casquatch-generator</module>
   </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <apache-commons-text.version>1.6</apache-commons-text.version>
+    <cassandraunit.version>3.11.2.0</cassandraunit.version>
+    <casquatch.version>2.0-SNAPSHOT</casquatch.version>
+    <datastax-core.version>4.1.0-SNAPSHOT</datastax-core.version>
+    <datastax-mapper.version>4.1.0</datastax-mapper.version>
+    <datastax_v3.version>3.7.1</datastax_v3.version>
+    <google-auto-service.version>1.0-rc5</google-auto-service.version>
+    <freemarker.version>2.3.28</freemarker.version>
+    <jackson.version>2.9.9</jackson.version>
+    <java.version>1.8</java.version>
+    <javax.version>4.0.1</javax.version>
+    <junit.version>4.12</junit.version>
+    <logback.version>1.2.3</logback.version>
+    <lombok.version>1.18.6</lombok.version>
+    <lombok-maven.version>1.18.6.0</lombok-maven.version>
+    <maven-compiler.version>3.8.1</maven-compiler.version>
+    <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
+    <maven-gpg.version>1.5</maven-gpg.version>
+    <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
+    <maven-javadoc.version>3.1.0</maven-javadoc.version>
+    <maven-source.version>3.0.1</maven-source.version>
+    <maven-surefire.version>2.22.2</maven-surefire.version>
+    <nexus.version>1.6.8</nexus.version>
+    <podam.version>7.2.3.RELEASE</podam.version>
+    <spring-boot.version>1.5.10.RELEASE</spring-boot.version>
+    <spring-context.version>5.0.4.RELEASE</spring-context.version>
+    <spring-web.version>5.0.7.RELEASE</spring-web.version>
+
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire.version}</version>
+        <configuration>
+          <includes>
+            <include>**/*Tests.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/Abstract*.java</exclude>
+            <exclude>**/*ExternalTests.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler.version}</version>
+        <configuration>
+          <showWarnings>true</showWarnings>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${maven-javadoc.version}</version>
+        <configuration>
+          <outputDirectory>${project.basedir}/docs</outputDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>aggregate</id>
+            <goals>
+              <goal>aggregate</goal>
+            </goals>
+            <phase>site</phase>
+          </execution>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>release-sign-artifacts</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>${maven-javadoc.version}</version>
+            <configuration>
+              <outputDirectory>${project.basedir}/../docs</outputDirectory>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>${maven-source.version}</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>${maven-gpg.version}</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>${nexus.version}</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>ossrh</serverId>
+              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+              <autoReleaseAfterClose>false</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>ossrh</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+          <id>ossrh</id>
+          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+      </distributionManagement>
+    </profile>
+  </profiles>
 
 </project>

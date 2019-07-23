@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="description" content="Documentation for Casquatch">
+<meta name="author" content="Josh Turner">
+
+    <link rel="icon" href="/casquatch/images/favicon.png" type="image/png">
+
+    <title>Configuration - Driver :: Casquatch</title>
+
+    
+    <link href="/casquatch/css/nucleus.css?1563821964" rel="stylesheet">
+    <link href="/casquatch/css/fontawesome-all.min.css?1563821964" rel="stylesheet">
+    <link href="/casquatch/css/hybrid.css?1563821964" rel="stylesheet">
+    <link href="/casquatch/css/featherlight.min.css?1563821964" rel="stylesheet">
+    <link href="/casquatch/css/perfect-scrollbar.min.css?1563821964" rel="stylesheet">
+    <link href="/casquatch/css/auto-complete.css?1563821964" rel="stylesheet">
+    <link href="/casquatch/css/atom-one-dark-reasonable.css?1563821964" rel="stylesheet">
+    <link href="/casquatch/css/theme.css?1563821964" rel="stylesheet">
+    <link href="/casquatch/css/hugo-theme.css?1563821964" rel="stylesheet">
+    
+      <link href="/casquatch/css/theme-casquatch.css?1563821964" rel="stylesheet">
+    
+
+    <script src="/casquatch/js/jquery-3.3.1.min.js?1563821964"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/casquatch/features/casquatchdriver/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="http://tmobile.github.io/casquatch">
+    <h4>Casquatch</h4>
+</a>
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/casquatch/js/lunr.min.js?1563821964"></script>
+<script type="text/javascript" src="/casquatch/js/auto-complete.js?1563821964"></script>
+<script type="text/javascript">
+    
+        var baseurl = "http:\/\/tmobile.github.io\/casquatch";
+    
+</script>
+<script type="text/javascript" src="/casquatch/js/search.js?1563821964"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/casquatch/overview/" title="Overview" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/casquatch/overview/">
+          <b>1. </b>Overview
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/overview/overview/" title="Overview" class="dd-item ">
+        <a href="/casquatch/overview/overview/">
+        Overview
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/overview/license/" title="License" class="dd-item ">
+        <a href="/casquatch/overview/license/">
+        License
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/casquatch/features/" title="Features" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="/casquatch/features/">
+          <b>2. </b>Features
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/summary/" title="Summary" class="dd-item ">
+        <a href="/casquatch/features/summary/">
+        Summary
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/api/" title="API" class="dd-item ">
+        <a href="/casquatch/features/api/">
+        API
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/annotations/" title="Annotations" class="dd-item ">
+        <a href="/casquatch/features/annotations/">
+        Annotations
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/builder/" title="Builder Configuration" class="dd-item ">
+        <a href="/casquatch/features/builder/">
+        Builder Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/codegenerator/" title="Code Generator" class="dd-item ">
+        <a href="/casquatch/features/codegenerator/">
+        Code Generator
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/configuration/" title="Configuration" class="dd-item ">
+        <a href="/casquatch/features/configuration/">
+        Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/casquatchdriver/" title="Configuration - Driver" class="dd-item active">
+        <a href="/casquatch/features/casquatchdriver/">
+        Configuration - Driver
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/casquatchgenerator/" title="Configuration - Generator" class="dd-item ">
+        <a href="/casquatch/features/casquatchgenerator/">
+        Configuration - Generator
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/configurespring/" title="Configure Spring" class="dd-item ">
+        <a href="/casquatch/features/configurespring/">
+        Configure Spring
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/drivercache/" title="Driver Cache" class="dd-item ">
+        <a href="/casquatch/features/drivercache/">
+        Driver Cache
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/failover/" title="Failover" class="dd-item ">
+        <a href="/casquatch/features/failover/">
+        Failover
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/mavenconfiguration/" title="Maven Configuration" class="dd-item ">
+        <a href="/casquatch/features/mavenconfiguration/">
+        Maven Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/queryoptions/" title="Query Options" class="dd-item ">
+        <a href="/casquatch/features/queryoptions/">
+        Query Options
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/restapi/" title="Rest API" class="dd-item ">
+        <a href="/casquatch/features/restapi/">
+        Rest API
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/features/solr/" title="Solr" class="dd-item ">
+        <a href="/casquatch/features/solr/">
+        Solr
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/casquatch/examples/" title="Examples" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/casquatch/examples/">
+          <b>3. </b>Examples
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/examples/loadtest/" title="Load Test" class="dd-item ">
+        <a href="/casquatch/examples/loadtest/">
+        Load Test
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/examples/springconfigserver/" title="Spring Config Server" class="dd-item ">
+        <a href="/casquatch/examples/springconfigserver/">
+        Spring Config Server
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/examples/springrest/" title="Spring Rest" class="dd-item ">
+        <a href="/casquatch/examples/springrest/">
+        Spring Rest
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/casquatch/releasenotes/" title="Release Notes" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/casquatch/releasenotes/">
+          <b>4. </b>Release Notes
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/releasenotes/v1.0/" title="1.0-RELEASE" class="dd-item ">
+        <a href="/casquatch/releasenotes/v1.0/">
+        1.0-RELEASE
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/releasenotes/v1.1/" title="1.1-RELEASE" class="dd-item ">
+        <a href="/casquatch/releasenotes/v1.1/">
+        1.1-RELEASE
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/releasenotes/v1.1.1/" title="1.1.1-RELEASE" class="dd-item ">
+        <a href="/casquatch/releasenotes/v1.1.1/">
+        1.1.1-RELEASE
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/releasenotes/v1.2/" title="1.2-RELEASE" class="dd-item ">
+        <a href="/casquatch/releasenotes/v1.2/">
+        1.2-RELEASE
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/releasenotes/v1.3/" title="1.3-RELEASE" class="dd-item ">
+        <a href="/casquatch/releasenotes/v1.3/">
+        1.3-RELEASE
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/releasenotes/v1.4/" title="1.4-RELEASE" class="dd-item ">
+        <a href="/casquatch/releasenotes/v1.4/">
+        1.4-RELEASE
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/casquatch/releasenotes/v1.5/" title="1.5-SNAPSHOT" class="dd-item ">
+        <a href="/casquatch/releasenotes/v1.5/">
+        1.5-SNAPSHOT
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+      <section id="shortcuts">
+        <h3></h3>
+        <ul>
+          
+              <li> 
+                  <a class="padding" href="http://tmobile.github.io/casquatch/docs"><i class='fas fa-bookmark'></i> API Docs</a>
+              </li>
+          
+              <li> 
+                  <a class="padding" href="https://github.com/tmobile/casquatch"><i class='fab fa-fw fa-github'></i> GitHub repo</a>
+              </li>
+          
+        </ul>
+      </section>
+    
+
+    
+    <section id="footer">
+      <center>
+    <a href="https://github.com/tmobile/casquatch/releases"><img alt="GitHub release" src="https://img.shields.io/github/release/tmobile/casquatch.svg?style=plastic"></a>
+    <a href="https://search.maven.org/search?q=g:com.tmobile.opensource.casquatch"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.tmobile.opensource.casquatch/CassandraDriver.svg?style=plastic"></a><br/>
+    <a href="https://github.com/tmobile/casquatch/"><img alt="GitHub stars" src="https://img.shields.io/github/stars/tmobile/casquatch.svg?style=plastic"></a><a href="https://github.com/tmobile/casquatch/fork"><img alt="GitHub forks" src="https://img.shields.io/github/forks/tmobile/casquatch.svg?style=plastic"></a><br/>
+    <a href="https://github.com/tmobile/casquatch/blob/master/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/tmobile/casquatch.svg?style=plastic"></a><br/>
+</center>
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                  
+                  
+                  
+                  <div id="top-github-link">
+                    <a class="github-link" title='Edit this page' href="https://github.com/tmobile/casquatch/edit/master/manual/content/features/casquatchdriver.md" target="blank">
+                      <i class="fas fa-code-branch"></i>
+                      <span id="top-github-link-text">Edit this page</span>
+                    </a>
+                  </div>
+                  
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                   Configuration - Driver 
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#concept">Concept</a></li>
+<li><a href="#basic-properties">Basic Properties</a></li>
+<li><a href="#failover-policy">Failover Policy</a></li>
+<li><a href="#query-options">Query Options</a></li>
+<li><a href="#advanced-properties">Advanced Properties</a></li>
+<li><a href="#debugging">Debugging</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Configuration - Driver
+            </h1>
+          
+
+        
+
+
+
+
+
+<h2 id="concept">Concept</h2>
+
+<p>This an extension of <a href="https://docs.datastax.com/en/developer/java-driver/4.0/manual/core/configuration/reference/">Reference Configuration</a>. This page will highlight a subset of the properties as well as all non-default values. Please use the reference page for further details.</p>
+
+<h2 id="basic-properties">Basic Properties</h2>
+
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>casquatch.basic.contact-points</td>
+<td>127.0.0.1:9042</td>
+<td>A list of contact point ips and ports. If providing in properties file</td>
+</tr>
+
+<tr>
+<td>casquatch.basic.session-keyspace</td>
+<td></td>
+<td>Keyspace for the connection</td>
+</tr>
+
+<tr>
+<td>casquatch.basic.load-balancing-policy.local-datacenter</td>
+<td></td>
+<td>local datacenter for connect</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.auth-provider.username</td>
+<td>cassandra</td>
+<td>Username for connection</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.auth-provider.password</td>
+<td>cassandra</td>
+<td>Password for connection</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="failover-policy">Failover Policy</h2>
+
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>casquatch.failover-policy.class</td>
+<td>DefaultFailoverPolicy</td>
+<td>Provides a failover policy to fail to a second profile.</td>
+</tr>
+
+<tr>
+<td>casquatch.failover-policy.profile</td>
+<td></td>
+<td>Name of profile to failover to in the vent of failure</td>
+</tr>
+</tbody>
+</table>
+
+<p>See <a href="/casquatch/features/failover/">Failover Policy</a> for more information</p>
+
+<h2 id="query-options">Query Options</h2>
+
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>casquatch.query-options.allow-non-primary-keys</td>
+<td>false</td>
+<td>Default to disallow queries with non primary keys.</td>
+</tr>
+
+<tr>
+<td>casquatch.query-options.null-saving-strategy</td>
+<td>DO_NOT_SET</td>
+<td>Default of whether to persist nulls</td>
+</tr>
+
+<tr>
+<td>casquatch.query-options.limit</td>
+<td>10</td>
+<td>Default row limit when doing a getAll</td>
+</tr>
+
+<tr>
+<td>casquatch.query-options.profile</td>
+<td></td>
+<td>Default execution profile</td>
+</tr>
+
+<tr>
+<td>casquatch.solr-query-options.allow-non-primary-keys</td>
+<td>true</td>
+<td>Default to allow queries with non primary keys.</td>
+</tr>
+
+<tr>
+<td>casquatch.solr-query-options.null-saving-strategy</td>
+<td>DO_NOT_SET</td>
+<td>Default of whether to persist nulls</td>
+</tr>
+
+<tr>
+<td>casquatch.solr-query-options.limit</td>
+<td>10</td>
+<td>Default row limit when doing a getAll</td>
+</tr>
+
+<tr>
+<td>casquatch.solr-query-options.profile</td>
+<td></td>
+<td>Default execution profile</td>
+</tr>
+</tbody>
+</table>
+
+<p>See <a href="/casquatch/features/queryoptions/">Query Options</a> for more information</p>
+
+<h2 id="advanced-properties">Advanced Properties</h2>
+
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>casquatch.basic.request.timeout</td>
+<td>500 milliseconds</td>
+<td>Set the request time out duration</td>
+</tr>
+
+<tr>
+<td>casquatch.basic.request.consistency</td>
+<td>LOCAL_QUORUM</td>
+<td>Default consistency level for queries</td>
+</tr>
+
+<tr>
+<td>casquatch.basic.request.page-size</td>
+<td></td>
+<td>Default page size</td>
+</tr>
+
+<tr>
+<td>casquatch.basic.load-balancing-policy.class</td>
+<td></td>
+<td>Class to provide a custom load balancer policy</td>
+</tr>
+
+<tr>
+<td>casquatch.basic.load-balancing-policy.filter.class</td>
+<td></td>
+<td>Class to provide a custom filtering policy</td>
+</tr>
+
+<tr>
+<td>casquatch.max-requests-per-connection</td>
+<td>1024</td>
+<td>Maximum number of requests per connection</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.connection.init-query-timeout</td>
+<td>12000</td>
+<td>How long to wait for a heartbeat</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.connection.pool.local.size</td>
+<td>3</td>
+<td>Size of the local connection pool</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.reconnect-on-init</td>
+<td>true</td>
+<td>Attempt reconnect if all contact points are unavailable</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.reconnection-policy.class</td>
+<td>ExponentialReconnectionPolicy</td>
+<td>Reconnection policy to use</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.reconnection-policy.base-delay</td>
+<td>500 milliseconds</td>
+<td>Delay between reconnections</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.reconnection-policy.max-delay</td>
+<td>300 seconds</td>
+<td>Maximum delay</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.retry-policy.class</td>
+<td>DefaultRetryPolicy</td>
+<td>Reconnection policy to use</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.speculative-execution-policy.class</td>
+<td>ConstantSpeculativeExecutionPolicy</td>
+<td>Speculative execution policy to use</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.speculative-execution-policy.max-executions = 2</td>
+<td>Maximum number of executions</td>
+<td></td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.speculative-execution-policy.delay = 500 milliseconds</td>
+<td>Delay before reexecuting the query</td>
+<td></td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.auth-provider.class</td>
+<td>PlainTextAuthProvider</td>
+<td>Authentication provider</td>
+</tr>
+
+<tr>
+<td>casquatch.ssl-engine-factory.class</td>
+<td>DefaultSslEngineFactory</td>
+<td>SSL Class</td>
+</tr>
+
+<tr>
+<td>casquatch.ssl-engine-factory.cipher-suites</td>
+<td>[ &ldquo;TLS_RSA_WITH_AES_128_CBC_SHA&rdquo;, &ldquo;TLS_RSA_WITH_AES_256_CBC_SHA&rdquo; ]</td>
+<td>Default cipher suites</td>
+</tr>
+
+<tr>
+<td>casquatch.ssl-engine-factory.hostname-validation</td>
+<td>true</td>
+<td>Hostname validation</td>
+</tr>
+
+<tr>
+<td>casquatch.ssl-engine-factory.truststore-path</td>
+<td></td>
+<td>Path to truststore</td>
+</tr>
+
+<tr>
+<td>casquatch.ssl-engine-factory.truststore-password</td>
+<td></td>
+<td>Truststore password</td>
+</tr>
+
+<tr>
+<td>casquatch.ssl-engine-factory.keystore-path</td>
+<td></td>
+<td>Path to Keystore</td>
+</tr>
+
+<tr>
+<td>casquatch.ssl-engine-factory.keystore-password</td>
+<td></td>
+<td>Keystore password</td>
+</tr>
+
+<tr>
+<td>casquatch.profiles.ddl.basic.request.timeout</td>
+<td>2 seconds</td>
+<td>Provides a DDL profile with greater timeout</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="debugging">Debugging</h2>
+
+<p>To enable debug logging and dump configured properties to the log, please enable the following:
+com.tmobile.opensource.casquatch.ConfigLoader=DEBUG</p>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        <center>
+    Copyright 2018 T-Mobile US, Inc.<br/>
+    Code For Demonstration Purposes Only
+</center>
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/casquatch/features/configuration/" title="Configuration"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/casquatch/features/casquatchgenerator/" title="Configuration - Generator" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/casquatch/js/clipboard.min.js?1563821964"></script>
+    <script src="/casquatch/js/perfect-scrollbar.min.js?1563821964"></script>
+    <script src="/casquatch/js/perfect-scrollbar.jquery.min.js?1563821964"></script>
+    <script src="/casquatch/js/jquery.sticky.js?1563821964"></script>
+    <script src="/casquatch/js/featherlight.min.js?1563821964"></script>
+    <script src="/casquatch/js/html5shiv-printshiv.min.js?1563821964"></script>
+    <script src="/casquatch/js/highlight.pack.js?1563821964"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/casquatch/js/modernizr.custom-3.6.0.js?1563821964"></script>
+    <script src="/casquatch/js/learn.js?1563821964"></script>
+    <script src="/casquatch/js/hugo-learn.js?1563821964"></script>
+
+    <link href="/casquatch/mermaid/mermaid.css?1563821964" rel="stylesheet" />
+    <script src="/casquatch/mermaid/mermaid.js?1563821964"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+

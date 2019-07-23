@@ -9,7 +9,7 @@
   <version>1.5-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>Project Casquatch - Cassandra Driver</name>
+  <name>Project Casquatch - Cassandra Driver (Legacy) </name>
   <description>Cassandra Driver component of Project Casquatch</description>
   <url>http://github.com/tmobile/casquatch</url>
   <licenses>

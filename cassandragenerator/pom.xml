@@ -8,7 +8,7 @@
 	<version>1.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-  <name>Project Casquatch - Cassandra Generator</name>
+  <name>Project Casquatch - Cassandra Generator (Legacy)</name>
   <description>Cassandra Generator component of Project Casquatch</description>
   <url>http://github.com/tmobile/casquatch</url>
   <licenses>

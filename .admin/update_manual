@@ -1,0 +1,8 @@
+#!/bin/sh
+rm -rf manual/static/docs
+rm -rf docs
+mvn javadoc:aggregate
+cp -r target/site/apidocs manual/static/docs
+cd manual
+hugo
+mv public ../docs
