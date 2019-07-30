@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Sample application for Rest API. Swagger available at http://localhost:8080/springrest/swagger-ui.html
  */
 @SpringBootApplication
-@CasquatchSpring(generateRestDao = truezx)
+@CasquatchSpring(generateRestDao = true)
 public class SpringrestApplication {
 
 	public static void main(String[] args) {

@@ -13,23 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.tmobile.opensource.casquatch.examples.springrest;
 
-package com.tmobile.opensource.casquatch.examples.springconfigserver;
-
-import org.junit.Test;
+import com.tmobile.opensource.casquatch.AbstractEntityRestDAOTests;
+import com.tmobile.opensource.casquatch.CasquatchDao;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.runner.RunWith;
+import org.mockito.Spy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class SpringconfigserverApplicationTests {
-	@Test
-	public void contextLoads() {
+@Slf4j
+@Getter
+public class TableName_RestDaoTests extends AbstractEntityRestDAOTests<TableName,TableName_RestDao> {
+	@Autowired
+	protected MockMvc mockMvc;
+
+	@Autowired
+	@Spy
+	protected TableName_RestDao service;
+
+	@Autowired
+	protected CasquatchDao dao;
+
+	public TableName_RestDaoTests() {
+		super(TableName.class, TableName_RestDao.class);
 	}
-
-	//TODO - Test Service
-
 }
