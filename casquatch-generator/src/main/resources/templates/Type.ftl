@@ -15,9 +15,9 @@ import lombok.Setter;
 
 @CasquatchType
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class ${CasquatchNamingConvention.cqlToJavaClass(name)} extends AbstractCasquatchType {
+public class ${naming.cqlToJavaClass(name)} extends AbstractCasquatchType {
 <#list fields as col,type>
-    private ${CasquatchNamingConvention.cqlDataTypeToJavaType(type)} ${CasquatchNamingConvention.cqlToJavaVariable(col)};
+    private ${naming.cqlDataTypeToJavaType(type)} ${naming.cqlToJavaVariable(col)};
 </#list>
 
     /**

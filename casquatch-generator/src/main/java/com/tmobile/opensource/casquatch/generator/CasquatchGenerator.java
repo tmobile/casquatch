@@ -233,7 +233,7 @@ public class CasquatchGenerator {
             }
         }
         Map<String, Object> input = inputStart(userDefinedType.getName().toString());
-        input.put("ddl",userDefinedType.describe(false).replace("\"","\\\""));
+        input.put("ddl",userDefinedType.describe(false).replace("CREATE TYPE \""+casquatchGeneratorConfiguration.getKeyspace()+"\".","CREATE TYPE ").replace("\"","\\\""));
         input.put("fields",fields);
         input.put("imports",imports);
         generate("Type.ftl", input, "src/main/java/" + (casquatchGeneratorConfiguration.getPackageName().replace(".", "/")) + "/" + CasquatchNamingConvention.cqlToJavaClass(userDefinedType.getName().toString()) + ".java");
@@ -300,7 +300,7 @@ public class CasquatchGenerator {
         }
 
         Map<String, Object> input = inputStart(entity.getName().toString());
-        input.put("ddl",entity.describe(false).replace("\"","\\\""));
+        input.put("ddl",entity.describe(false).replace("CREATE TABLE \""+casquatchGeneratorConfiguration.getKeyspace()+"\".","CREATE TABLE ").replace("\"","\\\""));
         input.put("partitionKeys",partitionKeys);
         input.put("clusteringColumns",clusteringColumns);
         input.put("nonKeyColumns",nonKeyColumns);
@@ -333,7 +333,6 @@ public class CasquatchGenerator {
      * @throws Exception passed exception
      */
     private void generate(String templateName, Map<String, Object> input, String output ) throws Exception {
-        input.put("CasquatchNamingConvention",new CasquatchNamingConvention());
         if(casquatchGeneratorConfiguration.getConsole()) {
             generateConsole(templateName,input);
         }

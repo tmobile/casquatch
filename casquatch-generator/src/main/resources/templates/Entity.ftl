@@ -25,36 +25,36 @@ import org.apache.commons.text.TextStringBuilder;
 
 @CasquatchEntity
 @Getter @Setter @NoArgsConstructor
-public class ${CasquatchNamingConvention.classToSimpleClass(class)} extends AbstractCasquatchEntity {
+public class ${naming.classToSimpleClass(class)} extends AbstractCasquatchEntity {
 <#list partitionKeys as cql,col>
     @PartitionKey
-    private ${CasquatchNamingConvention.cqlDataTypeToJavaType(col.type)} ${CasquatchNamingConvention.cqlToJavaVariable(col.name)};
+    private ${naming.cqlDataTypeToJavaType(col.type)} ${naming.cqlToJavaVariable(col.name)};
 </#list>
 
 <#list clusteringColumns as cql,col>
     @ClusteringColumn(${col?counter})
-    private ${CasquatchNamingConvention.cqlDataTypeToJavaType(col.type)} ${CasquatchNamingConvention.cqlToJavaVariable(col.name)};
+    private ${naming.cqlDataTypeToJavaType(col.type)} ${naming.cqlToJavaVariable(col.name)};
 </#list>
 
 <#list nonKeyColumns as cql,col>
-    private ${CasquatchNamingConvention.cqlDataTypeToJavaType(col.type)} ${CasquatchNamingConvention.cqlToJavaVariable(col.name)};
+    private ${naming.cqlDataTypeToJavaType(col.type)} ${naming.cqlToJavaVariable(col.name)};
 </#list>
 <#if udtColumns?has_content>
     <#list udtColumns as col,type>
     @UDT
-    private ${CasquatchNamingConvention.cqlToJavaClass(type)} ${CasquatchNamingConvention.cqlToJavaVariable(col)};
+    private ${naming.cqlToJavaClass(type)} ${naming.cqlToJavaVariable(col)};
     </#list>
 </#if>
 
     /**
     * Generated: Initialize with Partition Keys
     <#list partitionKeys as cql,col>
-        * @param ${CasquatchNamingConvention.cqlToJavaVariable(col.name)} Partition Key Named ${col.name}
+        * @param ${naming.cqlToJavaVariable(col.name)} Partition Key Named ${col.name}
     </#list>
     */
-    public ${CasquatchNamingConvention.classToSimpleClass(class)}(<#list partitionKeys as cql,col>${CasquatchNamingConvention.cqlDataTypeToJavaType(col.type)} ${CasquatchNamingConvention.cqlToJavaVariable(col.name)}<#sep>,</#sep></#list>) {
+    public ${naming.classToSimpleClass(class)}(<#list partitionKeys as cql,col>${naming.cqlDataTypeToJavaType(col.type)} ${naming.cqlToJavaVariable(col.name)}<#sep>,</#sep></#list>) {
     <#list partitionKeys as cql,col>
-        this.${CasquatchNamingConvention.cqlToJavaSet(col.name)}(${CasquatchNamingConvention.cqlToJavaVariable(col.name)});
+        this.${naming.cqlToJavaSet(col.name)}(${naming.cqlToJavaVariable(col.name)});
     </#list>
     }
 
@@ -62,18 +62,18 @@ public class ${CasquatchNamingConvention.classToSimpleClass(class)} extends Abst
     /**
     * Generated: Initialize with Partition and Clustering Keys
     <#list partitionKeys as cql,col>
-        * @param ${CasquatchNamingConvention.cqlToJavaVariable(col.name)} Partition Key Named ${col.name}
+        * @param ${naming.cqlToJavaVariable(col.name)} Partition Key Named ${col.name}
     </#list>
     <#list clusteringColumns as cql,col>
-        * @param ${CasquatchNamingConvention.cqlToJavaVariable(col.name)} Clustering Key Named ${col.name}
+        * @param ${naming.cqlToJavaVariable(col.name)} Clustering Key Named ${col.name}
     </#list>
     */
-    public ${CasquatchNamingConvention.classToSimpleClass(class)}(<#list partitionKeys as cql,col>${CasquatchNamingConvention.cqlDataTypeToJavaType(col.type)} ${CasquatchNamingConvention.cqlToJavaVariable(col.name)}<#sep>,</#sep></#list>,<#list clusteringColumns as cql,col>${CasquatchNamingConvention.cqlDataTypeToJavaType(col.type)} ${CasquatchNamingConvention.cqlToJavaVariable(col.name)}<#sep>,</#sep></#list>) {
+    public ${naming.classToSimpleClass(class)}(<#list partitionKeys as cql,col>${naming.cqlDataTypeToJavaType(col.type)} ${naming.cqlToJavaVariable(col.name)}<#sep>,</#sep></#list>,<#list clusteringColumns as cql,col>${naming.cqlDataTypeToJavaType(col.type)} ${naming.cqlToJavaVariable(col.name)}<#sep>,</#sep></#list>) {
     <#list partitionKeys as cql,col>
-        this.${CasquatchNamingConvention.cqlToJavaSet(col.name)}(${CasquatchNamingConvention.cqlToJavaVariable(col.name)});
+        this.${naming.cqlToJavaSet(col.name)}(${naming.cqlToJavaVariable(col.name)});
     </#list>
     <#list clusteringColumns as cql,col>
-        this.${CasquatchNamingConvention.cqlToJavaSet(col.name)}(${CasquatchNamingConvention.cqlToJavaVariable(col.name)});
+        this.${naming.cqlToJavaSet(col.name)}(${naming.cqlToJavaVariable(col.name)});
     </#list>
     }
     </#if>
@@ -82,15 +82,15 @@ public class ${CasquatchNamingConvention.classToSimpleClass(class)} extends Abst
      * Generated: Instance of object containing primary keys only
      */
     @CasquatchIgnore
-    public ${CasquatchNamingConvention.classToSimpleClass(class)} keys() {
-        ${CasquatchNamingConvention.classToSimpleClass(class)} ${CasquatchNamingConvention.classToVar(name)} = new ${CasquatchNamingConvention.classToSimpleClass(class)}();
+    public ${naming.classToSimpleClass(class)} keys() {
+        ${naming.classToSimpleClass(class)} ${naming.classToVar(naming.classToSimpleClass(class))} = new ${naming.classToSimpleClass(class)}();
 <#list partitionKeys as cql,col>
-        ${CasquatchNamingConvention.classToVar(name)}.${CasquatchNamingConvention.cqlToJavaSet(col.name)}(this.${CasquatchNamingConvention.cqlToJavaGet(col.name)}());
+        ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.cqlToJavaSet(col.name)}(this.${naming.cqlToJavaGet(col.name)}());
 </#list>
 <#list clusteringColumns as cql,col>
-        ${CasquatchNamingConvention.classToVar(name)}.${CasquatchNamingConvention.cqlToJavaSet(col.name)}(this.${CasquatchNamingConvention.cqlToJavaGet(col.name)}());
+        ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.cqlToJavaSet(col.name)}(this.${naming.cqlToJavaGet(col.name)}());
 </#list>
-        return ${CasquatchNamingConvention.classToVar(name)};
+        return ${naming.classToVar(naming.classToSimpleClass(class))};
     }
 
     /**
@@ -101,7 +101,7 @@ public class ${CasquatchNamingConvention.classToSimpleClass(class)} extends Abst
         TextStringBuilder ddl = new TextStringBuilder();
         <#if udtColumns?has_content>
             <#list udtColumns as col,type>
-        ddl.appendln(${CasquatchNamingConvention.cqlToJavaClass(type)}.getDDL());
+        ddl.appendln(${naming.cqlToJavaClass(type)}.getDDL());
             </#list>
         </#if>
         ddl.appendln("${ddl}");
