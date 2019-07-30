@@ -82,7 +82,7 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>${javax.version}</version>
+      <version>${javax-servlet-api.version}</version>
     </dependency>
     <dependency>
       <groupId>org.cassandraunit</groupId>
@@ -105,6 +105,11 @@
           <artifactId>netty-handler</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <version>${spring-boot.version}</version>
     </dependency>
   </dependencies>
 

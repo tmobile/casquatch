@@ -19,12 +19,14 @@ package com.tmobile.opensource.casquatch.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.opensource.casquatch.DriverException;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+@Slf4j
+@Getter
 public class Response<T> {
     /**
      *  Response Status
@@ -44,7 +46,7 @@ public class Response<T> {
         ERROR
     }
 
-    Status status;
+    Status status = Status.NO_DATA_FOUND;
 
     private String payloadClass;
     private List<T> payload;
@@ -62,36 +64,23 @@ public class Response<T> {
      * @param status status
      */
     public Response(Status status) {
-        this.setStatus(status);
+        this.status=status;
     }
 
     /**
      * Construct Response object with provided payload. Determine status based on if payload has data
      * @param payload payload object
      */
-    @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
     public Response(T payload) {
-        this(Arrays.asList(payload));
+        this.addPayload(payload);
     }
 
     /**
      * Construct Response object with provided payload (List). Determine status based on if payload has data
      * @param payload payload list
      */
-    public Response(List<T> payload) throws DriverException {
-        if(payload != null && payload.size()>0 && payload.get(0) != null) {
-            this.setPayload(payload);
-            try {
-                this.setPayloadClass(payload.get(0).getClass().toString());
-            }
-            catch (Exception e) {
-                throw new DriverException(e);
-            }
-            this.setStatus(Status.SUCCESS);
-        }
-        else {
-            this.setStatus(Status.NO_DATA_FOUND);
-        }
+    public Response(List<T> payload) {
+        this.addPayload(payload);
     }
 
     /**
@@ -99,9 +88,8 @@ public class Response<T> {
      * @param payload payload object
      * @param status status
      */
-    @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
     public Response(T payload, Status status) {
-        this(new ArrayList<>(Arrays.asList(payload)),status);
+        this(Arrays.asList(payload),status);
     }
 
     /**
@@ -110,73 +98,35 @@ public class Response<T> {
      * @param status status
      */
     public Response(List<T> payload, Status status) {
-        this.setPayload(payload);
-        this.setPayloadClass(payload.get(0).getClass().toString());
-        this.setStatus(status);
+        this.addPayload(payload);
+        this.status=status;
     }
 
     /**
-     * Get Payload
-     * @return payload
+     * Helper function to add a payload item and set class and status if not yet defined
+     * @param newPayload payload item
      */
-    public List<T> getPayload() {
-        return payload;
+    private void addPayload(T newPayload) {
+        if(newPayload!=null) {
+            if (this.payload == null) {
+                this.payload = new ArrayList<>();
+                this.payloadClass=payload.getClass().toString();
+                this.status=Status.SUCCESS;
+            }
+            this.payload.add(newPayload);
+        }
     }
 
     /**
-     * Set Payload
-     * @param payload payload
+     * Helper function to add a list of payload items
+     * @param newPayload list of payload items
      */
-    public void setPayload(List<T> payload) {
-        this.payload = payload;
-    }
-
-    /**
-     * Get Payload Class as string
-     * @return payload class
-     */
-    public String getPayloadClass() {
-        return payloadClass;
-    }
-
-    /**
-     * Set Payload Class as string
-     * @param payloadClass payload class
-     */
-    public void setPayloadClass(String payloadClass) {
-        this.payloadClass = payloadClass;
-    }
-
-    /**
-     * Get Response Status
-     * @return status
-     */
-    public Status getStatus() {
-        return status;
-    }
-
-    /**
-     * Set Response Status
-     * @param status status
-     */
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    /**
-     * Get Response Timestamp
-     * @return timestamp
-     */
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    /**
-     * Set Response Timestamp
-     * @param timestamp timestamp
-     */
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+    private void addPayload(List<T> newPayload) {
+        if(newPayload != null && newPayload.size()>0 && newPayload.get(0) != null) {
+            for(T entry : newPayload) {
+                addPayload(entry);
+            }
+        }
     }
 
     /**

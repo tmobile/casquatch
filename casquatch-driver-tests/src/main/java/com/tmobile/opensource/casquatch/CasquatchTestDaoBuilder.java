@@ -51,7 +51,7 @@ public class CasquatchTestDaoBuilder extends CasquatchDaoBuilder {
      * @return builder after running ddl
      */
     public CasquatchTestDaoBuilder withDDL(String ddl) {
-        CqlSession session = this.session("system");
+        CqlSession session = this.session();
         try {
             for(String query : ddl.split(System.lineSeparator())) {
                 log.info("Executing DDL: {}",query);

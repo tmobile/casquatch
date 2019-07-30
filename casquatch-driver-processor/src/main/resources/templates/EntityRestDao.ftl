@@ -36,8 +36,18 @@ public class ${naming.classToRestDao(naming.classToSimpleClass(class))} {
 
 <#list restMethods as api,method>
     @RequestMapping(value = "${api}", method= RequestMethod.POST)
-    public Response<<#if method.returnType.simpleName=="AbstractCasquatchEntity">${naming.classToSimpleClass(class)}<#else>${method.returnType.simpleName}</#if>> ${naming.apiToRestMethod(api)}(@RequestBody Request<${naming.classToSimpleClass(class)}> request) {
-        return new Response<<#if method.returnType.simpleName=="AbstractCasquatchEntity">${naming.classToSimpleClass(class)}<#else>${method.returnType.simpleName}</#if>>(casquatchDao.${method.name}(${naming.classToSimpleClass(class)}.class,request.getPayload(),request.getQueryOptions()));
+    <#if method.returnType.simpleName=="AbstractCasquatchEntity">
+    public Response<${naming.classToSimpleClass(class)}> ${naming.apiToRestMethod(api)}(@RequestBody Request<${naming.classToSimpleClass(class)}> request) {
+        return new Response<${naming.classToSimpleClass(class)}>(casquatchDao.${method.name}(${naming.classToSimpleClass(class)}.class,request.getPayload(),request.getQueryOptions()));
     }
+    <#elseif method.returnType.simpleName=="Void">
+    public Response<Void> ${naming.apiToRestMethod(api)}(@RequestBody Request<${naming.classToSimpleClass(class)}> request) {
+        return new Response<Void>(casquatchDao.${method.name}(${naming.classToSimpleClass(class)}.class,request.getPayload(),request.getQueryOptions()), Response.Status.SUCCESS);
+    }
+    <#else>
+    public Response<${method.returnType.simpleName}> ${naming.apiToRestMethod(api)}(@RequestBody Request<${naming.classToSimpleClass(class)}> request) {
+        return new Response<${method.returnType.simpleName}>(casquatchDao.${method.name}(${naming.classToSimpleClass(class)}.class,request.getPayload(),request.getQueryOptions()));
+    }
+    </#if>
 </#list>
 }
