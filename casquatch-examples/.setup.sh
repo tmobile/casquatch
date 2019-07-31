@@ -1,10 +1,10 @@
 #!/bin/bash
-PORT="90"$(( ( RANDOM % 50 )  + 42 ))
+
+PORT=$(( ( RANDOM % 300 )  + 9000 ))
 GENERATOR=../../casquatch-generator/target/casquatch-generator-2.0-SNAPSHOT.jar
 DOCKER_VERSION=cassandra:latest
 TEST_COMMAND="mvn clean test"
 RUN_COMMAND="mvn clean spring-boot:run"
-
 
 APP_LIST=(*/env);
 APP_LIST_COUNT=${#APP_LIST[@]}
@@ -47,7 +47,7 @@ cat $SCHEMA | docker exec -i $NAME cqlsh
 echo "---------------------------------------------"
 echo "Configure project"
 echo "---------------------------------------------"
-sed -i .old "s/127.0.0.1:90../127.0.0.1:$PORT/" src/main/resources/application.conf
+sed -i .old "s/127.0.0.1:[0-9]\{4\}/127.0.0.1:$PORT/" src/main/resources/application.conf
 rm src/main/resources/application.conf.old
 
 echo "---------------------------------------------"
