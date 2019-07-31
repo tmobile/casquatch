@@ -36,7 +36,7 @@ echo "Starting Docker (30 second pause to startup)"
 echo "---------------------------------------------"
 echo "Docker will be started with cassandra on 127.0.0.1:$PORT"
 docker kill $NAME
-docker run --rm  -p $PORT:9042 -d --name $NAME -d cassandra:latest
+docker run --rm  -p $PORT:9042 -d --label casquatch_example=$NAME --name $NAME -d cassandra:latest
 sleep 30
 
 echo "---------------------------------------------"

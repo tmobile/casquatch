@@ -6,99 +6,72 @@ DATACENTER=dc1
 DATACENTER2=dc2
 KEYSPACE=fulltest
 OUTPUT=.admin/test.out
-PORT="90"$(( ( RANDOM % 50 )  + 42 ))
 VERSION=2.0-SNAPSHOT
+WORKER="docker run --rm --network cassandra_test_default -v $HOME/.m2:/root/.m2 -v `pwd`:`pwd` -w `pwd` -it maven:latest"
+MVN="$WORKER mvn"
+JAVA="$WORKER java"
 
-#startDockerCassandra name version
-#Start up open source cassandra for the given version
-startDockerCassandra() {
+#startCluster image name nodes
+#Start up a cassandra cluster with the given parameters. Nodes defaults to 1
+startCluster() {
   echo "---------------------------------------------"
-  echo "Starting Cassandra Docker with DC=$DATACENTER"
+  echo "Starting Docker Cluster - $1 "
   echo "---------------------------------------------"
-  docker run --rm  -p $PORT:9042 -d -e CASSANDRA_DC=$DATACENTER -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch --label casquatch_test=$1 --name $1 -d cassandra:$2
-  if [ $? -eq 0 ]; then
-    retryLoop "docker exec -it $1 nodetool status 2>/dev/null | grep rack1 | grep -q 'UN'" 120
+  IMAGE=$1
+  BASENAME=$2
+
+  if [ -z $3 ]; then
+    NODES=1
   else
-    $?
+    NODES=$3
   fi;
+
+  startNode $IMAGE ${BASENAME}
+
+    for (( n=2; n<=$NODES; n++)); do
+        startNode $IMAGE ${BASENAME}_n${n} ${BASENAME}
+    done;
 }
 
+startNode() {
+    IMAGE=$1
+    NODENAME=$2
+    SEED=$3
 
-#startDockerDSECluster name version
-#Start up a datastax cassandra cluster with mulitple nodes for the given version
-startDockerCassandraCluster() {
-  echo "---------------------------------------------"
-  echo "Starting Docker Cassandra Cluster"
-  echo "---------------------------------------------"
-  NAME=$1
-  VERSION=$2
-  docker network create ${NAME}_default --label casquatch_test=${NAME}
-  docker run --network ${NAME}_default --rm -e CASSANDRA_DC=$DATACENTER -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch -d --name ${NAME}_seed_1 --label casquatch_test=${NAME} -d cassandra:$VERSION
-  if [ $? -eq 0 ]; then
-    retryLoop "docker exec -it ${NAME}_seed_1 dsetool status 2>/dev/null | grep rack1 | grep -q UN" 120
-  else
-    $?
-  fi;
-  docker run --network ${NAME}_default --rm -e CASSANDRA_DC=$DATACENTER2 -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch -e CASSANDRA_SEEDS=${NAME}_seed_1 -d --name ${NAME}_search_1 --label casquatch_test=${NAME} -d cassandra:$VERSION
-  if [ $? -eq 0 ]; then
-    retryLoop "docker exec -it ${NAME}_seed_1 nodetool status 2>/dev/null | grep rack1 | grep -c UN | grep -q '2'" 300
-  else
-    $?
-  fi;
-  docker run --network ${NAME}_default --rm -e CASSANDRA_DC=$DATACENTER2 -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch -e CASSANDRA_SEEDS=${NAME}_seed_1 -d --name ${NAME}_search_2 --label casquatch_test=${NAME} -d cassandra:$VERSION
-  if [ $? -eq 0 ]; then
-    retryLoop "docker exec -it ${NAME}_seed_1 nodetool status 2>/dev/null | grep rack1 | grep -c UN | grep -q '3'" 300
-  else
-    $?
-  fi;
+
+    PARAMS="--network cassandra_test_default --label casquatch_test=$NODENAME"
+
+    if [[ "$IMAGE" == "cassandra"* ]]; then
+        PARAMS="$PARAMS -e CASSANDRA_DC=$DATACENTER -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch "
+    else
+        PARAMS="$PARAMS -e DS_LICENSE=accept -e DC=$DATACENTER"
+    fi
+
+    if [ ! -z "$SEED" ]; then
+        SEED_IP=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $3 `
+        if [[ "$IMAGE" == "cassandra"* ]]; then
+            PARAMS="$PARAMS -e CASSANDRA_SEEDS=$SEED_IP"
+        else
+            PARAMS="$PARAMS -e SEEDS=$SEED_IP"
+        fi;
+    fi;
+
+    echo "Starting node : docker run $PARAMS -d --name $NODENAME $IMAGE"
+    docker run --rm -e JVM_EXTRA_OPTS='-Xms2g -Xmx2g' $PARAMS -d --name $NODENAME $IMAGE
+    sleep 5
+    if [ $? -eq 0 ]; then
+        retryLoop "docker exec -it $NODENAME nodetool status 2>/dev/null | egrep '^[A-Z]{2}' | egrep -c -v '^UN' | grep -q 0 " 300
+        retryLoop "echo exit | docker exec -i $NODENAME cqlsh 2>/dev/null " 300
+    else
+        $?
+    fi;
+# TODO
+#    if [[ "$IMAGE" == "datastax"* ]]; then
+#        configureSSL $NODENAME `echo $IMAGE | cut -c 21-`
+#    fi
 }
 
-#startDockerDSE name version
-#Start up datastax cassandra with solr enabled for the given version
-startDockerDSE() {
-  echo "---------------------------------------------"
-  echo "Starting DSE Docker"
-  echo "---------------------------------------------"
-  docker run --rm -e DS_LICENSE=accept -p $PORT:9042 -p 9142:9142 -d --name $1 -h dse.local --label casquatch_test=$1 -d datastax/dse-server:$2 -s
-  if [ $? -eq 0 ]; then
-    retryLoop "docker exec -it $1 dsetool status 2>/dev/null | grep rack1 | grep -q 'UN'" 120
-  else
-    $?
-  fi;
-}
-
-#startDockerDSECluster name version
-#Start up a datastax cassandra cluster with mulitple nodes for the given version
-startDockerDSECluster() {
-  echo "---------------------------------------------"
-  echo "Starting DSE Docker Cluster"
-  echo "---------------------------------------------"
-  NAME=$1
-  VERSION=$2
-  docker network create ${NAME}_default --label casquatch_test=${NAME}
-  docker run --network ${NAME}_default --rm -e DS_LICENSE=accept -e DC=$DATACENTER -d --name ${NAME}_seed_1 --label casquatch_test=${NAME} -d datastax/dse-server:$VERSION
-  if [ $? -eq 0 ]; then
-    retryLoop "docker exec -it ${NAME}_seed_1 dsetool status 2>/dev/null | grep rack1 | grep -q UN" 120
-  else
-    $?
-  fi;
-  docker run --network ${NAME}_default --rm -e DS_LICENSE=accept -e DC=$DATACENTER2 -e SEEDS=${NAME}_seed_1 -d --name ${NAME}_search_1 --label casquatch_test=${NAME} -d datastax/dse-server:$VERSION -s
-  if [ $? -eq 0 ]; then
-    retryLoop "docker exec -it ${NAME}_seed_1 dsetool status 2>/dev/null | grep rack1 | grep -c UN | grep -q '2'" 300
-  else
-    $?
-  fi;
-  docker run --network ${NAME}_default --rm -e DS_LICENSE=accept -e DC=$DATACENTER2 -e SEEDS=${NAME}_seed_1 -d --name ${NAME}_search_2 --label casquatch_test=${NAME} -d datastax/dse-server:$VERSION -s
-  if [ $? -eq 0 ]; then
-    retryLoop "docker exec -it ${NAME}_seed_1 dsetool status 2>/dev/null | grep rack1 | grep -c UN | grep -q '3'" 300
-  else
-    $?
-  fi;
-}
-
-#configureDSESSL name
-#Configure SSL on DSE
-configureDSESSL() {
+configureSSL() {
   echo "---------------------------------------------"
   echo "Configure SSL"
   echo "---------------------------------------------"
@@ -109,6 +82,7 @@ configureDSESSL() {
   cp .admin/dsessl/client.truststore config/client.truststore
   docker restart $1
   retryLoop "docker exec -it $1 dsetool status 2>/dev/null | grep rack1 | grep -q 'UN'" 120
+
 }
 
 #installKeyspace name
@@ -122,6 +96,16 @@ CREATE KEYSPACE IF NOT EXISTS $KEYSPACE WITH replication = { 'class' : 'SimpleSt
 EOF
 }
 
+installTables() {
+  installKeyspace $1
+  echo "---------------------------------------------"
+  echo "Installing Tables"
+  echo "---------------------------------------------"
+  docker exec -i $1 cqlsh << EOF
+  use $KEYSPACE;
+  CREATE TABLE IF NOT EXISTS "table_name" ( "key_one" int, "key_two" int, "col_one" text, "col_two" text, PRIMARY KEY ("key_one", "key_two") );
+EOF
+}
 #installSpringKeyspace name
 #install the spring keyspace
 installSpringKeyspace() {
@@ -142,21 +126,21 @@ configureDriver() {
   echo "Configure driver"
   echo "---------------------------------------------"
   mkdir config 2>>$OUTPUT
+  SEED_IP=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $1 `
 cat << EOF > config/application.properties
-casquatch.basic.contact-points.0=localhost:$PORT
+casquatch.basic.contact-points.0=$SEED_IP:9042
 casquatch.basic.load-balancing-policy.local-datacenter=$DATACENTER
-casquatch.basic.session-keyspace=$1
+casquatch.basic.session-keyspace=$2
 casquatch.generator.createPackage=true
 casquatch.generator.outputFolder=cassandramodels
 casquatch.generator.file=true
+casquatch.basic.request.timeout=1 second
+advanced.reconnect-on-init=true
+
+javax.net.ssl.trustStorePassword=cassandra
+javax.net.ssl.trustStore=$TRUSTSTORE_PATH
+javax.net.ssl.trustStoreType=jks
 EOF
-  if [ "$1" == "springconfig" ]; then
-  cat << EOF >> config/application.properties
-security.user.name=test
-security.user.password=test
-server.port=8888
-EOF
-  fi;
 }
 
 #runTests package test
@@ -165,17 +149,8 @@ runTests() {
   echo "---------------------------------------------"
   echo "Run Tests $1:$2"
   echo "---------------------------------------------"
-  mvn -pl $1 -q -Dconfig.file=../config/application.properties -Dtest=$2 test
-}
-
-#startSpringConfig
-#Start up spring config server and wait for it to come up
-startSpringConfig() {
-  echo "---------------------------------------------"
-  echo "Starting Spring Config"
-  echo "---------------------------------------------"
-  nohup mvn -pl springconfigserver spring-boot:run > nohup.out 2>&1 &
-  retryLoop "grep -q 'Started Application' nohup.out" 120
+  #$MVN -pl $1 -q -Dconfig.file=../config/application.properties -Dtest=$2 test
+  $MVN -pl $1 -Dconfig.file=../config/application.properties -Dtest=$2 test
 }
 
 #cleanup name
@@ -186,20 +161,10 @@ cleanup() {
   echo "---------------------------------------------"
   docker ps -flabel=casquatch_test -q | xargs -I % docker kill %
   docker container ls -al -flabel=casquatch_test -q | xargs -I % docker rm %
-  docker network ls -flabel=casquatch_test -q | xargs -I % docker network rm %
-  mvn clean
+  docker container ls -al -flabel=casquatch_example -q | xargs -I % docker rm %
+  $MVN clean
   rm -rf cassandramodels
   rm -rf config/application.properties
-}
-
-#testSpringConfig
-#Test the running spring config server
-testSpringConfig() {
-  echo "---------------------------------------------"
-  echo "Pulling test config. Should be keyname: valuevalue"
-  echo "---------------------------------------------"
-  curl -s -u test:test http://localhost:8888/app-test.yml | grep -q "keyname: valuevalue"
-  #curl -u test:test http://localhost:8888/app/test/labelname
 }
 
 #showStatus returnCode
@@ -242,7 +207,7 @@ buildGenerator() {
   echo "---------------------------------------------"
   echo "Building Generator"
   echo "---------------------------------------------"
-  mvn -pl casquatch-generator -q clean package
+  $MVN -pl casquatch-generator -q clean package
 }
 
 
@@ -252,7 +217,7 @@ generateModels() {
   echo "---------------------------------------------"
   echo "Generating Models"
   echo "---------------------------------------------"
-  java -Dconfig.file=config/application.properties -jar casquatch-generator/target/casquatch-generator-$VERSION.jar
+  $JAVA -Dconfig.file=config/application.properties -jar casquatch-generator/target/casquatch-generator-$VERSION.jar
 }
 
 #testModels
@@ -262,7 +227,7 @@ testModels() {
   echo "Testing Models"
   echo "---------------------------------------------"
   cd cassandramodels
-  mvn -q clean test
+  $MVN clean test
   cd ..
 }
 
@@ -271,7 +236,7 @@ installCasquatch() {
   echo "---------------------------------------------"
   echo "Installing Casquatch"
   echo "---------------------------------------------"
-  mvn -q clean install
+  $MVN -Dtest.skip=true clean install
 }
 
 #basicTestSuite name
@@ -286,9 +251,32 @@ basicTestSuite() {
   showStatus $?
 }
 
+
+exampleTestSuite() {
+    echo "[$1][Build Generator]" \\c
+    buildGenerator >> $OUTPUT 2>&1
+    showStatus $?
+
+    echo "[$1][Test Example - LoadTest]" \\c
+    casquatch-examples/test.sh loadtest >> $OUTPUT 2>&1
+    showStatus $?
+
+    echo "[$1][Test Example - Spring Config Server]" \\c
+    casquatch-examples/test.sh springconfigserver >> $OUTPUT 2>&1
+    showStatus $?
+
+    echo "[$1][Test Example - Spring Rest]" \\c
+    casquatch-examples/test.sh springrest >> $OUTPUT 2>&1
+    showStatus $?
+}
+
 #generatorTestSuite
 #Test suite for code generator
 generatorTestSuite() {
+  echo "[$1][Install Tables]" \\c
+  installTables $container >> $OUTPUT 2>&1
+  showStatus $?
+
   echo "[$1][Build Generator]" \\c
   buildGenerator >> $OUTPUT 2>&1
   showStatus $?
@@ -303,47 +291,12 @@ generatorTestSuite() {
 
 }
 
-#springTestSuite
-#test suite for spring
-springTestSuite() {
-  #TODO
-  echo "[$1][Install Spring Config Server Keyspace]" \\c
-  installSpringKeyspace $1 >> $OUTPUT 2>&1
-  showStatus $?
-
-  echo "[$1][Configure Driver - Spring Config Server]" \\c
-  configureDriver springconfig >> $OUTPUT 2>&1
-  showStatus $?
-
-  echo "[$1][Start Spring Config Server]" \\c
-  startSpringConfig >> $OUTPUT 2>&1
-  showStatus $?
-
-  echo "[$1][Test Spring Config Server]" \\c
-  testSpringConfig >> $OUTPUT 2>&1
-  showStatus $?
-}
-
 #solrTestSuite
 #test suite for solr
 solrTestSuite() {
   #TODO
   echo "[$1][Run JUnit Solr Tests]" \\c
   runTests cassandradriver CassandraDriverDockerSolrTests >> $OUTPUT 2>&1
-  showStatus $?
-}
-
-#sslTestSuite
-#test suite for DSE SSL
-sslTestSuite() {
-  #TODO
-  echo "[$1][Config SSL]" \\c
-  configureDSESSL $1 $version >> $OUTPUT 2>&1
-  showStatus $?
-
-  echo "[$1][Run JUnit SSL Tests]" \\c
-  export MAVEN_OPTS="-Djavax.net.ssl.trustStorePassword=cassandra -Djavax.net.ssl.trustStore=$TRUSTSTORE_PATH -Djavax.net.ssl.trustStoreType=jks"
-  runTests cassandradriver CassandraDriverDockerSSLTests >> $OUTPUT 2>&1
   showStatus $?
 }
 
@@ -355,23 +308,8 @@ embeddedTests() {
   showStatus $?
 
   echo "[Embedded][Run JUnitTests]" \\c
-  mvn -pl casquatch-driver-tests -q -Dtest=*EmbeddedTests test >> $OUTPUT 2>&1
+  $MVN -pl casquatch-driver-tests -q -Dtest=*EmbeddedTests test >> $OUTPUT 2>&1
   showStatus $?
-}
-
-runClusterTests() {
-  #TODO
-  NAME=$1
-  mvn -q -pl cassandradriver -P cluster-tests clean package
-  docker cp cassandradriver/target/CassandraDriver-*-test-jar-with-dependencies.jar ${NAME}_seed_1:/cassandra-driver-cluster-tests.jar
-  docker exec -it ${NAME}_seed_1 java -jar /cassandra-driver-cluster-tests.jar
-}
-
-runClusterEETests() {
-  #TODO
-  mvn -q -pl cassandradriver-ee -P cluster-tests clean package
-  docker cp cassandradriver-ee/target/CassandraDriver-*-test-jar-with-dependencies.jar ${NAME}_search_1:/cassandra-driver-cluster-ee-tests.jar
-  docker exec -it ${NAME}_search_1 java -jar /cassandra-driver-cluster-ee-tests.jar
 }
 
 #cassandraTests version
@@ -385,7 +323,7 @@ cassandraTests() {
   showStatus $?
 
   echo "[$container][Start Docker]" \\c
-  startDockerCassandra $container $version >> $OUTPUT 2>&1
+  startCluster cassandra:$version $container >>  $OUTPUT 2>&1
   showStatus $?
 
   echo "[$container][Install Keyspace]" \\c
@@ -393,29 +331,16 @@ cassandraTests() {
   showStatus $?
 
   echo "[$container][Configure Driver]" \\c
-  configureDriver $KEYSPACE >> $OUTPUT 2>&1
+  configureDriver $container $KEYSPACE >> $OUTPUT 2>&1
   showStatus $?
 
   basicTestSuite  $container
   generatorTestSuite $container
-#  springTestSuite $container
+  exampleTestSuite $container
 
   echo "[$container][Cleanup]" \\c
   cleanup $container >> $OUTPUT 2>&1
   showStatus $?
-
-#  TODO
-#  echo "[$container][Start Cassandra Cluster]" \\c
-#  startDockerCassandraCluster $container $version >> $OUTPUT 2>&1
-#  showStatus $?
-#
-#  echo "[$container][Run Cluster Tests]" \\c
-#  runClusterTests $container >> $OUTPUT 2>&1
-#  showStatus $?
-#
-#  echo "[$container][Cleanup]" \\c
-#  cleanup $container >> $OUTPUT 2>&1
-#  showStatus $?
 }
 
 #dseTests version
@@ -429,7 +354,7 @@ dseTests() {
   showStatus $?
 
   echo "[$container][Start Docker]" \\c
-  startDockerDSE $container $version >> $OUTPUT 2>&1
+  startCluster datastax/dse-server:$version $container >>  $OUTPUT 2>&1
   showStatus $?
 
   echo "[$container][Install Keyspace]" \\c
@@ -437,36 +362,24 @@ dseTests() {
   showStatus $?
 
   echo "[$container][Configure Driver]" \\c
-  configureDriver $KEYSPACE >> $OUTPUT 2>&1
+  configureDriver $container $KEYSPACE >> $OUTPUT 2>&1
   showStatus $?
 
   basicTestSuite $container
   generatorTestSuite $container
-  #TODO
-#  springTestSuite $container
-#  solrTestSuite $container
-#  sslTestSuite $container
+  exampleTestSuite $container
 
-#  echo "[$container][Run JUnit Enterprise Driver Tests]" \\c
-#  runTests cassandradriver-ee CassandraDriverEEDockerTests >> $OUTPUT 2>&1
+#  echo "[$1][Run EE External Tests]" \\c
+#  runTests casquatch-driver-ee-tests *ExternalTests >> $OUTPUT 2>&1
 #  showStatus $?
 
   echo "[$container][Cleanup]" \\c
   cleanup $container >> $OUTPUT 2>&1
   showStatus $?
-  #TODO
-#  echo "[$container][Start DSE Cluster]" \\c
-#  startDockerDSECluster $container $version >> $OUTPUT 2>&1
-#  showStatus $?
-#
-#  echo "[$container][Run EE Cluster Tests]" \\c
-#  runClusterEETests $container >> $OUTPUT 2>&1
-#  showStatus $?
-#
-#  echo "[$container][Cleanup]" \\c
-#  cleanup $container >> $OUTPUT 2>&1
-#  showStatus $?
 }
+
+#Create network for instances to use
+docker network create cassandra_test_default > /dev/null 2>&1
 
 #Run all tests
 embeddedTests
@@ -475,3 +388,6 @@ cassandraTests 3.11
 dseTests 5.1.13
 dseTests 6.0.6
 dseTests 6.7.2
+
+#Remove the network
+docker network rm cassandra_test_default > /dev/null 2>&1
