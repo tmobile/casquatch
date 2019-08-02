@@ -45,6 +45,7 @@ import java.util.*;
 /**
  * Generates entity objects which extend {@link com.tmobile.opensource.casquatch.AbstractCasquatchEntity} for use in Casquatch
  */
+@SuppressWarnings("WeakerAccess")
 @Slf4j
 public class CasquatchGenerator {
 

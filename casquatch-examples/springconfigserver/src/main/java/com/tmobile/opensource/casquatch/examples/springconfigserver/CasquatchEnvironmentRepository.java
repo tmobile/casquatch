@@ -26,11 +26,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("WeakerAccess")
 public class CasquatchEnvironmentRepository implements EnvironmentRepository {
 
     private final static Logger logger = LoggerFactory.getLogger(CasquatchEnvironmentRepository.class);
 	
-	private CasquatchDao db;
+	private final CasquatchDao db;
 	
 	/**
      * Initializes the Repository
@@ -58,8 +59,8 @@ public class CasquatchEnvironmentRepository implements EnvironmentRepository {
 			
 		List<Configuration> configList = db.getAllById(Configuration.class, searchConfig);
 		
-		final Map<String, String> properties = new HashMap<String,String>();
-		configList.stream().forEach((Configuration conf) -> properties.put(conf.getKey(), conf.getValue()));		
+		final Map<String, String> properties = new HashMap<>();
+		configList.forEach((Configuration conf) -> properties.put(conf.getKey(), conf.getValue()));
         environment.add(new PropertySource(application+"-"+label, properties));
 		return environment;
 	}

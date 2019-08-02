@@ -26,11 +26,12 @@ import java.util.List;
 /**
  * Helper class for Casquatch Naming Conventions
  */
+@SuppressWarnings("WeakerAccess")
 @Slf4j
 public class CasquatchNamingConvention {
 
     /**
-     * convert class to packagename
+     * convert class to package name
      * @param className class name
      * @return package name
      */

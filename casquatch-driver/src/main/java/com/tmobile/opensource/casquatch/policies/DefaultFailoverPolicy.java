@@ -31,7 +31,8 @@ public class DefaultFailoverPolicy extends FailoverPolicy {
         else if(exception instanceof com.datastax.oss.driver.api.core.InvalidKeyspaceException) {
             return true;
         }
-        else if(exception instanceof com.datastax.oss.driver.api.core.NoNodeAvailableException) {
+        else //noinspection RedundantIfStatement
+            if(exception instanceof com.datastax.oss.driver.api.core.NoNodeAvailableException) {
             return true;
         }
         else {

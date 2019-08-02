@@ -25,10 +25,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 @CasquatchSpring(generateRestDao = true)
-public class SpringrestApplication {
-
+public class SpringRestApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(SpringrestApplication.class, args);
+		SpringApplication.run(SpringRestApplication.class, args);
 	}
 
 }

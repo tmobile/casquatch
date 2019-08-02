@@ -72,6 +72,7 @@ public class DatabaseCache<T extends AbstractCasquatchEntity> {
      * @return Object containing the cached object
      */
     public T get(T key) {
+        //noinspection unchecked
         key = (T) key.keys();
         if(checkCache(key)) {
             log.debug("DatabaseCache <{}> Returned {} from cache",this.classType,key);
@@ -97,6 +98,7 @@ public class DatabaseCache<T extends AbstractCasquatchEntity> {
      * @param obj Object to cache
      */
     public void set(T key, T obj) {
+        //noinspection unchecked
         key = (T) key.keys();
         dao.save(this.classType,obj);
         this.setCache(key, obj);

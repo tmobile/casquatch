@@ -33,13 +33,13 @@ public class ${naming.classToEmbeddedTests(naming.classToSimpleClass(class))} ex
         casquatchDao=new CasquatchTestDaoBuilder()
                             .withEmbedded()
                             .withTestKeyspace("junittest")
-                            .withDDL(new ${naming.classToSimpleClass(class)}().getDDL())
+                            .withDDL(${naming.classToSimpleClass(class)}.getDDL())
                             .withBasicRequestConsistency("LOCAL_ONE")
                             .build();
     }
 
     public CasquatchDao getCasquatchDao() {
-        return this.casquatchDao;
+        return casquatchDao;
     }
 
 }

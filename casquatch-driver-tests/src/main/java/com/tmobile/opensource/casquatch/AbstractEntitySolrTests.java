@@ -20,7 +20,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public abstract class AbstractEntitySolrTests<T extends AbstractCasquatchEntity> extends AbstractEntityTests<T> {
 
@@ -33,8 +33,8 @@ public abstract class AbstractEntitySolrTests<T extends AbstractCasquatchEntity>
         T obj = prepObject();
 
         List<T> tstObj = this.getCasquatchDao().getAllBySolr(this.getTableClass(),obj);
-        assertTrue(tstObj.size()==1);
-        assertTrue(obj.equals(tstObj.get(0)));
+        assertEquals(1, tstObj.size());
+        assertEquals(obj, tstObj.get(0));
 
         cleanObject(obj);
     }
@@ -45,7 +45,7 @@ public abstract class AbstractEntitySolrTests<T extends AbstractCasquatchEntity>
         T obj = prepObject();
 
         Long count = this.getCasquatchDao().getCountBySolr(this.getTableClass(),obj);
-        assertTrue(count==1);
+        assertEquals(1, (long) count);
 
         cleanObject(obj);
     }
@@ -55,8 +55,8 @@ public abstract class AbstractEntitySolrTests<T extends AbstractCasquatchEntity>
         T obj = prepObject();
 
         List<T> tstObj = this.getCasquatchDao().getAllBySolr(this.getTableClass(),obj,queryOptions);
-        assertTrue(tstObj.size()==1);
-        assertTrue(obj.equals(tstObj.get(0)));
+        assertEquals(1, tstObj.size());
+        assertEquals(obj, tstObj.get(0));
 
         cleanObject(obj);
     }
@@ -67,7 +67,7 @@ public abstract class AbstractEntitySolrTests<T extends AbstractCasquatchEntity>
         T obj = prepObject();
 
         Long count = this.getCasquatchDao().getCountBySolr(this.getTableClass(),obj,queryOptions);
-        assertTrue(count==1);
+        assertEquals(1, (long) count);
 
         cleanObject(obj);
     }

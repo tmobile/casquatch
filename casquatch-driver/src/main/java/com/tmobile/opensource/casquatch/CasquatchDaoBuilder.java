@@ -31,6 +31,7 @@ import java.util.*;
 /**
  * Builder for {@link CasquatchDao}
  */
+@SuppressWarnings({"WeakerAccess", "SpellCheckingInspection"})
 @Slf4j
 public class CasquatchDaoBuilder {
 
@@ -183,6 +184,7 @@ public class CasquatchDaoBuilder {
         List<String> list;
         if(this.configMap.containsKey(key)) {
             if(this.configMap.get(key) instanceof List) {
+                //noinspection unchecked
                 list = (List<String>) this.configMap.get(key);
                 list.addAll(valueList);
             }
@@ -599,7 +601,7 @@ public class CasquatchDaoBuilder {
             return this.with("advanced.metrics.node.enabled", Arrays.asList(value.split(",")));
         }
         else {
-            return this.with("advanced.metrics.node.enabled", Arrays.asList(value));
+            return this.with("advanced.metrics.node.enabled", Collections.singletonList(value));
         }
     }
     /**
@@ -759,7 +761,7 @@ public class CasquatchDaoBuilder {
             return this.with("advanced.metrics.session.enabled", Arrays.asList(value.split(",")));
         }
         else {
-            return this.with("advanced.metrics.session.enabled", Arrays.asList(value));
+            return this.with("advanced.metrics.session.enabled", Collections.singletonList(value));
         }
     }
     /**
@@ -967,7 +969,7 @@ public class CasquatchDaoBuilder {
             return this.with("basic.contact-points", Arrays.asList(value.split(",")));
         }
         else {
-            return this.with("basic.contact-points", Arrays.asList(value));
+            return this.with("basic.contact-points", Collections.singletonList(value));
         }
     }
     /**
@@ -1451,7 +1453,7 @@ public class CasquatchDaoBuilder {
             return this.with("advanced.ssl-engine-factory.cipher-suites", Arrays.asList(value.split(",")));
         }
         else {
-            return this.with("advanced.ssl-engine-factory.cipher-suites", Arrays.asList(value));
+            return this.with("advanced.ssl-engine-factory.cipher-suites", Collections.singletonList(value));
         }
     }
     /**

@@ -27,25 +27,23 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PreDestroy;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * Primary entry point for Project - Casquatch to provide object based API for entities.
  */
+@SuppressWarnings("WeakerAccess")
 @Slf4j
 public class CasquatchDao {
 
-    private CqlSession session;
-    @Getter private String keyspace;
+    private final CqlSession session;
+    @Getter private final String keyspace;
     private CasquatchDaoBuilder casquatchDaoBuilder;
-    private Map<Class,Object> queryHelperCache;
-    private QueryOptions defaultQueryOptions;
-    private QueryOptions defaultSolrQueryOptions;
-    private Config config;
+    private final Map<Class,Object> statementFactoryCache;
+    private final QueryOptions defaultQueryOptions;
+    private final QueryOptions defaultSolrQueryOptions;
+    private final Config config;
     private FailoverPolicy failoverPolicy;
 
     /**
@@ -56,7 +54,7 @@ public class CasquatchDao {
         this.config = casquatchDaoBuilder.getConfig();
         this.keyspace=this.config.getString("basic.session-keyspace");
         this.session=casquatchDaoBuilder.session();
-        this.queryHelperCache = new HashMap<>();
+        this.statementFactoryCache = new HashMap<>();
         if(this.config.hasPath("query-options")) {
             this.defaultQueryOptions=new QueryOptions(this.config.getConfig("query-options"));
         }
@@ -125,11 +123,9 @@ public class CasquatchDao {
             return this.session.execute(statement);
         }
         catch (Exception e) {
-            if(failoverPolicy !=null) {
-                if(failoverPolicy !=null && getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()) != null && failoverPolicy.shouldFailover(e,statement)) {
-                    log.warn("Statement Failed With Exception. Retrying on failover profile: {}", getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()), new DriverException((Exception) e));
-                    return this.execute(statement.setExecutionProfileName(getProfileConfig("failover-policy.profile",statement.getExecutionProfileName())));
-                }
+            if(failoverPolicy !=null && getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()) != null && failoverPolicy.shouldFailover(e,statement)) {
+                log.warn("Statement Failed With Exception. Retrying on failover profile: {}", getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()), new DriverException(e));
+                return this.execute(statement.setExecutionProfileName(getProfileConfig("failover-policy.profile",statement.getExecutionProfileName())));
             }
             throw new DriverException(e);
         }
@@ -139,7 +135,7 @@ public class CasquatchDao {
      * Execute a statement asynchronously and provide resultset. This wraps {@link CqlSession#executeAsync(Statement)} with additional logic
      *
      * @param statement statement to execute
-     * @return completablefuture with statement results
+     * @return CompletableFuture with statement results
      * @throws DriverException - Driver exception mapped to error code
      */
     private CompletableFuture<AsyncResultSet> executeASync(Statement statement) throws DriverException  {
@@ -147,7 +143,7 @@ public class CasquatchDao {
         try {
             return this.session.executeAsync(statement).toCompletableFuture().handle(
                     (result, e) -> {
-                        if (e != null&& e instanceof Exception) {
+                        if (e instanceof Exception) {
                             if(failoverPolicy !=null && getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()) != null && failoverPolicy.shouldFailover((Exception) e,statement)) {
                                 log.warn("Statement Failed With Exception. Retrying on failover profile: {}", getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()), new DriverException((Exception) e));
                                 try {
@@ -173,7 +169,7 @@ public class CasquatchDao {
      * @param profile profile name
      * @return string
      */
-    private String getProfileConfig(String path, String profile) {
+    private String getProfileConfig(@SuppressWarnings("SameParameterValue") String path, String profile) {
         if(profile!=null && this.config.hasPath(String.format("profiles.%s.%s",profile,path))) {
             return this.config.getString(String.format("profiles.%s.%s",profile,path));
         }
@@ -190,9 +186,9 @@ public class CasquatchDao {
      * @return dao object
      */
     private <T extends AbstractCasquatchEntity, Q extends AbstractStatementFactory<T>> Q getStatementFactory(Class<T> c) {
-        if(!queryHelperCache.containsKey(c)) {
+        if(!statementFactoryCache.containsKey(c)) {
             try {
-                queryHelperCache.put(c, Class.forName(CasquatchNamingConvention.classToStatementFactory(c.getName())).getConstructor(CqlSession.class).newInstance(this.session));
+                statementFactoryCache.put(c, Class.forName(CasquatchNamingConvention.classToStatementFactory(c.getName())).getConstructor(CqlSession.class).newInstance(this.session));
             } catch (ClassNotFoundException e) {
                 throw new DriverException(DriverException.CATEGORIES.CASQUATCH_MISSING_GENERATED_CLASS, String.format("Cannot find %s", CasquatchNamingConvention.classToStatementFactory(c.getName())));
             } catch (Exception e) {
@@ -200,7 +196,8 @@ public class CasquatchDao {
                 throw new DriverException(DriverException.CATEGORIES.CASQUATCH_MISSING_GENERATED_CLASS, String.format("Failed to create %s", CasquatchNamingConvention.classToStatementFactory(c.getName())));
             }
         }
-        return (Q) queryHelperCache.get(c);
+        //noinspection unchecked
+        return (Q) statementFactoryCache.get(c);
     }
 
     /**
@@ -239,6 +236,7 @@ public class CasquatchDao {
      * @param queryOptions Query Options to include
      * @throws DriverException - Driver exception mapped to error code
      */
+    @SuppressWarnings("SameReturnValue")
     @Rest("/delete")
     public <T extends AbstractCasquatchEntity> Void delete(Class<T> c, T o, QueryOptions queryOptions) throws DriverException {
         this.execute(this.getStatementFactory(c).delete(o,queryOptions.withPrimaryKeysOnly()));
@@ -294,12 +292,7 @@ public class CasquatchDao {
     @Rest("/exists")
     public <T extends AbstractCasquatchEntity> Boolean existsById(Class<T> c, T o, QueryOptions queryOptions) throws DriverException {
         ResultSet resultSet = this.execute(this.getStatementFactory(c).get(o,queryOptions.withPrimaryKeysOnly()));
-        if(resultSet.one()!=null) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return resultSet.one() != null;
     }
 
     /**
@@ -494,7 +487,8 @@ public class CasquatchDao {
      */
     @Rest("/solr/object/count")
     public <T extends AbstractCasquatchEntity> Long getCountBySolr(Class<T> c, T o, QueryOptions queryOptions) throws DriverException {
-        return this.execute(this.getStatementFactory(c).count(o,queryOptions.withAllColumns())).one().getLong("count");
+        Row row = this.execute(this.getStatementFactory(c).count(o,queryOptions.withAllColumns())).one();
+        return Objects.requireNonNull(row).getLong("count");
     }
 
     /**
@@ -520,7 +514,8 @@ public class CasquatchDao {
      */
     @Rest("/solr/query/count")
     public <T extends AbstractCasquatchEntity> Long getCountBySolr(Class<T> c, String solrQueryString, QueryOptions queryOptions) throws DriverException {
-        return this.execute(this.getStatementFactory(c).countSolr(solrQueryString,queryOptions.withAllColumns())).one().getLong("count");
+        Row row = this.execute(this.getStatementFactory(c).countSolr(solrQueryString,queryOptions.withAllColumns())).one();
+        return Objects.requireNonNull(row).getLong("count");
     }
 
     /**
@@ -551,6 +546,7 @@ public class CasquatchDao {
      * @param queryOptions Query Options to include
      * @throws DriverException - Driver exception mapped to error code
      */
+    @SuppressWarnings("SameReturnValue")
     @Rest("/save")
     public <T extends AbstractCasquatchEntity> Void save(Class<T> c, T o, QueryOptions queryOptions) throws DriverException{
         this.execute(this.getStatementFactory(c).save(o,queryOptions.withAllColumns()));

@@ -18,9 +18,7 @@ package com.tmobile.opensource.casquatch.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tmobile.opensource.casquatch.DriverException;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -89,7 +87,7 @@ public class Response<T> {
      * @param status status
      */
     public Response(T payload, Status status) {
-        this(Arrays.asList(payload),status);
+        this(Collections.singletonList(payload),status);
     }
 
     /**

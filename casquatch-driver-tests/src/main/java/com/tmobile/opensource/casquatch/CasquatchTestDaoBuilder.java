@@ -63,7 +63,8 @@ public class CasquatchTestDaoBuilder extends CasquatchDaoBuilder {
             log.warn("DDL Exception",e);
         }
         catch(Exception e) {
-            log.warn("DDL Exception",e);
+            log.error("DDL Exception",e);
+            throw(e);
         }
         return this;
     }

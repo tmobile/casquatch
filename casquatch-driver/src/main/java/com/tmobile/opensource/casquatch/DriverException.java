@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 public class DriverException extends RuntimeException {
 
-    public static enum CATEGORIES {
+    public enum CATEGORIES {
         CASQUATCH_MISSING_GENERATED_CLASS,
         CASQUATCH_MISSING_PARAMETER,
         CASQUATCH_INVALID_CONFIGURATION,
@@ -40,7 +40,7 @@ public class DriverException extends RuntimeException {
         APPLICATION_UNKNOWN,
         UNHANDLED_DATASTAX,
         UNHANDLED_CASQUATCH
-    };
+    }
 
     private CATEGORIES category;
     private String message;

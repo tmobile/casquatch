@@ -31,26 +31,36 @@ import uk.co.jemos.podam.api.PodamFactory;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
 public abstract class AbstractEntityRestDAOTests<T extends AbstractCasquatchEntity, S>{
 
-    protected static  PodamFactory podamFactory = new CasquatchPodamFactoryImpl();
+    private static final PodamFactory podamFactory = new CasquatchPodamFactoryImpl();
 
     protected abstract S getService();
     protected abstract MockMvc getMockMvc();
     protected abstract CasquatchDao getDao();
 
-    private Class<T> tableClass;
-    private Class<S> serviceClass;
+    private final Class<T> tableClass;
+    private final Class<S> serviceClass;
 
+    /**
+     * Construct with reference classes
+     * @param tableClass table class reference
+     * @param serviceClass service class reference
+     */
     public AbstractEntityRestDAOTests(Class<T> tableClass, Class<S> serviceClass) {
         this.tableClass=tableClass;
         this.serviceClass=serviceClass;
     }
 
+    /**
+     * Deserialize a string response into a response object
+     * @param response string response
+     * @return response object
+     */
     private Response<T> deserialize(String response) {
         ObjectMapper mapper = new ObjectMapper();
 
@@ -59,10 +69,15 @@ public abstract class AbstractEntityRestDAOTests<T extends AbstractCasquatchEnti
             return mapper.readValue(response, type);
         } catch (IOException e) {
             log.error("Unable to deserialize response",e);
-            return new Response<T>(Response.Status.ERROR);
+            return new Response<>(Response.Status.ERROR);
         }
     }
 
+    /**
+     * Helper function to get api name via reflection
+     * @param method method name
+     * @return api name
+     */
     private String getApi(String method) {
         try {
             return
@@ -74,10 +89,18 @@ public abstract class AbstractEntityRestDAOTests<T extends AbstractCasquatchEnti
         }
     }
 
-    protected void doApi(String method, Request<T> request, Response<T> expectedResponse) throws Exception{
+    /**
+     * Perform a given API
+     * @param method method name
+     * @param request request object
+     * @param expectedResponse expected response object
+     * @throws Exception any exception thrown by procedure
+     */
+    private void doApi(String method, Request<T> request, Response<T> expectedResponse) throws Exception{
         log.trace("Request: {}",request.toString());
         log.trace("Expected Response: {}",expectedResponse.toString());
         String api = getApi(method);
+        assertNotNull(api);
         log.trace("API: {}",api);
 
         MvcResult result = this.getMockMvc().perform(MockMvcRequestBuilders.post(api)
@@ -92,14 +115,14 @@ public abstract class AbstractEntityRestDAOTests<T extends AbstractCasquatchEnti
         log.trace("Expected Response: {}",expectedResponse.toString());
         log.trace("Actual Response: {}",actualResponse.toString());
 
-        assertTrue(expectedResponse.getStatus().equals(actualResponse.getStatus()));
+        assertEquals(expectedResponse.getStatus(), actualResponse.getStatus());
         if(expectedResponse.getPayload()==null) {
-            assertTrue(actualResponse.getPayload() == null);
+            assertNull(actualResponse.getPayload());
         }
         else {
-            assertTrue(expectedResponse.getPayload().size()==actualResponse.getPayload().size());
+            assertEquals(expectedResponse.getPayload().size(), actualResponse.getPayload().size());
             for(int i=0;i<expectedResponse.getPayload().size();i++) {
-                assertTrue(expectedResponse.getPayload().get(i).equals(actualResponse.getPayload().get(i)));
+                assertEquals(expectedResponse.getPayload().get(i), actualResponse.getPayload().get(i));
             }
         }
     }

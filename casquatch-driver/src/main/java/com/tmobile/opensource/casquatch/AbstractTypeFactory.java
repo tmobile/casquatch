@@ -20,12 +20,27 @@ import com.datastax.oss.driver.api.core.data.UdtValue;
 import com.datastax.oss.driver.api.core.type.UserDefinedType;
 
 public abstract class AbstractTypeFactory <T extends AbstractCasquatchType> {
-    protected UserDefinedType userDefinedType;
+    protected final UserDefinedType userDefinedType;
 
+    /**
+     * Construct TypeFactory from a UserDefinedType
+     * @param userDefinedType type to base factory on
+     */
     public AbstractTypeFactory(UserDefinedType userDefinedType) {
         this.userDefinedType=userDefinedType;
     }
 
+    /**
+     * Process a UdtValue into an Object
+     * @param udtValue UdtValue to process
+     * @return Object resulting
+     */
     protected abstract T fromUdtValue(UdtValue udtValue);
+
+    /**
+     * Process an object into a UdtValue
+     * @param obj object to process
+     * @return UdtValue
+     */
     protected abstract UdtValue toUdtValue(T obj);
 }

@@ -22,6 +22,7 @@ import com.tmobile.opensource.casquatch.annotation.CasquatchBuilder;
 /**
  * Used to generate the dao builder which is then copied to casquatch-driver
  */
+@SuppressWarnings("WeakerAccess")
 @CasquatchBuilder
 public class BuilderStub {
 }

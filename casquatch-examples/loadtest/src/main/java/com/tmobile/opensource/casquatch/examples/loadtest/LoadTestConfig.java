@@ -47,7 +47,7 @@ public class LoadTestConfig {
     public List<Class> getEntityClasses() {
         if(entityClasses.size()==0) {
             for (String entity : this.entities) {
-                Class clazz = null;
+                Class clazz;
                 try {
                     if (!entity.contains(".")) {
                         clazz = Class.forName(LoadtestApplication.class.getPackage().getName() + "." + entity);

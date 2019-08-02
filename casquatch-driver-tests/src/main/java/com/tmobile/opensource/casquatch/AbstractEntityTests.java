@@ -31,6 +31,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings("WeakerAccess")
 @Slf4j
 @Getter @Setter
 public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
@@ -39,7 +40,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public abstract CasquatchDao getCasquatchDao();
     protected Class<T> tableClass;
     protected DatabaseCache<T> databaseCache;
-    private Long expiration = new Long(100);
+    private Long expiration = 100L;
 
     protected QueryOptions queryOptions;
 
@@ -66,7 +67,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
      * @param count number of objects to create
      * @return list of created objects
      */
-    protected List<T> prepObject(Integer count) {
+    protected List<T> prepObject(@SuppressWarnings("SameParameterValue") Integer count) {
         log.trace("Prepping {} objects",count);
         List<T> objectList = new ArrayList<>();
         for(int i=0;i<count;i++) {
@@ -95,7 +96,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     }
 
     protected void waitForDone(CompletableFuture<?> completableFuture) {
-        Integer maxWait=10;
+        int maxWait=10;
         for(int i=0;i<=maxWait;i++) {
             if(completableFuture.isDone()) {
                 break;

@@ -17,12 +17,14 @@
 package com.tmobile.opensource.casquatch.tests;
 
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.cql.Row;
 import com.tmobile.opensource.casquatch.CasquatchDao;
 import com.tmobile.opensource.casquatch.annotation.CasquatchSpring;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertNotNull;
@@ -30,6 +32,7 @@ import static org.junit.Assert.assertNotNull;
 @CasquatchSpring
 @RunWith(SpringJUnit4ClassRunner.class)
 @Slf4j
+@TestConfiguration
 public class CasquatchSpringBeansExternalTests {
     @Autowired
     CasquatchDao casquatchDao;
@@ -50,7 +53,9 @@ public class CasquatchSpringBeansExternalTests {
 
     @Test
     public void testQuery() {
-        assertNotNull(session.execute("select release_version from system.local").one().getString("release_version"));
+        Row row = session.execute("select release_version from system.local").one();
+        assertNotNull(row);
+        assertNotNull(row.getString("release_version"));
     }
 
 }

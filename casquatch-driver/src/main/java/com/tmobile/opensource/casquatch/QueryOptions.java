@@ -68,9 +68,9 @@ public class QueryOptions {
 
     /**
      * Create QueryOptions from other QueryOptions.
-     * @param queryOptions populated queryoptions object
+     * @param queryOptions populated QueryOptions object
      */
-    QueryOptions(QueryOptions queryOptions) {
+    private QueryOptions(QueryOptions queryOptions) {
         this.ignoreNonPrimaryKeys=queryOptions.ignoreNonPrimaryKeys;
         this.consistencyLevel=queryOptions.consistencyLevel;
         this.limit=queryOptions.limit;

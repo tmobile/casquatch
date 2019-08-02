@@ -29,10 +29,10 @@ import org.springframework.context.annotation.Configuration;
 @SpringBootApplication
 @EnableConfigServer
 @CasquatchSpring
-public class SpringconfigserverApplication {
+public class SpringConfigServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringconfigserverApplication.class, args);
+		SpringApplication.run(SpringConfigServerApplication.class, args);
 	}
 
 	@Configuration

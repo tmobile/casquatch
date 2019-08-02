@@ -23,20 +23,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import uk.co.jemos.podam.api.PodamFactory;
 
-@Slf4j
-public class LoadWrapper<T extends AbstractCasquatchEntity> {
+import java.util.Objects;
 
-    private Class<T> clazz;
-    private CasquatchDao db;
-    protected static final PodamFactory podamFactory = new CasquatchPodamFactoryImpl();
+@Slf4j
+class LoadWrapper<T extends AbstractCasquatchEntity> {
+
+    private final Class<T> clazz;
+    private final CasquatchDao db;
+    private static final PodamFactory podamFactory = new CasquatchPodamFactoryImpl();
 
     private Integer totalWrites=0;
-    private Long totalDBWriteTime = new Long(0);
-    private Long totalWriteTime = new Long(0);
+    private Long totalDBWriteTime = 0L;
+    private Long totalWriteTime = 0L;
 
     private Integer totalReads=0;
-    private Long totalDBReadTime = new Long(0);
-    private Long totalReadTime = new Long(0);
+    private Long totalDBReadTime = 0L;
+    private Long totalReadTime = 0L;
 
     private Integer totalChecks=0;
     private Integer successChecks=0;
@@ -67,7 +69,7 @@ public class LoadWrapper<T extends AbstractCasquatchEntity> {
      * @param obj object to write
      * @return written object;
      */
-    public T write(T obj) {
+    private T write(T obj) {
 
         StopWatch sw = new StopWatch();
         StopWatch dbsw = new StopWatch();
@@ -99,7 +101,7 @@ public class LoadWrapper<T extends AbstractCasquatchEntity> {
      * @param obj object to query with
      * @return result of query
      */
-    public T read(T obj) {
+    private T read(T obj) {
         StopWatch sw = new StopWatch();
         StopWatch dbsw = new StopWatch();
         sw.start();
@@ -129,24 +131,20 @@ public class LoadWrapper<T extends AbstractCasquatchEntity> {
      * Compare two objects
      * @param obj1 object 1
      * @param obj2 object 2
-     * @return result of comparison
      */
-    public boolean check(T obj1, T obj2) {
+    private void check(T obj1, T obj2) {
         if(obj1==null && obj2==null) {
             log.error("Must read and write in same transaction to check");
-            return false;
         }
         else {
             totalChecks++;
-            if(obj1.equals(obj2)) {
+            if(Objects.requireNonNull(obj1).equals(obj2)) {
                 log.debug("Consistency Check: Passed");
                 successChecks++;
-                return true;
             }
             else {
                 log.debug("Consistency Check: Failed");
                 failChecks++;
-                return false;
             }
         }
     }
@@ -157,8 +155,8 @@ public class LoadWrapper<T extends AbstractCasquatchEntity> {
      * @return time in ms
      */
     private String timeFormat(Long input) {
-        Double tmp = Math.round(input*100/1000000)/100.00;
-        return tmp.toString()+"ms";
+        double tmp = Math.round(input*100/1000000)/100.00;
+        return tmp +"ms";
     }
 
     /**
@@ -178,10 +176,9 @@ public class LoadWrapper<T extends AbstractCasquatchEntity> {
 
     /**
      * Run the load test for this object
-     * @param loadTestConfig
+     * @param loadTestConfig load test configuration object
      */
     public void run(LoadTestConfig loadTestConfig) {
-        //warmup
         T warmup = generate();
         db.save(this.clazz, warmup);
         db.getById(this.clazz, warmup);

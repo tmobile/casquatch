@@ -18,23 +18,15 @@ package com.tmobile.opensource.casquatch.tests;
 
 import com.tmobile.opensource.casquatch.QueryOptions;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 @Slf4j
 public class QueryOptionsTests {
 
-    @BeforeClass
-    public static void setUp() {
-
-    }
-
     @Test
     public void testImmutable() {
         QueryOptions queryOptions1 = new QueryOptions().withLimit(5);
         QueryOptions queryOptions2 = queryOptions1;
-        assert(queryOptions1.equals(queryOptions1));
-
         queryOptions2=queryOptions2.withLimit(100);
         log.trace(queryOptions1.toString());
         log.trace(queryOptions2.toString());

@@ -28,13 +28,10 @@ import java.util.Map;
 @Slf4j
 public class LoadtestApplication {
 
-	private static CasquatchDao db;
-	private static LoadTestConfig loadTestConfig;
-
 	public static void main(String[] args) {
 
 		//Create CasquatchDao from config
-		db=CasquatchDao.builder().build();
+		CasquatchDao db=CasquatchDao.builder().build();
 
 		//Load loadtest config
 		ConfigFactory.invalidateCaches();
@@ -44,7 +41,7 @@ public class LoadtestApplication {
 				log.trace("Config: {} -> {}", entry.getKey(), entry.getValue().render());
 			}
 		}
-		loadTestConfig = ConfigBeanFactory.create(config,LoadTestConfig.class);
+		LoadTestConfig loadTestConfig = ConfigBeanFactory.create(config,LoadTestConfig.class);
 
 		//Run for each entity
 		if(loadTestConfig.getEntities().size()>0) {

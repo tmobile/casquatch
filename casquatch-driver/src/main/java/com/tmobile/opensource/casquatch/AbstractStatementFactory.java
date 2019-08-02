@@ -38,6 +38,7 @@ import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.bindMarker;
 /**
  * Abstract Statement Factory to generate statements
  */
+@SuppressWarnings("WeakerAccess")
 @Slf4j
 public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity> {
 
@@ -46,14 +47,14 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
         @Getter String solrQuery;
     }
 
-    protected DeleteSelection deleteStart;
-    protected InsertInto insertStart;
-    protected Select selectAllStart;
-    protected Select selectCountStart;
-    protected Select selectSolrStart;
-    protected Select selectSolrCountStart;
-    protected CqlSession session;
-    protected Class<T> tableClass;
+    protected final DeleteSelection deleteStart;
+    protected final InsertInto insertStart;
+    protected final Select selectAllStart;
+    protected final Select selectCountStart;
+    protected final Select selectSolrStart;
+    protected final Select selectSolrCountStart;
+    protected final CqlSession session;
+    protected final Class<T> tableClass;
 
     /**
      * Query Factory Constructor
@@ -134,10 +135,10 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
      * @param buildableQuery buildable query
      * @param obj populated object
      * @param queryOptions query options to apply
-     * @param bindTosession override session
+     * @param bindToSession override session
      * @return bound statement
      */
-    protected BoundStatement buildBoundStatement(BuildableQuery buildableQuery, Object obj, QueryOptions queryOptions, CqlSession bindTosession) {
+    protected BoundStatement buildBoundStatement(BuildableQuery buildableQuery, Object obj, QueryOptions queryOptions, CqlSession bindToSession) {
         if(buildableQuery instanceof Select) {
             if(queryOptions!=null) {
                 if(queryOptions.getLimit()!=null) {
@@ -153,11 +154,13 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
         SimpleStatement simpleStatement = buildableQuery.build();
 
         if(log.isTraceEnabled()) log.trace("Preparing Statement {}",simpleStatement.getQuery());
-        BoundStatementBuilder boundStatementBuilder = bindTosession.prepare(simpleStatement).boundStatementBuilder();
+        BoundStatementBuilder boundStatementBuilder = bindToSession.prepare(simpleStatement).boundStatementBuilder();
         if(obj.getClass().equals(this.tableClass)) {
+            //noinspection unchecked
             boundStatementBuilder=bindObject(boundStatementBuilder,(T) obj,queryOptions);
         }
         else if (obj.getClass().equals(SolrQueryEntity.class)) {
+            //noinspection unchecked
             boundStatementBuilder=bindObject(boundStatementBuilder,(SolrQueryEntity) obj,queryOptions);
         }
         else {
@@ -190,7 +193,7 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
     /**
      * Create a count statement for a solr query
      *
-     * Example: select count(*) from TABLE where solr_query=SOLRQUERY
+     * Example: select count(*) from TABLE where solr_query=?
      *
      * @param solrQuery solrQuery to search
      * @param queryOptions query options to apply

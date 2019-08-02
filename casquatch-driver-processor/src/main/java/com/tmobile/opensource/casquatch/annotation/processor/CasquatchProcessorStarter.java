@@ -38,8 +38,8 @@ public abstract class CasquatchProcessorStarter extends AbstractProcessor {
 
     protected Configuration fmConfig;
     protected RoundEnvironment roundEnv;
-    protected List<String> knownClasses = new ArrayList<>();
-    protected List<String> entityList = new ArrayList<>();
+    protected final List<String> knownClasses = new ArrayList<>();
+    protected final List<String> entityList = new ArrayList<>();
 
     /**
      * Abstract procedure to annotation
@@ -139,7 +139,7 @@ public abstract class CasquatchProcessorStarter extends AbstractProcessor {
         log.trace("Found {} entities.",entityList.size());
 
         //Find list of entities
-        Boolean result = true;
+        boolean result = true;
         for (TypeElement annotation : annotations) {
             for(Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
                 result=result && process(element);
