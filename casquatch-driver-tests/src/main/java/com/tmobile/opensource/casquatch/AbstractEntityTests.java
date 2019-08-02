@@ -33,21 +33,20 @@ import static org.junit.Assert.*;
 
 @SuppressWarnings("WeakerAccess")
 @Slf4j
-@Getter @Setter
 public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     protected static final PodamFactory podamFactory = new CasquatchPodamFactoryImpl();
     public abstract CasquatchDao getCasquatchDao();
-    protected Class<T> tableClass;
+    protected Class<T> entityClass;
     protected DatabaseCache<T> databaseCache;
     private Long expiration = 100L;
 
     protected QueryOptions queryOptions;
 
-    public AbstractEntityTests(Class<T> tableClass) {
-        this.setTableClass(tableClass);
+    public AbstractEntityTests(Class<T> entityClass) {
+        this.entityClass=entityClass;
         this.queryOptions=new QueryOptions();
-        databaseCache = this.getCasquatchDao().getCache(this.getTableClass(),expiration);
+        databaseCache = this.getCasquatchDao().getCache(this.entityClass,expiration);
     }
 
     /**
@@ -55,10 +54,10 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
      * @return created object
      */
     protected T prepObject() {
-        T obj = podamFactory.manufacturePojoWithFullData(this.getTableClass());
+        T obj = podamFactory.manufacturePojoWithFullData(this.entityClass);
         log.debug("Prep Object Created: {}",obj.toString());
-        this.getCasquatchDao().save(this.getTableClass(), obj);
-        assertTrue(this.getCasquatchDao().existsById(this.getTableClass(), obj));
+        this.getCasquatchDao().save(this.entityClass, obj);
+        assertTrue(this.getCasquatchDao().existsById(this.entityClass, obj));
         return obj;
     }
 
@@ -81,8 +80,8 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
      * @param obj object to clean
      */
     protected void cleanObject(T obj) {
-        this.getCasquatchDao().delete(this.getTableClass(), obj);
-        assertFalse(this.getCasquatchDao().existsById(this.getTableClass(), obj));
+        this.getCasquatchDao().delete(this.entityClass, obj);
+        assertFalse(this.getCasquatchDao().existsById(this.entityClass, obj));
     }
 
     /**
@@ -121,16 +120,16 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     }
 
     private void changeNonKeyField(T obj) {
-        for (Field field : tableClass.getDeclaredFields()) {
+        for (Field field : entityClass.getDeclaredFields()) {
             if (    !field.isAnnotationPresent(com.fasterxml.jackson.annotation.JsonIgnore.class) &&
                     !field.isAnnotationPresent(com.tmobile.opensource.casquatch.annotation.CasquatchIgnore.class) &&
                     !field.isAnnotationPresent(com.tmobile.opensource.casquatch.annotation.PartitionKey.class) &&
                     !field.isAnnotationPresent(com.tmobile.opensource.casquatch.annotation.ClusteringColumn.class)
             ) {
                 try {
-                    T fakeObject = podamFactory.manufacturePojoWithFullData(tableClass);
-                    Method getMethod = tableClass.getDeclaredMethod(CasquatchNamingConvention.javaVariableToJavaGet(field.getName()));
-                    Method setMethod = tableClass.getDeclaredMethod(CasquatchNamingConvention.javaVariableToJavaSet(field.getName()),field.getType());
+                    T fakeObject = podamFactory.manufacturePojoWithFullData(entityClass);
+                    Method getMethod = entityClass.getDeclaredMethod(CasquatchNamingConvention.javaVariableToJavaGet(field.getName()));
+                    Method setMethod = entityClass.getDeclaredMethod(CasquatchNamingConvention.javaVariableToJavaSet(field.getName()),field.getType());
                     setMethod.invoke(obj,getMethod.invoke(fakeObject));
                     return;
 
@@ -147,15 +146,15 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public void testDelete() {
         T obj = prepObject();
 
-        this.getCasquatchDao().delete(this.getTableClass(), obj);
-        assertFalse(this.getCasquatchDao().existsById(this.getTableClass(),obj));
+        this.getCasquatchDao().delete(this.entityClass, obj);
+        assertFalse(this.getCasquatchDao().existsById(this.entityClass,obj));
     }
 
     @Test
     public void testDeleteASync() {
         T obj = prepObject();
 
-        CompletableFuture<Void> tst = this.getCasquatchDao().deleteAsync(this.getTableClass(), obj);
+        CompletableFuture<Void> tst = this.getCasquatchDao().deleteAsync(this.entityClass, obj);
         waitForDone(tst);
         assertTrue(tst.isDone());
     }
@@ -164,7 +163,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public void testExistsById() {
         T obj = prepObject();
 
-        assertTrue(this.getCasquatchDao().existsById(this.getTableClass(),obj));
+        assertTrue(this.getCasquatchDao().existsById(this.entityClass,obj));
 
         cleanObject(obj);
     }
@@ -173,7 +172,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public void testGetAllById() throws IllegalAccessException, InstantiationException {
         List<T> objectList = prepObject(5);
 
-        List<T> testList = this.getCasquatchDao().getAllById(this.getTableClass(), this.getTableClass().newInstance(),10);
+        List<T> testList = this.getCasquatchDao().getAllById(this.entityClass, this.entityClass.newInstance(),10);
         assertTrue(testList.size()>=5);
 
         cleanObject(objectList);
@@ -183,7 +182,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public void testGetAllByIdLimited() throws IllegalAccessException, InstantiationException {
         List<T> objectList = prepObject(5);
 
-        assertEquals(5, this.getCasquatchDao().getAllById(this.getTableClass(), this.getTableClass().newInstance(), 5).size());
+        assertEquals(5, this.getCasquatchDao().getAllById(this.entityClass, this.entityClass.newInstance(), 5).size());
 
         cleanObject(objectList);
     }
@@ -192,7 +191,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public void testGetById() {
         T obj = prepObject();
 
-        T tstObj = this.getCasquatchDao().getById(this.getTableClass(),obj);
+        T tstObj = this.getCasquatchDao().getById(this.entityClass,obj);
         assertEquals(obj, tstObj);
 
         cleanObject(obj);
@@ -202,7 +201,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public void testSave() {
         T obj = prepObject();
 
-        assertTrue(this.getCasquatchDao().existsById(this.getTableClass(), obj));
+        assertTrue(this.getCasquatchDao().existsById(this.entityClass, obj));
 
         cleanObject(obj);
     }
@@ -211,7 +210,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public void testSaveASync() {
         T obj = prepObject();
 
-        CompletableFuture<Void> tst = this.getCasquatchDao().saveAsync(this.getTableClass(), obj);
+        CompletableFuture<Void> tst = this.getCasquatchDao().saveAsync(this.entityClass, obj);
         waitForDone(tst);
         assertTrue(tst.isDone());
 
@@ -222,15 +221,15 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public void testDeleteWithQueryOptions() {
         T obj = prepObject();
 
-        this.getCasquatchDao().delete(this.getTableClass(), obj,queryOptions);
-        assertFalse(this.getCasquatchDao().existsById(this.getTableClass(),obj));
+        this.getCasquatchDao().delete(this.entityClass, obj,queryOptions);
+        assertFalse(this.getCasquatchDao().existsById(this.entityClass,obj));
     }
 
     @Test
     public void testDeleteASyncWithQueryOptions() {
         T obj = prepObject();
 
-        CompletableFuture<Void> tst = this.getCasquatchDao().deleteAsync(this.getTableClass(), obj,queryOptions);
+        CompletableFuture<Void> tst = this.getCasquatchDao().deleteAsync(this.entityClass, obj,queryOptions);
         waitForDone(tst);
         assertTrue(tst.isDone());
     }
@@ -239,7 +238,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public void testExistsByIdWithQueryOptions() {
         T obj = prepObject();
 
-        assertTrue(this.getCasquatchDao().existsById(this.getTableClass(),obj,queryOptions));
+        assertTrue(this.getCasquatchDao().existsById(this.entityClass,obj,queryOptions));
 
         cleanObject(obj);
     }
@@ -248,7 +247,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public void testGetAllByIdWithQueryOptions() throws IllegalAccessException, InstantiationException {
         List<T> objectList = prepObject(5);
 
-        assertTrue(this.getCasquatchDao().getAllById(this.getTableClass(), this.getTableClass().newInstance(),queryOptions).size()>=5);
+        assertTrue(this.getCasquatchDao().getAllById(this.entityClass, this.entityClass.newInstance(),queryOptions).size()>=5);
 
         cleanObject(objectList);
     }
@@ -257,7 +256,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public void testGetByIdWithQueryOptions() {
         T obj = prepObject();
 
-        T tstObj = this.getCasquatchDao().getById(this.getTableClass(),obj, queryOptions);
+        T tstObj = this.getCasquatchDao().getById(this.entityClass,obj, queryOptions);
         assertEquals(obj, tstObj);
 
         cleanObject(obj);
@@ -267,7 +266,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public void testSaveWithQueryOptions() {
         T obj = prepObject();
 
-        assertTrue(this.getCasquatchDao().existsById(this.getTableClass(), obj, queryOptions));
+        assertTrue(this.getCasquatchDao().existsById(this.entityClass, obj, queryOptions));
 
         cleanObject(obj);
     }
@@ -276,7 +275,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public void testSaveASyncWithQueryOptions() {
         T obj = prepObject();
 
-        CompletableFuture<Void> tst = this.getCasquatchDao().saveAsync(this.getTableClass(), obj, queryOptions);
+        CompletableFuture<Void> tst = this.getCasquatchDao().saveAsync(this.entityClass, obj, queryOptions);
         waitForDone(tst);
         assertTrue(tst.isDone());
 
@@ -300,7 +299,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
         log.trace("Changing Value");
         changeNonKeyField(obj);
         assert(!obj.equals(cachedObject));
-        this.getCasquatchDao().save(tableClass,obj);
+        this.getCasquatchDao().save(entityClass,obj);
 
         log.trace("Get Cached Value");
         cachedObject = databaseCache.get(obj);
@@ -319,13 +318,13 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
         changeNonKeyField(obj);
         assert(!obj.equals(cachedObject));
-        this.getCasquatchDao().save(tableClass,obj);
+        this.getCasquatchDao().save(entityClass,obj);
 
         log.trace("Changing Value");
         changeNonKeyField(obj);
         log.trace("Changed object: {}",obj);
         assert(!obj.equals(cachedObject));
-        this.getCasquatchDao().save(tableClass,obj);
+        this.getCasquatchDao().save(entityClass,obj);
 
         log.trace("Allow cache to expire");
         Thread.sleep(expiration);

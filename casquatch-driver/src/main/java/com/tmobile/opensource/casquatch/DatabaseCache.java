@@ -30,17 +30,17 @@ import java.util.Map;
  * Interface for generic database cache
  */
 @Slf4j
-public class DatabaseCache<T extends AbstractCasquatchEntity> {
+public class DatabaseCache<E extends AbstractCasquatchEntity> {
 
     @AllArgsConstructor
     @Getter @Setter @ToString
     private class CacheItem {
-        T item;
+        E item;
         Long expiration;
     }
 
     private final CasquatchDao dao;
-    private final Class<T> classType;
+    private final Class<E> classType;
     private final Long expirationTime;
     private final Map<String, CacheItem> cacheMap;
 
@@ -50,7 +50,7 @@ public class DatabaseCache<T extends AbstractCasquatchEntity> {
      * @param dao Database connection to use
      * @param expirationTime Time in milliseconds to expire cache
      */
-    public DatabaseCache (Class<T> classType, CasquatchDao dao, Long expirationTime) {
+    public DatabaseCache (Class<E> classType, CasquatchDao dao, Long expirationTime) {
         this.dao = dao;
         this.classType = classType;
         this.expirationTime = expirationTime;
@@ -62,7 +62,7 @@ public class DatabaseCache<T extends AbstractCasquatchEntity> {
      * @param classType Type of class to cache
      * @param dao Database connection to use
      */
-    public DatabaseCache (Class<T> classType, CasquatchDao dao) {
+    public DatabaseCache (Class<E> classType, CasquatchDao dao) {
         this(classType,dao, (long) (15 * 60 * 1000));
     }
 
@@ -71,16 +71,16 @@ public class DatabaseCache<T extends AbstractCasquatchEntity> {
      * @param key Key for cache
      * @return Object containing the cached object
      */
-    public T get(T key) {
+    public E get(E key) {
         //noinspection unchecked
-        key = (T) key.keys();
+        key = (E) key.keys();
         if(checkCache(key)) {
             log.debug("DatabaseCache <{}> Returned {} from cache",this.classType,key);
             return getCache(key);
         }
         else {
             try {
-                T obj = dao.getById(this.classType,key);
+                E obj = dao.getById(this.classType,key);
                 this.setCache(key, obj);
                 log.debug("DatabaseCache <{}> Returned {} from DB",this.classType,key);
                 return obj;
@@ -97,9 +97,9 @@ public class DatabaseCache<T extends AbstractCasquatchEntity> {
      * @param key Name of key
      * @param obj Object to cache
      */
-    public void set(T key, T obj) {
+    public void set(E key, E obj) {
         //noinspection unchecked
-        key = (T) key.keys();
+        key = (E) key.keys();
         dao.save(this.classType,obj);
         this.setCache(key, obj);
     }
@@ -109,7 +109,7 @@ public class DatabaseCache<T extends AbstractCasquatchEntity> {
      * @param key Name of key
      * @param obj Object to cache
      */
-    private void setCache(T key, T obj) {
+    private void setCache(E key, E obj) {
         if(obj != null) {
             log.trace("Setting :"+obj.toString());
         }
@@ -123,7 +123,7 @@ public class DatabaseCache<T extends AbstractCasquatchEntity> {
      * @param key name of key
      * @return Object from cache
      */
-    private T getCache(T key) {
+    private E getCache(E key) {
         if ( checkCache(key)) {
             if(cacheMap.get(key.toString()) != null) {
                 log.trace("Setting : {}",cacheMap.get(key.toString()).toString());
@@ -142,7 +142,7 @@ public class DatabaseCache<T extends AbstractCasquatchEntity> {
      * @param key name of key
      * @return Object from cache
      */
-    private boolean checkCache(T key) {
+    private boolean checkCache(E key) {
         if ( cacheMap.containsKey(key.toString())) {
             if (cacheMap.get(key.toString()).getExpiration() >  System.currentTimeMillis()) {
                 log.debug("DatabaseCache <{}> Hit: {}",this.classType,key);

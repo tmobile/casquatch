@@ -182,10 +182,10 @@ public class CasquatchDao {
     /**
      * Gets a dao mapper for a given object
      * @param c Entity class name
-     * @param <T> Generic entity class
+     * @param <E> Generic entity class
      * @return dao object
      */
-    private <T extends AbstractCasquatchEntity, Q extends AbstractStatementFactory<T>> Q getStatementFactory(Class<T> c) {
+    private <E extends AbstractCasquatchEntity, Q extends AbstractStatementFactory<E>> Q getStatementFactory(Class<E> c) {
         if(!statementFactoryCache.containsKey(c)) {
             try {
                 statementFactoryCache.put(c, Class.forName(CasquatchNamingConvention.classToStatementFactory(c.getName())).getConstructor(CqlSession.class).newInstance(this.session));
@@ -219,18 +219,18 @@ public class CasquatchDao {
 
     /**
      * Delete an object by passing an instance of the given object.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> Void delete(Class<T> c, T o) throws DriverException {
+    public <E extends AbstractCasquatchEntity> Void delete(Class<E> c, E o) throws DriverException {
         return this.delete(c,o,defaultQueryOptions);
     }
 
     /**
      * Delete an object by passing an instance of the given object.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @param queryOptions Query Options to include
@@ -238,51 +238,51 @@ public class CasquatchDao {
      */
     @SuppressWarnings("SameReturnValue")
     @Rest("/delete")
-    public <T extends AbstractCasquatchEntity> Void delete(Class<T> c, T o, QueryOptions queryOptions) throws DriverException {
+    public <E extends AbstractCasquatchEntity> Void delete(Class<E> c, E o, QueryOptions queryOptions) throws DriverException {
         this.execute(this.getStatementFactory(c).delete(o,queryOptions.withPrimaryKeysOnly()));
         return null;
     }
 
     /**
      * Delete asynchronously an object by passing an instance of the given object.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @return CompletableFuture to process ASync request
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> CompletableFuture<Void> deleteAsync(Class<T> c, T o) throws DriverException {
+    public <E extends AbstractCasquatchEntity> CompletableFuture<Void> deleteAsync(Class<E> c, E o) throws DriverException {
         return this.deleteAsync(c,o,defaultQueryOptions);
     }
 
     /**
      * Delete asynchronously an object by passing an instance of the given object.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @param queryOptions Query Options to include
      * @return CompletableFuture to process ASync request
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> CompletableFuture<Void> deleteAsync(Class<T> c, T o,QueryOptions queryOptions) throws DriverException {
+    public <E extends AbstractCasquatchEntity> CompletableFuture<Void> deleteAsync(Class<E> c, E o,QueryOptions queryOptions) throws DriverException {
         return this.executeASync(this.getStatementFactory(c).delete(o,queryOptions.withPrimaryKeysOnly())).thenApply(rs -> null);
     }
 
     /**
      * Check if an object exists. Non key columns are ignored.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @return boolean indicating existence
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> Boolean existsById(Class<T> c, T o) throws DriverException {
+    public <E extends AbstractCasquatchEntity> Boolean existsById(Class<E> c, E o) throws DriverException {
         return this.existsById(c,o,defaultQueryOptions);
     }
 
     /**
      * Check if an object exists. Non key columns are ignored.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @param queryOptions Query Options to include
@@ -290,7 +290,7 @@ public class CasquatchDao {
      * @throws DriverException - Driver exception mapped to error code
      */
     @Rest("/exists")
-    public <T extends AbstractCasquatchEntity> Boolean existsById(Class<T> c, T o, QueryOptions queryOptions) throws DriverException {
+    public <E extends AbstractCasquatchEntity> Boolean existsById(Class<E> c, E o, QueryOptions queryOptions) throws DriverException {
         ResultSet resultSet = this.execute(this.getStatementFactory(c).get(o,queryOptions.withPrimaryKeysOnly()));
         return resultSet.one() != null;
     }
@@ -299,40 +299,40 @@ public class CasquatchDao {
      * Gets a database cache for the given entity class
      * @param c Entity class name
      * @param expirationTime Time in milliseconds to expire cache
-     * @param <T> Generic entity class
+     * @param <E> Generic entity class
      * @return database cache object
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> DatabaseCache<T> getCache(Class<T> c, Long expirationTime) throws DriverException {
+    public <E extends AbstractCasquatchEntity> DatabaseCache<E> getCache(Class<E> c, Long expirationTime) throws DriverException {
         return new DatabaseCache<>(c,this,expirationTime);
     }
 
     /**
      * Gets a database cache for the given entity class
      * @param c Entity class name
-     * @param <T> Generic entity class
+     * @param <E> Generic entity class
      * @return database cache object
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> DatabaseCache<T> getCache(Class<T> c) throws DriverException {
+    public <E extends AbstractCasquatchEntity> DatabaseCache<E> getCache(Class<E> c) throws DriverException {
         return new DatabaseCache<>(c,this);
     }
 
     /**
      * Get an object by passing an instance of the given object with all keys populated. Non-Key columns are ignored.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @return populated object
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> T getById(Class<T> c, T o) throws DriverException {
+    public <E extends AbstractCasquatchEntity> E getById(Class<E> c, E o) throws DriverException {
         return this.getById(c,o,defaultQueryOptions);
     }
 
     /**
      * Get an object by passing an instance of the given object with all keys populated. Non-Key columns are ignored.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @param queryOptions Query Options to include
@@ -340,38 +340,38 @@ public class CasquatchDao {
      * @throws DriverException - Driver exception mapped to error code
      */
     @Rest("/get")
-    public <T extends AbstractCasquatchEntity> T getById(Class<T> c, T o, QueryOptions queryOptions) throws DriverException {
+    public <E extends AbstractCasquatchEntity> E getById(Class<E> c, E o, QueryOptions queryOptions) throws DriverException {
         return this.execute(this.getStatementFactory(c).get(o,queryOptions.withPrimaryKeysOnly().withLimit(1))).map(this.getStatementFactory(c)::map).one();
     }
 
     /**
      * Get all object by passing a partially populated instance of the given object. Non-Key columns are ignored.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @return list of populated objects
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> List<T> getAllById(Class<T> c, T o) throws DriverException {
+    public <E extends AbstractCasquatchEntity> List<E> getAllById(Class<E> c, E o) throws DriverException {
         return this.getAllById(c,o,defaultQueryOptions);
     }
 
     /**
      * Get all object by passing a partially populated instance of the given object. Non-Key columns are ignored.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @param limit limit number of returned objects
      * @return list of populated objects
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> List<T> getAllById(Class<T> c, T o, Integer limit) throws DriverException {
+    public <E extends AbstractCasquatchEntity> List<E> getAllById(Class<E> c, E o, Integer limit) throws DriverException {
         return this.getAllById(c,o,defaultQueryOptions.withLimit(limit));
     }
 
     /**
      * Get all object by passing a partially populated instance of the given object. Non-Key columns are ignored.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @param queryOptions Query Options to include
@@ -379,7 +379,7 @@ public class CasquatchDao {
      * @throws DriverException - Driver exception mapped to error code
      */
     @Rest("/get/all")
-    public <T extends AbstractCasquatchEntity> List<T> getAllById(Class<T> c, T o, QueryOptions queryOptions) throws DriverException {
+    public <E extends AbstractCasquatchEntity> List<E> getAllById(Class<E> c, E o, QueryOptions queryOptions) throws DriverException {
         return this.execute(this.getStatementFactory(c).get(o,queryOptions.withPrimaryKeysOnly())).map(this.getStatementFactory(c)::map).all();
     }
 
@@ -388,32 +388,32 @@ public class CasquatchDao {
      *
      * Note: Defaults to 10 rows
      *
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @return list of populated objects
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> List<T> getAllBySolr(Class<T> c, T o) throws DriverException {
+    public <E extends AbstractCasquatchEntity> List<E> getAllBySolr(Class<E> c, E o) throws DriverException {
         return this.getAllBySolr(c,o,defaultSolrQueryOptions);
     }
 
     /**
      * Get all objects by passing a partially populated object. Non-Key columns are allowed.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @param limit limit number of returned objects
      * @return list of populated objects
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> List<T> getAllBySolr(Class<T> c, T o, int limit) throws DriverException {
+    public <E extends AbstractCasquatchEntity> List<E> getAllBySolr(Class<E> c, E o, int limit) throws DriverException {
         return this.getAllBySolr(c,o,defaultSolrQueryOptions.withLimit(limit));
     }
 
     /**
      * Get all objects by passing a partially populated object. Non-Key columns are allowed.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @param queryOptions Query Options to include
@@ -421,38 +421,38 @@ public class CasquatchDao {
      * @throws DriverException - Driver exception mapped to error code
      */
     @Rest("/solr/object/get")
-    public <T extends AbstractCasquatchEntity> List<T> getAllBySolr(Class<T> c, T o, QueryOptions queryOptions) throws DriverException {
+    public <E extends AbstractCasquatchEntity> List<E> getAllBySolr(Class<E> c, E o, QueryOptions queryOptions) throws DriverException {
         return this.execute(this.getStatementFactory(c).get(o,queryOptions.withAllColumns())).map(this.getStatementFactory(c)::map).all();
     }
 
     /**
      * Get all objects by passing a solr_query.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param solrQueryString string representing the solr query (See https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/search/siQuerySyntax.html#siQuerySyntax)
      * @return list of populated objects
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> List<T> getAllBySolr(Class<T> c, String solrQueryString) throws DriverException {
+    public <E extends AbstractCasquatchEntity> List<E> getAllBySolr(Class<E> c, String solrQueryString) throws DriverException {
         return getAllBySolr(c,solrQueryString,defaultSolrQueryOptions);
     }
 
     /**
      * Get all objects by passing a solr_query.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param solrQueryString string representing the solr query (See https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/search/siQuerySyntax.html#siQuerySyntax)
      * @param limit limit number of returned objects
      * @return list of populated objects
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> List<T> getAllBySolr(Class<T> c, String solrQueryString, int limit) throws DriverException {
+    public <E extends AbstractCasquatchEntity> List<E> getAllBySolr(Class<E> c, String solrQueryString, int limit) throws DriverException {
         return this.getAllBySolr(c,solrQueryString,defaultSolrQueryOptions.withLimit(limit));
     }
 
     /**
      * Get all objects by passing a solr_query.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param solrQueryString string representing the solr query (See https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/search/siQuerySyntax.html#siQuerySyntax)
      * @param queryOptions Query Options to include
@@ -460,25 +460,25 @@ public class CasquatchDao {
      * @throws DriverException - Driver exception mapped to error code
      */
     @Rest("/solr/query/get")
-    public <T extends AbstractCasquatchEntity> List<T> getAllBySolr(Class<T> c, String solrQueryString, QueryOptions queryOptions) throws DriverException {
+    public <E extends AbstractCasquatchEntity> List<E> getAllBySolr(Class<E> c, String solrQueryString, QueryOptions queryOptions) throws DriverException {
         return this.execute(this.getStatementFactory(c).getSolr(solrQueryString,queryOptions.withAllColumns())).map(this.getStatementFactory(c)::map).all();
     }
 
     /**
      * Get a count of objects by passing a solr_query.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @return list of populated objects
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> Long getCountBySolr(Class<T> c, T o) throws DriverException {
+    public <E extends AbstractCasquatchEntity> Long getCountBySolr(Class<E> c, E o) throws DriverException {
         return this.getCountBySolr(c,o,defaultSolrQueryOptions);
     }
 
     /**
      * Get a count of objects by passing a solr_query.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @param queryOptions Query Options to include
@@ -486,26 +486,26 @@ public class CasquatchDao {
      * @throws DriverException - Driver exception mapped to error code
      */
     @Rest("/solr/object/count")
-    public <T extends AbstractCasquatchEntity> Long getCountBySolr(Class<T> c, T o, QueryOptions queryOptions) throws DriverException {
+    public <E extends AbstractCasquatchEntity> Long getCountBySolr(Class<E> c, E o, QueryOptions queryOptions) throws DriverException {
         Row row = this.execute(this.getStatementFactory(c).count(o,queryOptions.withAllColumns())).one();
         return Objects.requireNonNull(row).getLong("count");
     }
 
     /**
      * Get a count of objects by passing a solr_query.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param solrQueryString string representing the solr query (See https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/search/siQuerySyntax.html#siQuerySyntax)
      * @return list of populated objects
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> Long getCountBySolr(Class<T> c, String solrQueryString) throws DriverException {
+    public <E extends AbstractCasquatchEntity> Long getCountBySolr(Class<E> c, String solrQueryString) throws DriverException {
         return this.getCountBySolr(c,solrQueryString,defaultSolrQueryOptions);
     }
 
     /**
      * Get a count of objects by passing a solr_query.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param solrQueryString string representing the solr query (See https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/search/siQuerySyntax.html#siQuerySyntax)
      * @param queryOptions Query Options to include
@@ -513,7 +513,7 @@ public class CasquatchDao {
      * @throws DriverException - Driver exception mapped to error code
      */
     @Rest("/solr/query/count")
-    public <T extends AbstractCasquatchEntity> Long getCountBySolr(Class<T> c, String solrQueryString, QueryOptions queryOptions) throws DriverException {
+    public <E extends AbstractCasquatchEntity> Long getCountBySolr(Class<E> c, String solrQueryString, QueryOptions queryOptions) throws DriverException {
         Row row = this.execute(this.getStatementFactory(c).countSolr(solrQueryString,queryOptions.withAllColumns())).one();
         return Objects.requireNonNull(row).getLong("count");
     }
@@ -529,18 +529,18 @@ public class CasquatchDao {
 
     /**
      * Save an object by passing a populated instance of the given object.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> Void save(Class<T> c, T o) throws DriverException{
+    public <E extends AbstractCasquatchEntity> Void save(Class<E> c, E o) throws DriverException{
         return this.save(c,o,defaultQueryOptions);
     }
 
     /**
      * Save an object by passing a populated instance of the given object.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @param queryOptions Query Options to include
@@ -548,33 +548,33 @@ public class CasquatchDao {
      */
     @SuppressWarnings("SameReturnValue")
     @Rest("/save")
-    public <T extends AbstractCasquatchEntity> Void save(Class<T> c, T o, QueryOptions queryOptions) throws DriverException{
+    public <E extends AbstractCasquatchEntity> Void save(Class<E> c, E o, QueryOptions queryOptions) throws DriverException{
         this.execute(this.getStatementFactory(c).save(o,queryOptions.withAllColumns()));
         return null;
     }
 
     /**
      * Save asynchronously an object by passing a populated instance of the given object.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @return CompletableFuture to process ASync request
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> CompletableFuture<Void> saveAsync(Class<T> c, T o) throws DriverException{
+    public <E extends AbstractCasquatchEntity> CompletableFuture<Void> saveAsync(Class<E> c, E o) throws DriverException{
         return this.saveAsync(c,o,defaultQueryOptions);
     }
 
     /**
      * Save asynchronously an object by passing a populated instance of the given object.
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @param queryOptions Query Options to include
      * @return CompletableFuture to process ASync request
      * @throws DriverException - Driver exception mapped to error code
      */
-    public <T extends AbstractCasquatchEntity> CompletableFuture<Void> saveAsync(Class<T> c, T o,QueryOptions queryOptions) throws DriverException{
+    public <E extends AbstractCasquatchEntity> CompletableFuture<Void> saveAsync(Class<E> c, E o,QueryOptions queryOptions) throws DriverException{
         return this.executeASync(this.getStatementFactory(c).save(o,queryOptions.withPrimaryKeysOnly())).thenApply(rs -> null);
     }
 
@@ -609,14 +609,14 @@ public class CasquatchDao {
      *
      * Deprecated: Please use Object API or {@link CasquatchDao#execute(Statement)}
      *
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param cql cql to run
      * @return list of populated objects
      * @throws DriverException - Driver exception mapped to error code
      */
     @Deprecated
-    public <T extends AbstractCasquatchEntity> List<T> executeAll(Class<T> c, String cql) throws DriverException {
+    public <E extends AbstractCasquatchEntity> List<E> executeAll(Class<E> c, String cql) throws DriverException {
         try {
             return this.execute(SimpleStatement.builder(cql).build()).map(this.getStatementFactory(c)::map).all();
         }
@@ -630,14 +630,14 @@ public class CasquatchDao {
      *
      * Deprecated: Please use Object API or {@link CasquatchDao#execute(Statement)}
      *
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param cql cql to run
      * @return list of populated objects
      * @throws DriverException - Driver exception mapped to error code
      */
     @Deprecated
-    public <T extends AbstractCasquatchEntity> T executeOne(Class<T> c, String cql) throws DriverException {
+    public <E extends AbstractCasquatchEntity> E executeOne(Class<E> c, String cql) throws DriverException {
         try {
             return this.execute(SimpleStatement.builder(cql).build()).map(this.getStatementFactory(c)::map).one();
         }
@@ -651,14 +651,14 @@ public class CasquatchDao {
      *
      * Deprecated: please use {@link com.tmobile.opensource.casquatch.CasquatchDao#getById(Class, AbstractCasquatchEntity)}
      *
-     * @param <T> Domain Object for results
+     * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object
      * @return populated object
      * @throws DriverException - Driver exception mapped to error code
      */
     @Deprecated
-    public <T extends AbstractCasquatchEntity> T getOneById(Class<T> c, T o) throws DriverException {
+    public <E extends AbstractCasquatchEntity> E getOneById(Class<E> c, E o) throws DriverException {
         return this.getById(c,o);
     }
 

@@ -40,7 +40,7 @@ import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.bindMarker;
  */
 @SuppressWarnings("WeakerAccess")
 @Slf4j
-public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity> {
+public abstract class AbstractStatementFactory<E extends AbstractCasquatchEntity> {
 
     @AllArgsConstructor
     private class SolrQueryEntity {
@@ -54,14 +54,14 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
     protected final Select selectSolrStart;
     protected final Select selectSolrCountStart;
     protected final CqlSession session;
-    protected final Class<T> tableClass;
+    protected final Class<E> entityClass;
 
     /**
      * Query Factory Constructor
-     * @param tableClass Class for table object
+     * @param entityClass Class for table object
      * @param session bind to session
      */
-    public AbstractStatementFactory(Class<T> tableClass, CqlSession session) {
+    public AbstractStatementFactory(Class<E> entityClass, CqlSession session) {
         this.deleteStart = QueryBuilder.deleteFrom(this.getTableName());
         this.insertStart=QueryBuilder.insertInto(this.getTableName());
         this.selectCountStart=QueryBuilder.selectFrom(this.getTableName()).countAll();
@@ -69,7 +69,7 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
         this.selectSolrStart=selectAllStart.whereColumn("solr_query").isEqualTo(bindMarker());
         this.selectSolrCountStart=selectCountStart.whereColumn("solr_query").isEqualTo(bindMarker());
         this.session=session;
-        this.tableClass=tableClass;
+        this.entityClass=entityClass;
     }
 
     /**
@@ -79,7 +79,7 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
      * @param queryOptions query options to apply
      * @return bound statement builder containing bound values
      */
-    protected abstract BoundStatementBuilder bindObject(BoundStatementBuilder boundStatementBuilder, T obj, QueryOptions queryOptions);
+    protected abstract BoundStatementBuilder bindObject(BoundStatementBuilder boundStatementBuilder, E obj, QueryOptions queryOptions);
 
     /**
      * Create delete statement for object
@@ -87,7 +87,7 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
      * @param queryOptions query options to apply
      * @return delete statement containing object
      */
-    protected abstract Delete deleteObject(T obj, QueryOptions queryOptions);
+    protected abstract Delete deleteObject(E obj, QueryOptions queryOptions);
 
     /**
      * Get the table name
@@ -101,14 +101,14 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
      * @param queryOptions query options to apply
      * @return insert statement containing object
      */
-    protected abstract RegularInsert insertObject(T obj, QueryOptions queryOptions);
+    protected abstract RegularInsert insertObject(E obj, QueryOptions queryOptions);
 
     /**
      * Map a source to an object
      * @param source source, generally a row from a resultset
      * @return populated object
      */
-    protected abstract T map(GettableByName source);
+    protected abstract E map(GettableByName source);
 
     /**
      * Append a where clause to a select query using non-null fields found in the provided object
@@ -117,7 +117,7 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
      * @param queryOptions query options to apply
      * @return select object containing where clause
      */
-    protected abstract Select selectWhereObject(Select select, T obj, QueryOptions queryOptions);
+    protected abstract Select selectWhereObject(Select select, E obj, QueryOptions queryOptions);
 
     /**
      * Populate bind values of query using the provided object
@@ -155,9 +155,9 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
 
         if(log.isTraceEnabled()) log.trace("Preparing Statement {}",simpleStatement.getQuery());
         BoundStatementBuilder boundStatementBuilder = bindToSession.prepare(simpleStatement).boundStatementBuilder();
-        if(obj.getClass().equals(this.tableClass)) {
+        if(obj.getClass().equals(this.entityClass)) {
             //noinspection unchecked
-            boundStatementBuilder=bindObject(boundStatementBuilder,(T) obj,queryOptions);
+            boundStatementBuilder=bindObject(boundStatementBuilder,(E) obj,queryOptions);
         }
         else if (obj.getClass().equals(SolrQueryEntity.class)) {
             //noinspection unchecked
@@ -186,7 +186,7 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
      * @param queryOptions query options to apply
      * @return bound statement for the query
      */
-    public BoundStatement count(T obj, QueryOptions queryOptions) {
+    public BoundStatement count(E obj, QueryOptions queryOptions) {
         return buildBoundStatement(selectWhereObject(selectCountStart, obj, queryOptions),obj, queryOptions, this.session);
     }
 
@@ -212,7 +212,7 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
      * @param queryOptions query options to apply
      * @return bound statement for the query
      */
-    public BoundStatement delete(T obj, QueryOptions queryOptions) {
+    public BoundStatement delete(E obj, QueryOptions queryOptions) {
         return buildBoundStatement(deleteObject(obj, queryOptions), obj,queryOptions,this.session);
     }
 
@@ -225,7 +225,7 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
      * @param queryOptions query options to apply
      * @return bound statement for the query
      */
-    public BoundStatement get(T obj, QueryOptions queryOptions) {
+    public BoundStatement get(E obj, QueryOptions queryOptions) {
         return buildBoundStatement(selectWhereObject(selectAllStart, obj, queryOptions), obj,queryOptions,this.session);
     }
 
@@ -245,13 +245,13 @@ public abstract class AbstractStatementFactory<T extends AbstractCasquatchEntity
     /**
      * Create a save statement for an object
      *
-     * Example: INSERT INTO TABLE ([COL1..COLN]) VALUES([?..?])
+     * Example: INSERE INTO TABLE ([COL1..COLN]) VALUES([?..?])
      *
      * @param obj partially populated object
      * @param queryOptions query options to apply
      * @return simple statement for the query
      */
-    public BoundStatement save(T obj, QueryOptions queryOptions) {
+    public BoundStatement save(E obj, QueryOptions queryOptions) {
         return buildBoundStatement(insertObject(obj,queryOptions),obj, queryOptions,this.session);
     }
 

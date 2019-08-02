@@ -26,9 +26,9 @@ import uk.co.jemos.podam.api.PodamFactory;
 import java.util.Objects;
 
 @Slf4j
-class LoadWrapper<T extends AbstractCasquatchEntity> {
+class LoadWrapper<E extends AbstractCasquatchEntity> {
 
-    private final Class<T> clazz;
+    private final Class<E> clazz;
     private final CasquatchDao db;
     private static final PodamFactory podamFactory = new CasquatchPodamFactoryImpl();
 
@@ -51,7 +51,7 @@ class LoadWrapper<T extends AbstractCasquatchEntity> {
      * @param clazz class reference
      * @param db db reference
      */
-    public LoadWrapper(Class<T> clazz, CasquatchDao db) {
+    public LoadWrapper(Class<E> clazz, CasquatchDao db) {
         this.clazz=clazz;
         this.db=db;
     }
@@ -60,7 +60,7 @@ class LoadWrapper<T extends AbstractCasquatchEntity> {
      * Create a random object
      * @return random object
      */
-    private T generate() {
+    private E generate() {
         return podamFactory.manufacturePojoWithFullData(this.clazz);
     }
 
@@ -69,7 +69,7 @@ class LoadWrapper<T extends AbstractCasquatchEntity> {
      * @param obj object to write
      * @return written object;
      */
-    private T write(T obj) {
+    private E write(E obj) {
 
         StopWatch sw = new StopWatch();
         StopWatch dbsw = new StopWatch();
@@ -101,12 +101,12 @@ class LoadWrapper<T extends AbstractCasquatchEntity> {
      * @param obj object to query with
      * @return result of query
      */
-    private T read(T obj) {
+    private E read(E obj) {
         StopWatch sw = new StopWatch();
         StopWatch dbsw = new StopWatch();
         sw.start();
         log.trace("Reading object with id: "+obj.keys().toString());
-        T readObj = null;
+        E readObj = null;
         try {
             dbsw.start();
             readObj = db.getById(this.clazz, obj);
@@ -132,7 +132,7 @@ class LoadWrapper<T extends AbstractCasquatchEntity> {
      * @param obj1 object 1
      * @param obj2 object 2
      */
-    private void check(T obj1, T obj2) {
+    private void check(E obj1, E obj2) {
         if(obj1==null && obj2==null) {
             log.error("Must read and write in same transaction to check");
         }
@@ -179,16 +179,16 @@ class LoadWrapper<T extends AbstractCasquatchEntity> {
      * @param loadTestConfig load test configuration object
      */
     public void run(LoadTestConfig loadTestConfig) {
-        T warmup = generate();
+        E warmup = generate();
         db.save(this.clazz, warmup);
         db.getById(this.clazz, warmup);
 
         log.info("Run Starting. Loops: "+loadTestConfig.getLoops()+". Delay: "+loadTestConfig.getDelay());
         for (int x=0;x<loadTestConfig.getLoops();x++) {
 
-            T obj = generate();
-            T readObj = null;
-            T writeObj = null;
+            E obj = generate();
+            E readObj = null;
+            E writeObj = null;
 
             if(loadTestConfig.getDoWrite()) writeObj = write(obj);
 

@@ -22,17 +22,25 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public abstract class AbstractEntitySolrTests<T extends AbstractCasquatchEntity> extends AbstractEntityTests<T> {
+/**
+ * Abstract Class to be extended for Entity Solr Tests
+ * @param <E> Entity Class that extends AbstractCasquatchEntity
+ */
+public abstract class AbstractEntitySolrTests<E extends AbstractCasquatchEntity> extends AbstractEntityTests<E> {
 
-    public AbstractEntitySolrTests(Class<T> tableClass) {
-        super(tableClass);
+    /**
+     * Constructor based on entityClass
+     * @param entityClass
+     */
+    public AbstractEntitySolrTests(Class<E> entityClass) {
+        super(entityClass);
     }
 
     @Test
     public void testGetAllBySolrObject() {
-        T obj = prepObject();
+        E obj = prepObject();
 
-        List<T> tstObj = this.getCasquatchDao().getAllBySolr(this.getTableClass(),obj);
+        List<E> tstObj = this.getCasquatchDao().getAllBySolr(this.entityClass,obj);
         assertEquals(1, tstObj.size());
         assertEquals(obj, tstObj.get(0));
 
@@ -42,9 +50,9 @@ public abstract class AbstractEntitySolrTests<T extends AbstractCasquatchEntity>
 
     @Test
     public void testGetCountBySolrObject() {
-        T obj = prepObject();
+        E obj = prepObject();
 
-        Long count = this.getCasquatchDao().getCountBySolr(this.getTableClass(),obj);
+        Long count = this.getCasquatchDao().getCountBySolr(this.entityClass,obj);
         assertEquals(1, (long) count);
 
         cleanObject(obj);
@@ -52,9 +60,9 @@ public abstract class AbstractEntitySolrTests<T extends AbstractCasquatchEntity>
 
     @Test
     public void testGetAllBySolrObjectWithOptions() {
-        T obj = prepObject();
+        E obj = prepObject();
 
-        List<T> tstObj = this.getCasquatchDao().getAllBySolr(this.getTableClass(),obj,queryOptions);
+        List<E> tstObj = this.getCasquatchDao().getAllBySolr(this.entityClass,obj,queryOptions);
         assertEquals(1, tstObj.size());
         assertEquals(obj, tstObj.get(0));
 
@@ -64,9 +72,9 @@ public abstract class AbstractEntitySolrTests<T extends AbstractCasquatchEntity>
 
     @Test
     public void testGetCountBySolrObjectWithOptions() {
-        T obj = prepObject();
+        E obj = prepObject();
 
-        Long count = this.getCasquatchDao().getCountBySolr(this.getTableClass(),obj,queryOptions);
+        Long count = this.getCasquatchDao().getCountBySolr(this.entityClass,obj,queryOptions);
         assertEquals(1, (long) count);
 
         cleanObject(obj);

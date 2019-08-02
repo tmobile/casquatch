@@ -34,25 +34,43 @@ import java.io.IOException;
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Abstract class to be extended for Entity Rest DAO Testing
+ * @param <E> Entity Class that extends AbstractCasquatchEntity
+ * @param <S> Service Class for Entity Rest DAO
+ */
 @Slf4j
-public abstract class AbstractEntityRestDAOTests<T extends AbstractCasquatchEntity, S>{
+public abstract class AbstractEntityRestDAOTests<E extends AbstractCasquatchEntity, S>{
 
     private static final PodamFactory podamFactory = new CasquatchPodamFactoryImpl();
-
-    protected abstract S getService();
-    protected abstract MockMvc getMockMvc();
-    protected abstract CasquatchDao getDao();
-
-    private final Class<T> tableClass;
+    private final Class<E> entityClass;
     private final Class<S> serviceClass;
 
     /**
+     * Abstract Getter for Service
+     * @return Service reference
+     */
+    protected abstract S getService();
+
+    /**
+     * Abstract Getter for MockMvc
+     * @return MockMvc reference
+     */
+    protected abstract MockMvc getMockMvc();
+
+    /**
+     * Abstract Getter for CasquatchDao to allow implementer to customize Dao
+     * @return CasquatchDao reference
+     */
+    protected abstract CasquatchDao getDao();
+
+    /**
      * Construct with reference classes
-     * @param tableClass table class reference
+     * @param entityClass table class reference
      * @param serviceClass service class reference
      */
-    public AbstractEntityRestDAOTests(Class<T> tableClass, Class<S> serviceClass) {
-        this.tableClass=tableClass;
+    public AbstractEntityRestDAOTests(Class<E> entityClass, Class<S> serviceClass) {
+        this.entityClass=entityClass;
         this.serviceClass=serviceClass;
     }
 
@@ -61,10 +79,10 @@ public abstract class AbstractEntityRestDAOTests<T extends AbstractCasquatchEnti
      * @param response string response
      * @return response object
      */
-    private Response<T> deserialize(String response) {
+    private Response<E> deserialize(String response) {
         ObjectMapper mapper = new ObjectMapper();
 
-        JavaType type = mapper.getTypeFactory().constructParametricType(Response.class, this.tableClass);
+        JavaType type = mapper.getTypeFactory().constructParametricType(Response.class, this.entityClass);
         try {
             return mapper.readValue(response, type);
         } catch (IOException e) {
@@ -96,7 +114,7 @@ public abstract class AbstractEntityRestDAOTests<T extends AbstractCasquatchEnti
      * @param expectedResponse expected response object
      * @throws Exception any exception thrown by procedure
      */
-    private void doApi(String method, Request<T> request, Response<T> expectedResponse) throws Exception{
+    private void doApi(String method, Request<E> request, Response<E> expectedResponse) throws Exception{
         log.trace("Request: {}",request.toString());
         log.trace("Expected Response: {}",expectedResponse.toString());
         String api = getApi(method);
@@ -109,7 +127,7 @@ public abstract class AbstractEntityRestDAOTests<T extends AbstractCasquatchEnti
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Response<T> actualResponse = deserialize(result.getResponse().getContentAsString());
+        Response<E> actualResponse = deserialize(result.getResponse().getContentAsString());
 
         log.trace("Raw Response: {}",result.getResponse().getContentAsString());
         log.trace("Expected Response: {}",expectedResponse.toString());
@@ -130,23 +148,23 @@ public abstract class AbstractEntityRestDAOTests<T extends AbstractCasquatchEnti
     @Test
     public void testGet() throws Exception {
 
-        T payload = podamFactory.manufacturePojoWithFullData(this.tableClass);
-        this.getDao().save(this.tableClass,payload);
+        E payload = podamFactory.manufacturePojoWithFullData(this.entityClass);
+        this.getDao().save(this.entityClass,payload);
 
         doApi("get",new Request<>(payload),new Response<>(payload));
 
-        this.getDao().delete(this.tableClass,payload);
+        this.getDao().delete(this.entityClass,payload);
 
     }
 
     @Test
     public void testSave() throws Exception {
 
-        T payload = podamFactory.manufacturePojoWithFullData(this.tableClass);
+        E payload = podamFactory.manufacturePojoWithFullData(this.entityClass);
 
         doApi("save",new Request<>(payload),new Response<>(Response.Status.SUCCESS));
 
-        this.getDao().delete(this.tableClass,payload);
+        this.getDao().delete(this.entityClass,payload);
 
     }
 
