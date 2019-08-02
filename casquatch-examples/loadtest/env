@@ -1,3 +1,0 @@
-NAME=loadtest
-SCHEMA=schema.cql
-RUN_COMMAND="mvn clean test package"

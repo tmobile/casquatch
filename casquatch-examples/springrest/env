@@ -1,3 +1,0 @@
-NAME=springrest
-SCHEMA=schema.cql
-RUN_COMMAND="mvn clean test spring-boot:run"

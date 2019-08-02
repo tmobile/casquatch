@@ -16,21 +16,54 @@
 
 package com.tmobile.opensource.casquatch.examples.springconfigserver;
 
+import com.tmobile.opensource.casquatch.CasquatchDao;
+import com.tmobile.opensource.casquatch.tests.podam.CasquatchPodamFactoryImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.config.environment.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@Slf4j
 public class SpringConfigServerApplicationTests {
+
+	@Autowired
+	private CasquatchDao casquatchDao;
+	private CasquatchPodamFactoryImpl casquatchPodamFactory= new CasquatchPodamFactoryImpl();
+	private CasquatchEnvironmentRepository casquatchEnvironmentRepository= new CasquatchEnvironmentRepository(casquatchDao);
+
 	@Test
-	public void contextLoads() {
-		//Intentionally Left Empty
+	public void testFindOne() {
+
+		Configuration configuration = casquatchPodamFactory.manufacturePojoWithFullData(Configuration.class);
+		casquatchDao.save(Configuration.class,configuration);
+
+		casquatchEnvironmentRepository = new CasquatchEnvironmentRepository(casquatchDao);
+		Environment environment = casquatchEnvironmentRepository.findOne(configuration.getApplication(),configuration.getProfile(),configuration.getLabel());
+
+		assertEquals(configuration.getValue(),environment.getPropertySources().get(0).getSource().get(configuration.getKey()));
+
 	}
 
-	//TODO - Test Service
+	@Test
+	public void testFindOneMissing() {
+
+		Configuration configuration = casquatchPodamFactory.manufacturePojoWithFullData(Configuration.class);
+
+		casquatchEnvironmentRepository = new CasquatchEnvironmentRepository(casquatchDao);
+		Environment environment = casquatchEnvironmentRepository.findOne(configuration.getApplication(),configuration.getProfile(),configuration.getLabel());
+
+		assertNull(environment.getPropertySources().get(0).getSource().get(configuration.getKey()));
+
+	}
 
 }

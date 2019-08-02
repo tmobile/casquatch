@@ -31,12 +31,12 @@ public class Configuration_EmbeddedTests extends AbstractEntityTests<Configurati
         casquatchDao=new CasquatchTestDaoBuilder()
                             .withEmbedded()
                             .withTestKeyspace("junittest")
-                            .withDDL(Configuration.getDDL())
+                            .withDDL(new Configuration().getDDL())
                             .build();
     }
 
     public CasquatchDao getCasquatchDao() {
-        return casquatchDao;
+        return this.casquatchDao;
     }
 
 }

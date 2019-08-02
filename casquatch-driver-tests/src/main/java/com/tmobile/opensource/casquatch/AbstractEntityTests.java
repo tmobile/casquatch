@@ -39,7 +39,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
     public abstract CasquatchDao getCasquatchDao();
     protected Class<T> entityClass;
     protected DatabaseCache<T> databaseCache;
-    private Long expiration = 100L;
+    private Long expiration = 10000L;
 
     protected QueryOptions queryOptions;
 

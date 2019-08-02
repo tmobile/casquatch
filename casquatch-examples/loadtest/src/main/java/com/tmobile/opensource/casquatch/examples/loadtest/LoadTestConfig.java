@@ -53,7 +53,7 @@ public class LoadTestConfig {
                 Class clazz;
                 try {
                     if (!entity.contains(".")) {
-                        clazz = Class.forName(LoadtestApplication.class.getPackage().getName() + "." + entity);
+                        clazz = Class.forName(LoadTestApplication.class.getPackage().getName() + "." + entity);
                     } else {
                         clazz = Class.forName(entity);
                     }
