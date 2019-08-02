@@ -19,6 +19,10 @@ package com.tmobile.opensource.casquatch;
 import com.datastax.oss.driver.api.core.data.UdtValue;
 import com.datastax.oss.driver.api.core.type.UserDefinedType;
 
+/**
+ * Abstract class for Type Factory to transation Type objects and UdtValue
+ * @param <T> Type reference
+ */
 public abstract class AbstractTypeFactory <T extends AbstractCasquatchType> {
     protected final UserDefinedType userDefinedType;
 

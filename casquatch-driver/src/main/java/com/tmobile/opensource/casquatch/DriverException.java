@@ -21,11 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * This exception class provides a wrapper for the underlying exceptions which then map to custom error codes.
  */
-
 @Slf4j
 @Getter
 public class DriverException extends RuntimeException {
 
+    /**
+     * Enum to hold exception categories
+     */
     public enum CATEGORIES {
         CASQUATCH_MISSING_GENERATED_CLASS,
         CASQUATCH_MISSING_PARAMETER,

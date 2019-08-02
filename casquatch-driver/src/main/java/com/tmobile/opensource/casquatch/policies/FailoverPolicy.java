@@ -18,6 +18,15 @@ package com.tmobile.opensource.casquatch.policies;
 
 import com.datastax.oss.driver.api.core.cql.Statement;
 
+/**
+ * Generic Failover Policy interface. The failover policy is called when a statement is executed and an exception is raised. If shouldFailover returns true then the query is reattempted on the failover profile.
+ */
 public abstract class FailoverPolicy {
+    /**
+     * Evaluates statement and exception to determine if failover is to occurr
+     * @param exception exception received during execute
+     * @param statement statement that was executed
+     * @return boolean value to indicate failover
+     */
     public abstract Boolean shouldFailover(Exception exception, Statement statement);
 }

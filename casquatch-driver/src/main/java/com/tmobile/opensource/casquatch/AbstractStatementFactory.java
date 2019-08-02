@@ -42,6 +42,9 @@ import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.bindMarker;
 @Slf4j
 public abstract class AbstractStatementFactory<E extends AbstractCasquatchEntity> {
 
+    /**
+     * Internal class to represent an entity with only a SolrQuery column
+     */
     @AllArgsConstructor
     private class SolrQueryEntity {
         @Getter String solrQuery;

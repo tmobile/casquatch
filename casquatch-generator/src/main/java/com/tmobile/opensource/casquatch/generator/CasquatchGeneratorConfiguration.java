@@ -59,6 +59,10 @@ public class CasquatchGeneratorConfiguration {
     @Optional
     Boolean overwrite=false;
 
+    /**
+     * Validate the configuration and throw an exception on failure
+     * @throws DriverException exception for invalid configuration
+     */
     public void validate() throws DriverException {
 //        if(this.getKeyspace()==null || (this.getKeyspace()!=null && this.getKeyspace().isEmpty())) {
 //            throw new DriverException(DriverException.CATEGORIES.CASQUATCH_INVALID_CONFIGURATION,"Keyspace is required");

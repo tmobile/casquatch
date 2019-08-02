@@ -23,6 +23,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Request wrapper for use with RestAPI
+ * @param <T> entity type to wrap
+ */
 @SuppressWarnings("WeakerAccess")
 @NoArgsConstructor
 @Getter @Setter

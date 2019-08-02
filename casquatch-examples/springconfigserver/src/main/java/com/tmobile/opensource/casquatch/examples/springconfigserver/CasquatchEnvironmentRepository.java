@@ -26,6 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Implementation of EnvironmentRepository to back with Casquatch
+ */
 @SuppressWarnings("WeakerAccess")
 public class CasquatchEnvironmentRepository implements EnvironmentRepository {
 

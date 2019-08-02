@@ -22,7 +22,13 @@ import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
+/**
+ * Simple implementation class to define default strategies
+ */
 public class CasquatchPodamFactoryImpl extends PodamFactoryImpl {
+    /**
+     * Extends constructor for default settings
+     */
     public CasquatchPodamFactoryImpl() {
         super();
         this.getStrategy().addOrReplaceTypeManufacturer(UUID.class, new UUIDStrategy());

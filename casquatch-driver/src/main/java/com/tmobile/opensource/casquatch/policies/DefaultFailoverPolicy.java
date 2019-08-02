@@ -19,7 +19,23 @@ package com.tmobile.opensource.casquatch.policies;
 
 import com.datastax.oss.driver.api.core.cql.Statement;
 
+/**
+ * Default implementation of a FailoverPolicy.
+ *
+ * This provides a failover if any of the following exceptions occur:
+ *   {@link com.datastax.oss.driver.api.core.AllNodesFailedException}
+ *   {@link com.datastax.oss.driver.api.core.DriverTimeoutException}
+ *   {@link com.datastax.oss.driver.api.core.InvalidKeyspaceException}
+ *   {@link com.datastax.oss.driver.api.core.NoNodeAvailableException}
+ */
 public class DefaultFailoverPolicy extends FailoverPolicy {
+
+    /**
+     * Implementation of failover logic for class
+     * @param exception exception received during execute
+     * @param statement statement that was executed
+     * @return boolean indicator if failover should occur
+     */
     @Override
     public Boolean shouldFailover(Exception exception, Statement statement) {
         if(exception instanceof com.datastax.oss.driver.api.core.AllNodesFailedException) {

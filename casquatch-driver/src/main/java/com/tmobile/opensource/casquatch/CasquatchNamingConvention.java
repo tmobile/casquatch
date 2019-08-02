@@ -29,6 +29,14 @@ import java.util.List;
 @SuppressWarnings("WeakerAccess")
 @Slf4j
 public class CasquatchNamingConvention {
+    /**
+     * Converts an api name to rest method
+     * @param api name of api
+     * @return name of rest method
+     */
+    public static String apiToRestMethod(String api) {
+        return WordUtils.uncapitalize(WordUtils.capitalizeFully(api,'/','-').replaceAll("([^a-zA-Z0-9])",""));
+    }
 
     /**
      * convert class to package name
@@ -311,10 +319,6 @@ public class CasquatchNamingConvention {
      */
     public static String javaVariableToJavaSet(String javaVariable) {
         return "set"+WordUtils.capitalize(javaVariable);
-    }
-
-    public static String apiToRestMethod(String api) {
-        return WordUtils.uncapitalize(WordUtils.capitalizeFully(api,'/','-').replaceAll("([^a-zA-Z0-9])",""));
     }
 
 }

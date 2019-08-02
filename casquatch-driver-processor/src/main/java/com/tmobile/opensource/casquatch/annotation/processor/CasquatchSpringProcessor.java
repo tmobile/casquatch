@@ -73,6 +73,7 @@ public class CasquatchSpringProcessor extends CasquatchProcessorStarter {
     /**
      * Create spring rest dao configuration
      * @param className Entity to create rest dao for
+     * @param casquatchSpring annotation reference
      * @throws Exception exception generated while creating source
      */
     private void writeSpringRestDao(String className,CasquatchSpring casquatchSpring) throws Exception {

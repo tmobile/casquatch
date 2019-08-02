@@ -183,9 +183,10 @@ public class CasquatchDao {
      * Gets a dao mapper for a given object
      * @param c Entity class name
      * @param <E> Generic entity class
+     * @param <S> Generic statement factory
      * @return dao object
      */
-    private <E extends AbstractCasquatchEntity, Q extends AbstractStatementFactory<E>> Q getStatementFactory(Class<E> c) {
+    private <E extends AbstractCasquatchEntity, S extends AbstractStatementFactory<E>> S getStatementFactory(Class<E> c) {
         if(!statementFactoryCache.containsKey(c)) {
             try {
                 statementFactoryCache.put(c, Class.forName(CasquatchNamingConvention.classToStatementFactory(c.getName())).getConstructor(CqlSession.class).newInstance(this.session));
@@ -197,7 +198,7 @@ public class CasquatchDao {
             }
         }
         //noinspection unchecked
-        return (Q) statementFactoryCache.get(c);
+        return (S) statementFactoryCache.get(c);
     }
 
     /**
@@ -223,6 +224,7 @@ public class CasquatchDao {
      * @param c Class of object
      * @param o partially populated object
      * @throws DriverException - Driver exception mapped to error code
+     * @return returns a Void object
      */
     public <E extends AbstractCasquatchEntity> Void delete(Class<E> c, E o) throws DriverException {
         return this.delete(c,o,defaultQueryOptions);
@@ -235,6 +237,7 @@ public class CasquatchDao {
      * @param o partially populated object
      * @param queryOptions Query Options to include
      * @throws DriverException - Driver exception mapped to error code
+     * @return returns a Void object
      */
     @SuppressWarnings("SameReturnValue")
     @Rest("/delete")
@@ -533,6 +536,7 @@ public class CasquatchDao {
      * @param c Class of object
      * @param o partially populated object
      * @throws DriverException - Driver exception mapped to error code
+     * @return returns a Void object
      */
     public <E extends AbstractCasquatchEntity> Void save(Class<E> c, E o) throws DriverException{
         return this.save(c,o,defaultQueryOptions);
@@ -545,6 +549,7 @@ public class CasquatchDao {
      * @param o partially populated object
      * @param queryOptions Query Options to include
      * @throws DriverException - Driver exception mapped to error code
+     * @return returns a Void object
      */
     @SuppressWarnings("SameReturnValue")
     @Rest("/save")

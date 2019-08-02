@@ -25,9 +25,18 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.UUID;
 
-
+/**
+ * Implements UUID generation. Uses a TimeUUID
+ */
 class UUIDStrategy extends AbstractTypeManufacturer<UUID> {
 
+    /**
+     * Required interface to implement UUID generation.
+     * @param strategy passed strategy
+     * @param attributeMetadata passed attribute metadata
+     * @param genericTypesArgumentsMap passed map
+     * @return generated UUID
+     */
     @Override
     public UUID getType(DataProviderStrategy strategy,
                           AttributeMetadata attributeMetadata,

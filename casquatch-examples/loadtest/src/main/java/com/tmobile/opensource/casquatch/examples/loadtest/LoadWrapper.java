@@ -25,6 +25,10 @@ import uk.co.jemos.podam.api.PodamFactory;
 
 import java.util.Objects;
 
+/**
+ * Load functionality wrapped around a generic entity
+ * @param <E> entity to wrap
+ */
 @Slf4j
 class LoadWrapper<E extends AbstractCasquatchEntity> {
 

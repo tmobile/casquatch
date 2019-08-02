@@ -27,5 +27,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ClusteringColumn {
+    /**
+     * Order number of clustering column
+     * @return value
+     */
     int value();
 }

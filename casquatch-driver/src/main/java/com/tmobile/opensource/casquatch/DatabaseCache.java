@@ -32,6 +32,9 @@ import java.util.Map;
 @Slf4j
 public class DatabaseCache<E extends AbstractCasquatchEntity> {
 
+    /**
+     * Internal class to represent a cache item
+     */
     @AllArgsConstructor
     @Getter @Setter @ToString
     private class CacheItem {

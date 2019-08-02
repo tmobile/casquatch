@@ -20,6 +20,9 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration implementation to define Casquatch Beans
+ */
 @Configuration
 public class CasquatchSpringBeans {
 

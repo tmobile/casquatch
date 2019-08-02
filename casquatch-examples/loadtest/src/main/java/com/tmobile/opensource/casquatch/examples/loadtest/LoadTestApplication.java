@@ -25,8 +25,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
+/**
+ * Demo Load Test Application. Receives configuration then produces the given load.
+ */
 @Slf4j
-public class LoadtestApplication {
+public class LoadTestApplication {
 
 	public static void main(String[] args) {
 

@@ -23,6 +23,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
+/**
+ * Response wrapper for use with Rest API
+ * @param <T> Entity Type to Wrap
+ */
 @Slf4j
 @Getter
 public class Response<T> {

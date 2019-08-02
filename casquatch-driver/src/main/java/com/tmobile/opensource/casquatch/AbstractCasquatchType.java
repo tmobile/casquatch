@@ -18,6 +18,9 @@ package com.tmobile.opensource.casquatch;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Abstract class to define a CasquatchType
+ */
 @Slf4j
 public abstract class AbstractCasquatchType extends AbstractCasquatchObject {
 }

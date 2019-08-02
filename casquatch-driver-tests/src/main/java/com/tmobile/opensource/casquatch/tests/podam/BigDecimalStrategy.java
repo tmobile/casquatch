@@ -24,8 +24,18 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.Map;
 
+/**
+ * Implements BigDecimal generation
+ */
 class BigDecimalStrategy extends AbstractTypeManufacturer<BigDecimal> {
 
+    /**
+     * Required interface to implement BigDecimal generation.
+     * @param strategy passed strategy
+     * @param attributeMetadata passed attribute metadata
+     * @param genericTypesArgumentsMap passed map
+     * @return generated BigDecimal
+     */
     @Override
     public BigDecimal getType(DataProviderStrategy strategy,
                            AttributeMetadata attributeMetadata,
