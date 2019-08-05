@@ -28,10 +28,6 @@ import static org.junit.Assert.assertEquals;
  */
 public abstract class AbstractEntitySolrTests<E extends AbstractCasquatchEntity> extends AbstractEntityTests<E> {
 
-    /**
-     * Constructor based on entityClass
-     * @param entityClass
-     */
     public AbstractEntitySolrTests(Class<E> entityClass) {
         super(entityClass);
     }
