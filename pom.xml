@@ -104,6 +104,7 @@
             <exclude>**/Abstract*.java</exclude>
             <exclude>**/*ExternalTests.java</exclude>
           </excludes>
+          <trimStackTrace>false</trimStackTrace>
         </configuration>
       </plugin>
       <plugin>
