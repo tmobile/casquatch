@@ -57,7 +57,5 @@ public class GeneratorTest {
 
         casquatchGenerator.run();
 
-        //TODO Needs more comprehensive testing
-
     }
 }

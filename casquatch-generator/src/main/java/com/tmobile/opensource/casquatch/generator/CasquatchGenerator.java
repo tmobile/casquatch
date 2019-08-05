@@ -148,25 +148,35 @@ public class CasquatchGenerator {
      * @return string containing help message
      */
     public static String help() {
-
-        //TODO flesh out more
         TextStringBuilder output = new TextStringBuilder();
-        output.appendln("Properties:");
-        output.appendln("casquatch.generator.username=<string>");
-        output.appendln("casquatch.generator.password=<string>");
-        output.appendln("casquatch.generator.keyspace=<string>");
-        output.appendln("casquatch.generator.datacenter=<string>");
-        output.appendln("casquatch.generator.contactPoints.0=<ip0:port>...casquatch.generator.contactPoints.n=<ipn:port>");
-        output.appendln("casquatch.generator.tables.0=<table0>...casquatch.generator.tables.n=<tablen>");
-        output.appendln("casquatch.generator.console=<boolean>");
-        output.appendln("casquatch.generator.file=<boolean>");
-        output.appendln("casquatch.generator.outputFolder=<path>");
-        output.appendln("casquatch.generator.overwrite=<boolean>");
-        output.appendln("casquatch.generator.createPackage=<boolean>");
-        output.appendln("casquatch.generator.packageName=<string>");
-        output.appendln("config.file=<path>");
+        output.appendln("Casquatch Code Generated");
         output.appendln("");
         output.appendln("Properties can be provided via the command line via -D parameters");
+        output.appendln("Properties:");
+        output.appendln("casquatch.generator.username=<string> -- Authentication Username");
+        output.appendln("casquatch.generator.password=<string> -- Authentication Password");
+        output.appendln("casquatch.generator.keyspace=<string> -- Keyspace to parse");
+        output.appendln("casquatch.generator.datacenter=<string> -- LocalDC for connection");
+        output.appendln("casquatch.generator.contactPoints.0=<ip0:port>...casquatch.generator.contactPoints.n=<ipn:port> -- List of contact points");
+        output.appendln("casquatch.generator.tables.0=<table0>...casquatch.generator.tables.n=<tablen> -- Provide a list of tables. All tables are processed if not supplied");
+        output.appendln("casquatch.generator.console=<boolean> -- Indicate if generated code should be printed to console");
+        output.appendln("casquatch.generator.file=<boolean> -- Indicate if generated code should be printed to a file");
+        output.appendln("casquatch.generator.outputFolder=<path> -- Required if file=true. Defines location to write generated files");
+        output.appendln("casquatch.generator.overwrite=<boolean> -- Toggle overwriting of files in output folder");
+        output.appendln("casquatch.generator.createPackage=<boolean> -- If createPackage=true then pom.xml and src folder structure will be added |");
+        output.appendln("casquatch.generator.packageName=<string> -- Package name for source files");
+        output.appendln("config.file=<path> -- Specify a path  to a config file to place parameters");
+        output.appendln("");
+        output.appendln("Examples: ");
+        output.appendln("");
+        output.appendln("Generate using properties file");
+        output.appendln("java -Dconfig.file=/path/to/config.properties -jar CassandraGenerator.jar");
+        output.appendln("");
+        output.appendln("Generate all tables in a keyspace providing minimum information");
+        output.appendln("java -Dcasquatch.generator.outputFolder=tmp -Dcasquatch.generator.keyspace=myKeyspace -Dcasquatch.generator.datacenter=datacenter1 -jar CassandraGenerator.jar");
+        output.appendln("");
+        output.appendln("Generate a package for all tables in a keyspace providing additional information");
+        output.appendln("java -Dcasquatch.generator.outputFolder=tmp -Dcasquatch.generator.keyspace=myKeyspace -Dcasquatch.generator.datacenter=datacenter1 -Dcasquatch.generator.username=cassandra -Dcasquatch.generator.password=cassandra -Dcasquatch.generator.createPackage=true -Dcasquatch.generator.packageName=com.demo.mykeyspace -jar CassandraGenerator.jar");
         return output.toString();
     }
 

@@ -77,7 +77,6 @@ public class DriverException extends RuntimeException {
      */
     private void setException(Exception exception) {
         this.exception = exception;
-        //TODO process out more exceptions
         if(exception instanceof com.datastax.oss.driver.api.core.AllNodesFailedException) {
             this.category=CATEGORIES.APPLICATION_DML_QUERY;
             this.message="Query Exception: Query failed on all nodes "+exception.getClass()+": "+this.getException().getMessage();
@@ -102,37 +101,5 @@ public class DriverException extends RuntimeException {
             this.category=CATEGORIES.UNHANDLED_CASQUATCH;
             this.message="Undefined Exception: "+exception.getClass()+": "+this.getException().getMessage();
         }
-        /*if (exception instanceof com.datastax.driver.core.exceptions.NoHostAvailableException) {
-            this.setCode(201);
-            this.setMessage("No Hosts Available: "+this.getException().getMessage());
-        }
-        else if (exception instanceof com.datastax.driver.core.exceptions.AuthenticationException) {
-            this.setCode(202);
-            this.setMessage("Authentication Exception: "+this.getException().getMessage());
-        }
-        else if (exception instanceof IllegalStateException) {
-            this.setCode(203);
-            this.setMessage("Connection Exception: "+this.getException().getMessage());
-        }
-        else if (exception instanceof  com.datastax.driver.core.exceptions.QueryExecutionException) {
-            this.setCode(301);
-            this.setMessage("Query Execution Exception: "+this.getException().getMessage());
-        }
-        else if (exception instanceof com.datastax.driver.core.exceptions.InvalidConfigurationInQueryException) {
-            this.setCode(302);
-            this.setMessage("Invalid Query Configuration Exception: "+this.getException().getMessage());
-        }
-        else if (exception instanceof com.datastax.driver.core.exceptions.InvalidQueryException) {
-            this.setCode(303);
-            this.setMessage("Invalid Query Exception: "+this.getException().getMessage());
-        }
-        else if (exception instanceof com.datastax.driver.core.exceptions.DriverInternalError) {
-            this.setCode(304);
-            this.setMessage("Internal Driver Exception: "+exception.getCause());
-        }
-        else {
-            this.setCode(399);
-            this.setMessage("Unknown exception: "+exception.getClass()+": "+this.getException().getMessage());
-        }*/
     }
 }
