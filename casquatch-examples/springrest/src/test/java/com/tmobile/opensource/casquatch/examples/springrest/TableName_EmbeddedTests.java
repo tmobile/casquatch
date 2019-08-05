@@ -31,12 +31,12 @@ public class TableName_EmbeddedTests extends AbstractEntityTests<TableName> {
         casquatchDao=new CasquatchTestDaoBuilder()
                             .withEmbedded()
                             .withTestKeyspace("junittest")
-                            .withDDL(TableName.getDDL())
+                            .withDDL(new TableName().getDDL())
                             .build();
     }
 
     public CasquatchDao getCasquatchDao() {
-        return casquatchDao;
+        return this.casquatchDao;
     }
 
 }
