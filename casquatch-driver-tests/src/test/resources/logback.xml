@@ -26,7 +26,7 @@
     </encoder>
   </appender>
 
-  <Logger name="com.tmobile.opensource.casquatch" level="ERROR"/>
+  <Logger name="com.tmobile.opensource.casquatch" level="${CASQUATCH_LOG_LEVEL:-ERROR}"/>
 
   <Logger name="org.apache.cassandra" level="OFF"/>
 
