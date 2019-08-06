@@ -35,6 +35,7 @@ public class DriverException extends RuntimeException {
         DATABASE_NO_HOSTS_AVAILABLE,
         DATABASE_AUTHENTICATION,
         DATABASE_CONNECTION,
+        DATABASE_FEATURE_NOT_SUPPORTED,
         APPLICATION_DDL_QUERY,
         APPLICATION_DML_QUERY,
         APPLICATION_INVALID,
@@ -92,6 +93,16 @@ public class DriverException extends RuntimeException {
         else if(exception instanceof com.datastax.oss.driver.api.core.NoNodeAvailableException) {
             this.category=CATEGORIES.APPLICATION_DML_QUERY;
             this.message="Query Exception: No node was available to execute the query "+exception.getClass()+": "+this.getException().getMessage();
+        }
+        else if(exception instanceof com.datastax.oss.driver.api.core.servererrors.InvalidQueryException) {
+            if (exception.getMessage().equals("Undefined column name solr_query")) {
+                this.category=CATEGORIES.DATABASE_FEATURE_NOT_SUPPORTED;
+                this.message="Query Exception: Solr is not enabled for this table";
+            }
+            else {
+                this.category=CATEGORIES.APPLICATION_DML_QUERY;
+                this.message="Query Exception: "+exception.getClass()+": "+this.getException().getMessage();
+            }
         }
         else if(exception instanceof com.datastax.oss.driver.api.core.DriverException) {
             this.category=CATEGORIES.UNHANDLED_DATASTAX;

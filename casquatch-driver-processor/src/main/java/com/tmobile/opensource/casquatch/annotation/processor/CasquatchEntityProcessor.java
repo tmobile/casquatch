@@ -27,7 +27,11 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.type.*;
+import javax.lang.model.util.Types;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,8 +50,8 @@ public class CasquatchEntityProcessor  extends CasquatchProcessorStarter {
     protected boolean process(Element element) {
         CasquatchEntity casquatchEntity = element.getAnnotation(com.tmobile.opensource.casquatch.annotation.CasquatchEntity.class);
         try {
-            if(casquatchEntity.generateFactory()) writeStatementFactory(getClassName(element));
-            if(casquatchEntity.generateTests()) writeTests(getClassName(element));
+            if(casquatchEntity.generateFactory()) writeStatementFactory(getClassName(element),casquatchEntity.table());
+            if(casquatchEntity.generateTests()) writeTests(getClassName(element),casquatchEntity.table());
         } catch (Exception e) {
             log.error("Failed to generate source files.", e);
             return false;
@@ -60,8 +64,16 @@ public class CasquatchEntityProcessor  extends CasquatchProcessorStarter {
      * @param className Entity to create test for
      * @throws Exception exception generated while creating source
      */
-    private void writeTests(String className) throws Exception {
+    private void writeTests(String className, String tableName) throws Exception {
         Map<String, Object> input = inputStart(className);
+
+        if(!tableName.isEmpty()) {
+            input.put("table",tableName);
+        }
+        else {
+            input.put("table", CasquatchNamingConvention.javaVariableToCql(CasquatchNamingConvention.classToVar(CasquatchNamingConvention.classToSimpleClass(className))));
+        }
+
         createSource(CasquatchNamingConvention.classToEmbeddedTests(className),"EmbeddedTests.ftl",input);
         createSource(CasquatchNamingConvention.classToExternalTests(className),"ExternalTests.ftl",input);
     }
@@ -71,11 +83,13 @@ public class CasquatchEntityProcessor  extends CasquatchProcessorStarter {
      * @param className object holding an entity class
      * @throws Exception exception generated while creating source
      */
-    private void writeStatementFactory(String className) throws Exception {
+    private void writeStatementFactory(String className, String tableName) throws Exception {
         Map<String, Object> input = inputStart(className);
         Map<String,String> keyFields = new HashMap<>();
         Map<String,String> nonKeyFields = new HashMap<>();
         Map<String,String> udtFields = new HashMap<>();
+
+        List<String> imports = new ArrayList<>();
 
         for (Element element : roundEnv.getRootElements()) {
             if (element.getSimpleName().toString().equals(CasquatchNamingConvention.classToSimpleClass(className))) {
@@ -85,17 +99,30 @@ public class CasquatchEntityProcessor  extends CasquatchProcessorStarter {
                                 enclosedElement.getAnnotation(com.fasterxml.jackson.annotation.JsonIgnore.class)==null &&
                                 enclosedElement.getAnnotation(com.tmobile.opensource.casquatch.annotation.CasquatchIgnore.class)==null
                         ) {
-                            if(enclosedElement.getAnnotation(com.tmobile.opensource.casquatch.annotation.PartitionKey.class)!=null) {
-                                keyFields.put(enclosedElement.getSimpleName().toString(),enclosedElement.asType().toString());
-                            }
-                            else if(enclosedElement.getAnnotation(com.tmobile.opensource.casquatch.annotation.ClusteringColumn.class)!=null) {
-                                keyFields.put(enclosedElement.getSimpleName().toString(),enclosedElement.asType().toString());
-                            }
-                            else if(enclosedElement.getAnnotation(com.tmobile.opensource.casquatch.annotation.UDT.class)!=null) {
-                                udtFields.put(enclosedElement.getSimpleName().toString(),enclosedElement.asType().toString());
+
+                            String type = "";
+                            if(enclosedElement.asType().getKind()== TypeKind.DECLARED) {
+                                type=processingEnv.getTypeUtils().erasure(enclosedElement.asType()).toString();
+                                for(TypeMirror typeMirror : ((DeclaredType)enclosedElement.asType()).getTypeArguments()) {
+                                    if (!imports.contains(typeMirror.toString())) imports.add(typeMirror.toString());
+                                }
                             }
                             else {
-                                nonKeyFields.put(enclosedElement.getSimpleName().toString(),enclosedElement.asType().toString());
+                                type=enclosedElement.asType().toString();
+                            }
+                            if (!imports.contains(type)) imports.add(type);
+
+                            if(enclosedElement.getAnnotation(com.tmobile.opensource.casquatch.annotation.PartitionKey.class)!=null) {
+                                keyFields.put(enclosedElement.getSimpleName().toString(),type);
+                            }
+                            else if(enclosedElement.getAnnotation(com.tmobile.opensource.casquatch.annotation.ClusteringColumn.class)!=null) {
+                                keyFields.put(enclosedElement.getSimpleName().toString(),type);
+                            }
+                            else if(enclosedElement.getAnnotation(com.tmobile.opensource.casquatch.annotation.UDT.class)!=null) {
+                                udtFields.put(enclosedElement.getSimpleName().toString(),type);
+                            }
+                            else {
+                                nonKeyFields.put(enclosedElement.getSimpleName().toString(),type);
                             }
                         }
                     }
@@ -103,6 +130,13 @@ public class CasquatchEntityProcessor  extends CasquatchProcessorStarter {
             }
         }
 
+        if(!tableName.isEmpty()) {
+            input.put("table",tableName);
+        }
+        else {
+            input.put("table", CasquatchNamingConvention.javaVariableToCql(CasquatchNamingConvention.classToVar(CasquatchNamingConvention.classToSimpleClass(className))));
+        }
+        input.put("imports",imports);
         input.put("keyFields", keyFields);
         input.put("udtFields", udtFields);
         input.put("nonKeyFields", nonKeyFields);

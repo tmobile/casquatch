@@ -32,8 +32,20 @@ public @interface CasquatchEntity {
     boolean generateFactory() default true;
 
     /**
-     * Triggers the generation of Embedded Test suite
+     * Triggers the generation of Test suite
      * @return boolean indicator
      */
     boolean generateTests() default false;
+
+    /**
+     * Triggers the generation of DSE Test suite
+     * @return boolean indicator
+     */
+    boolean generateDSETests() default false;
+
+    /**
+     * Override table name. Infered from {@link com.tmobile.opensource.casquatch.CasquatchNamingConvention#javaClassToCql(String)} if left blank
+     * @return name of table
+     */
+    String table() default "";
 }

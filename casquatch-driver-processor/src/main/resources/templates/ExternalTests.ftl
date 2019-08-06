@@ -33,6 +33,7 @@ public class ${naming.classToExternalTests(naming.classToSimpleClass(class))} ex
         casquatchDao=new CasquatchTestDaoBuilder()
                             .withTestKeyspace("junittest")
                             .withDDL(new ${naming.classToSimpleClass(class)}().getDDL())
+                            .withSolrIndex("${table}")
                             .build();
     }
 

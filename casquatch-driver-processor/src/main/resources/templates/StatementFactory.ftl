@@ -28,11 +28,10 @@ import com.tmobile.opensource.casquatch.CasquatchNamingConvention;
 import com.tmobile.opensource.casquatch.QueryOptions;
 import com.tmobile.opensource.casquatch.DriverException;
 import lombok.extern.slf4j.Slf4j;
-<#if udtFields?has_content>
-    <#list udtFields as field,type>
-import ${type};
-    </#list>
-</#if>
+
+<#list imports as import>
+import ${import};
+</#list>
 
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.bindMarker;
 
@@ -117,18 +116,13 @@ public class ${naming.classToStatementFactory(naming.classToSimpleClass(class))}
                 delete=(delete==null?deleteStart:delete).whereColumn("${naming.javaVariableToCql(field)}").isEqualTo(bindMarker());
             }
 </#list>
-<#list udtFields as field,type>
-            if(${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}()!=null) {
-                delete=(delete==null?deleteStart:delete).whereColumn("${naming.javaVariableToCql(field)}").isEqualTo(bindMarker());
-            }
-</#list>
         }
         return delete;
     }
 
     @Override
-    protected CqlIdentifier getTableName() {
-        return CqlIdentifier.fromCql("${naming.javaVariableToCql(naming.classToVar(naming.classToSimpleClass(class)))}");
+    public CqlIdentifier getTableName() {
+        return CqlIdentifier.fromCql("${table}");
     }
 
     @Override
@@ -145,9 +139,12 @@ public class ${naming.classToStatementFactory(naming.classToSimpleClass(class))}
             }
 </#list>
 <#list udtFields as field,type>
-        if(${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}()!=null || options.getPersistNulls()) {
-            boundStatementBuilder = boundStatementBuilder.setUdtValue("${naming.javaVariableToCql(field)}", ${naming.classToVar(naming.classToTypeFactory(naming.classToSimpleClass(type)))}.toUdtValue(${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}()));
-        }
+            if(${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}()!=null || options.getPersistNulls()) {
+                try {
+                    boundStatementBuilder = boundStatementBuilder.setUdtValue("${naming.javaVariableToCql(field)}", ${naming.classToVar(naming.classToTypeFactory(naming.classToSimpleClass(type)))}.toUdtValue(${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}()));
+                }
+                catch (java.lang.IllegalArgumentException e) {}
+            }
 </#list>
         }
         return boundStatementBuilder;
@@ -157,13 +154,25 @@ public class ${naming.classToStatementFactory(naming.classToSimpleClass(class))}
     public ${naming.classToSimpleClass(class)} map(GettableByName source) {
         ${naming.classToSimpleClass(class)} ${naming.classToVar(naming.classToSimpleClass(class))} = new ${naming.classToSimpleClass(class)}();
 <#list keyFields as field,type>
-        ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaSet(field)}(source.get("${naming.javaVariableToCql(field)}",${type}.class));
+        try {
+            ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaSet(field)}(source.get("${naming.javaVariableToCql(field)}",${naming.classToSimpleClass(type)}.class));
+        }
+        catch (java.lang.IllegalArgumentException e) {
+        }
 </#list>
 <#list nonKeyFields as field,type>
-        ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaSet(field)}(source.get("${naming.javaVariableToCql(field)}",${type}.class));
+        try {
+            ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaSet(field)}(source.get("${naming.javaVariableToCql(field)}",${naming.classToSimpleClass(type)}.class));
+        }
+        catch (java.lang.IllegalArgumentException e) {
+        }
 </#list>
 <#list udtFields as field,type>
-        ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaSet(field)}(${naming.classToVar(naming.classToTypeFactory(naming.classToSimpleClass(type)))}.fromUdtValue(source.getUdtValue("${field}")));
+        try {
+            ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaSet(field)}(${naming.classToVar(naming.classToTypeFactory(naming.classToSimpleClass(type)))}.fromUdtValue(source.getUdtValue("${field}")));
+        }
+        catch (java.lang.IllegalArgumentException e) {
+        }
 </#list>
         return ${naming.classToVar(naming.classToSimpleClass(class))};
     }

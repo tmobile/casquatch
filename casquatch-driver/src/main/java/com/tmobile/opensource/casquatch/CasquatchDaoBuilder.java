@@ -35,10 +35,10 @@ import java.util.*;
 @Slf4j
 public class CasquatchDaoBuilder {
 
-    private final Map<String,Object> configMap = new HashMap<>();
-    private String prefix=null;
-    private String path=null;
-    private Config config;
+    protected final Map<String,Object> configMap = new HashMap<>();
+    protected String prefix=null;
+    protected String path=null;
+    protected Config config;
 
     /**
      * Clear cached configuration

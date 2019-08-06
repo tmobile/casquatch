@@ -21,6 +21,9 @@ import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import lombok.extern.slf4j.Slf4j;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Extension of CasquatchDaoBuilder to add a few test functions
  */
@@ -62,10 +65,27 @@ public class CasquatchTestDaoBuilder extends CasquatchDaoBuilder {
         catch(com.datastax.oss.driver.api.core.servererrors.AlreadyExistsException e) {
             log.warn("DDL Exception",e);
         }
+        catch(com.datastax.oss.driver.api.core.servererrors.InvalidQueryException e) {
+            log.warn("DDL Exception",e);
+        }
         catch(Exception e) {
             log.error("DDL Exception",e);
             throw(e);
         }
+        return this;
+    }
+
+    /**
+     * Creates a search index on the given table if required
+     * @param table name of table
+     * @return builder reference
+     */
+    public CasquatchTestDaoBuilder withSolrIndex(String table) {
+        CasquatchDao casquatchDao = this.build();
+        if(casquatchDao.checkFeature(CasquatchDao.FEATURES.SOLR)) {
+            this.withDDL(String.format("CREATE SEARCH INDEX ON %s",table));
+        }
+        casquatchDao.close();
         return this;
     }
 
@@ -85,6 +105,23 @@ public class CasquatchTestDaoBuilder extends CasquatchDaoBuilder {
             log.error("Error running withTestKeyspace",e);
         }
         return (CasquatchTestDaoBuilder) this.withBasicSessionKeyspace(keyspace);
+    }
+
+    /**
+     * Converts config to system properties to be grabbed by {@link org.springframework.beans.factory.annotation.Autowired}
+     */
+    public void buildSpring() {
+        for(Map.Entry<String,Object> entry : this.configMap.entrySet()) {
+            if(entry.getValue() instanceof String) {
+                System.setProperty("casquatch." + entry.getKey(), entry.getValue().toString());
+            }
+            else {
+                List<String> entryList = (List<String>) entry.getValue();
+                for(int i=0;i<entryList.size();i++) {
+                    System.setProperty("casquatch." + entry.getKey()+"."+i, entryList.get(i));
+                }
+            }
+        }
     }
 }
 

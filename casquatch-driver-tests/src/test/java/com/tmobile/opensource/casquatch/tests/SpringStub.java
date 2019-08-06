@@ -19,6 +19,6 @@ package com.tmobile.opensource.casquatch.tests;
 import com.tmobile.opensource.casquatch.annotation.CasquatchSpring;
 
 @SuppressWarnings("WeakerAccess")
-@CasquatchSpring(generateRestDao = true, restApi = "/v1")
+@CasquatchSpring(generateRestDao = false, generateRestDaoTests = false, generateEntityTests = true, restApi = "/v1")
 public class SpringStub {
 }

@@ -52,15 +52,21 @@ public class CasquatchNamingConvention {
      */
     public static String classToSimpleClass(String className) { return className.substring(className.lastIndexOf(".")+1);}
     /**
+     * convert class to DSE tests class
+     * @param className class name
+     * @return dse tests class name
+     */
+    public static String classToDSETests(String className) { return className+"_DSETests";}
+    /**
      * convert class to embedded tests class
      * @param className class name
-     * @return rest dao class name
+     * @return embedded tests class name
      */
     public static String classToEmbeddedTests(String className) { return className+"_EmbeddedTests";}
     /**
      * convert class to external tests class
      * @param className class name
-     * @return rest dao class name
+     * @return external tests class name
      */
     public static String classToExternalTests(String className) { return className+"_ExternalTests";}
     /**

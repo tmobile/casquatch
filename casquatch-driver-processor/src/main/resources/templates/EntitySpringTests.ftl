@@ -33,13 +33,7 @@ public class ${naming.classToSpringTests(naming.classToSimpleClass(class))} exte
 
     public ${naming.classToSpringTests(naming.classToSimpleClass(class))}() {
         super(${naming.classToSimpleClass(class)}.class);
-    }
-
-    @BeforeClass
-    public static void setUp() {
-        new CasquatchTestDaoBuilder()
-        .withEmbeddedKeyspace("junittest")
-        .withDDL(new TableName().getDDL());
+        new CasquatchTestDaoBuilder().withEmbedded().withTestKeyspace("junittest").withDDL(new ${naming.classToSimpleClass(class)}().getDDL()).buildSpring();
     }
 
     public CasquatchDao getCasquatchDao() {

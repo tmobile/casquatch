@@ -36,7 +36,7 @@ public class DatabaseCache<E extends AbstractCasquatchEntity> {
      * Internal class to represent a cache item
      */
     @AllArgsConstructor
-    @Getter @Setter @ToString
+    @Getter
     private class CacheItem {
         E item;
         Long expiration;
@@ -82,15 +82,15 @@ public class DatabaseCache<E extends AbstractCasquatchEntity> {
             return getCache(key);
         }
         else {
-            try {
-                E obj = dao.getById(this.classType,key);
-                this.setCache(key, obj);
-                log.debug("DatabaseCache <{}> Returned {} from DB",this.classType,key);
-                return obj;
-            }
-            catch (Exception e) {
-                log.debug("DatabaseCache <{}> Returned null from DB",this.classType);
+            E obj = dao.getById(this.classType,key);
+            if(obj == null) {
+                log.debug("DatabaseCache <{}> Returned null from DB", this.classType);
                 return null;
+            }
+            else {
+                this.setCache(key, obj);
+                log.debug("DatabaseCache <{}> Returned {} from DB", this.classType, key);
+                return obj;
             }
         }
     }

@@ -33,7 +33,7 @@ import java.util.Map;
 @Slf4j
 public class QueryOptions {
     @Getter private Boolean ignoreNonPrimaryKeys=false;
-    private String consistencyLevel;
+    private String consistency;
     @Getter private Integer limit;
     @Getter private Boolean persistNulls=false;
     @Getter private String profile;
@@ -58,7 +58,7 @@ public class QueryOptions {
             }
         }
         if(config.hasPath("ignore-non-primary-keys")) this.ignoreNonPrimaryKeys=config.getBoolean("ignore-non-primary-keys");
-        if(config.hasPath("consistencyLevel")) this.consistencyLevel=config.getString("consistencyLevel");
+        if(config.hasPath("consistency")) this.consistency=config.getString("consistency");
         if(config.hasPath("limit")) this.limit=config.getInt("limit");
         if(config.hasPath("persist-nulls")) this.persistNulls=config.getBoolean("persist-nulls");
         if(config.hasPath("profile")) this.profile=config.getString("profile");
@@ -72,7 +72,7 @@ public class QueryOptions {
      */
     private QueryOptions(QueryOptions queryOptions) {
         this.ignoreNonPrimaryKeys=queryOptions.ignoreNonPrimaryKeys;
-        this.consistencyLevel=queryOptions.consistencyLevel;
+        this.consistency=queryOptions.consistency;
         this.limit=queryOptions.limit;
         this.persistNulls=queryOptions.persistNulls;
         this.profile=queryOptions.profile;
@@ -96,8 +96,8 @@ public class QueryOptions {
      * @return object of consistencyLevel
      */
     public ConsistencyLevel getConsistencyLevel() {
-        if(this.consistencyLevel!=null) {
-            return DefaultConsistencyLevel.valueOf(this.consistencyLevel);
+        if(this.consistency!=null) {
+            return DefaultConsistencyLevel.valueOf(this.consistency);
         }
         return null;
     }
@@ -119,7 +119,7 @@ public class QueryOptions {
      */
     public QueryOptions withConsistencyLevel(String consistencyLevel) {
         QueryOptions queryOptions = new QueryOptions(this);
-        queryOptions.consistencyLevel=consistencyLevel;
+        queryOptions.consistency=consistencyLevel;
         return queryOptions;
     }
 

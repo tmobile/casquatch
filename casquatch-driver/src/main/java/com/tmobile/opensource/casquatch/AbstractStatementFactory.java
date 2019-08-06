@@ -96,7 +96,7 @@ public abstract class AbstractStatementFactory<E extends AbstractCasquatchEntity
      * Get the table name
      * @return table name reference
      */
-    protected abstract CqlIdentifier getTableName();
+    public abstract CqlIdentifier getTableName();
 
     /**
      * Create insert statement for object

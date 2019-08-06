@@ -20,13 +20,13 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.*;
 import com.datastax.oss.driver.api.core.session.Session;
 import com.tmobile.opensource.casquatch.annotation.Rest;
+import com.tmobile.opensource.casquatch.models.NodeMetaData;
 import com.tmobile.opensource.casquatch.policies.FailoverPolicy;
 import com.typesafe.config.Config;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PreDestroy;
-import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -37,24 +37,33 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class CasquatchDao {
 
+    public enum FEATURES {
+        SOLR,
+        SOLR_OBJECT,
+    }
+
     private final CqlSession session;
     @Getter private final String keyspace;
-    private CasquatchDaoBuilder casquatchDaoBuilder;
     private final Map<Class,Object> statementFactoryCache;
     private final QueryOptions defaultQueryOptions;
     private final QueryOptions defaultSolrQueryOptions;
     private final Config config;
     private FailoverPolicy failoverPolicy;
+    public static CasquatchCoordinations COORDINATES=new CasquatchCoordinations();
+    private NodeMetaData nodeMetaData;
 
     /**
      * Initialize CasquatchDao via a builder
      * @param casquatchDaoBuilder reference to a builder
      */
     protected CasquatchDao(CasquatchDaoBuilder casquatchDaoBuilder) {
+        //Initialize and store
         this.config = casquatchDaoBuilder.getConfig();
         this.keyspace=this.config.getString("basic.session-keyspace");
         this.session=casquatchDaoBuilder.session();
         this.statementFactoryCache = new HashMap<>();
+
+        //Load Query Options
         if(this.config.hasPath("query-options")) {
             this.defaultQueryOptions=new QueryOptions(this.config.getConfig("query-options"));
         }
@@ -69,6 +78,8 @@ public class CasquatchDao {
             defaultSolrQueryOptions=defaultQueryOptions.withAllColumns();
         }
         if(log.isTraceEnabled()) log.trace("Default SolrQuery Options: {}",defaultSolrQueryOptions);
+
+        //Load Failover policy
         if(this.config.hasPath("failover-policy.class")) {
             String failoverClassName="";
             try {
@@ -82,6 +93,10 @@ public class CasquatchDao {
                 throw new DriverException(DriverException.CATEGORIES.CASQUATCH_INVALID_CONFIGURATION,String.format("Unable to instantiate FailoverPolicy class %s",failoverClassName));
             }
         }
+
+        this.nodeMetaData=this.getStatementFactory(NodeMetaData.class).map(this.execute(SimpleStatement.newInstance("select * From system.local")).one());
+
+        //Log the version
         log.info(CasquatchDao.getVersion());
     }
 
@@ -98,70 +113,8 @@ public class CasquatchDao {
      * @return version string
      */
     public static String getVersion() {
-        InputStream resourceAsStream = CasquatchDao.class.getResourceAsStream("/maven.properties");
-        Properties properties = new Properties();
-        try {
-            properties.load(resourceAsStream);
-
-            return "Casquatch Driver "+properties.get("version")+". Datastax Driver Java Driver "+Session.OSS_DRIVER_COORDINATES.getVersion();
-        }
-        catch (Exception e) {
-            throw new DriverException(e);
-        }
+        return "Casquatch Driver "+CasquatchDao.COORDINATES.getVersion()+". Datastax Driver Java Driver "+Session.OSS_DRIVER_COORDINATES.getVersion();
     }
-
-    /**
-     * Execute a statement and provide resultset. This wraps {@link CqlSession#execute(Statement)} with additional logic
-     *
-     * @param statement statement to execute
-     * @return statement results
-     * @throws DriverException - Driver exception mapped to error code
-     */
-    public ResultSet execute(Statement statement) throws DriverException {
-        if(log.isTraceEnabled()) log.trace("Executing Statement with profile {}: {}", statement.getExecutionProfileName(), this.getStatementQuery(statement));
-        try {
-            return this.session.execute(statement);
-        }
-        catch (Exception e) {
-            if(failoverPolicy !=null && getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()) != null && failoverPolicy.shouldFailover(e,statement)) {
-                log.warn("Statement Failed With Exception. Retrying on failover profile: {}", getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()), new DriverException(e));
-                return this.execute(statement.setExecutionProfileName(getProfileConfig("failover-policy.profile",statement.getExecutionProfileName())));
-            }
-            throw new DriverException(e);
-        }
-    }
-
-    /**
-     * Execute a statement asynchronously and provide resultset. This wraps {@link CqlSession#executeAsync(Statement)} with additional logic
-     *
-     * @param statement statement to execute
-     * @return CompletableFuture with statement results
-     * @throws DriverException - Driver exception mapped to error code
-     */
-    private CompletableFuture<AsyncResultSet> executeASync(Statement statement) throws DriverException  {
-        if(log.isTraceEnabled()) log.trace("Executing Statement Asynchronously with profile {}: {}", statement.getExecutionProfileName(), this.getStatementQuery(statement));
-        try {
-            return this.session.executeAsync(statement).toCompletableFuture().handle(
-                    (result, e) -> {
-                        if (e instanceof Exception) {
-                            if(failoverPolicy !=null && getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()) != null && failoverPolicy.shouldFailover((Exception) e,statement)) {
-                                log.warn("Statement Failed With Exception. Retrying on failover profile: {}", getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()), new DriverException((Exception) e));
-                                try {
-                                    return this.executeASync(statement.setExecutionProfileName(getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()))).get();
-                                } catch (Exception ex) {
-                                    throw new DriverException(ex);
-                                }
-                            }
-                        }
-                        return result;
-                    }
-            );
-        }
-        catch (Exception e) {
-            throw new DriverException(e);
-        }
-    }
-
 
     /**
      * Get a config string based on a profile
@@ -219,6 +172,45 @@ public class CasquatchDao {
     }
 
     /**
+     * Function to check if a feature is enabled
+     * @param feature feature enum
+     * @return boolean indicator
+     */
+    public Boolean checkFeature(FEATURES feature) {
+        switch(feature) {
+            case SOLR:
+                if(this.nodeMetaData.getDseVersion()==null) {
+                    log.warn("Check Feature SOLR: DSE Version Is null : Failed");
+                    log.trace("Node Data: {}",this.nodeMetaData.toString());
+                    return false;
+                }
+                else if (this.nodeMetaData.getWorkloads()==null) {
+                    log.warn("Check Feature SOLR: Workloads Version Is null : Failed");
+                    log.trace("Node Data: {}",this.nodeMetaData.toString());
+                    return false;
+                }
+                else if (!this.nodeMetaData.getWorkloads().contains("Search")) {
+                    log.warn("Check Feature SOLR: Workloads does not contain Search : Failed");
+                    log.trace("Node Data: {}",this.nodeMetaData.toString());
+                    return false;
+                }
+                return true;
+            case SOLR_OBJECT:
+                if(!checkFeature(FEATURES.SOLR)) {
+                    return false;
+                }
+                else if (Integer.parseInt(this.nodeMetaData.getDseVersion().split("\\.")[0]) > 6) {
+                    log.warn("Check Feature SOLR_OBJECT: Version {} < 6.0.0 : Failed", this.nodeMetaData.getDseVersion());
+                    log.trace("Node Data: {}",this.nodeMetaData.toString());
+                    return false;
+                }
+                return true;
+            default:
+                return true;
+        }
+    }
+
+    /**
      * Delete an object by passing an instance of the given object.
      * @param <E> Entity Object for results
      * @param c Class of object
@@ -269,6 +261,60 @@ public class CasquatchDao {
      */
     public <E extends AbstractCasquatchEntity> CompletableFuture<Void> deleteAsync(Class<E> c, E o,QueryOptions queryOptions) throws DriverException {
         return this.executeASync(this.getStatementFactory(c).delete(o,queryOptions.withPrimaryKeysOnly())).thenApply(rs -> null);
+    }
+
+    /**
+     * Execute a statement and provide resultset. This wraps {@link CqlSession#execute(Statement)} with additional logic
+     *
+     * @param statement statement to execute
+     * @return statement results
+     * @throws DriverException - Driver exception mapped to error code
+     */
+    public ResultSet execute(Statement statement) throws DriverException {
+        if(log.isTraceEnabled()) log.trace("Executing Statement with profile {}: {}", statement.getExecutionProfileName(), this.getStatementQuery(statement));
+        try {
+            return this.session.execute(statement);
+        }
+        catch (Exception e) {
+            if(failoverPolicy !=null && getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()) != null && failoverPolicy.shouldFailover(e,statement)) {
+                log.warn("Statement Failed With Exception. Retrying on failover profile: {}", getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()), new DriverException(e));
+                return this.execute(statement.setExecutionProfileName(getProfileConfig("failover-policy.profile",statement.getExecutionProfileName())));
+            }
+            throw new DriverException(e);
+        }
+    }
+
+
+
+    /**
+     * Execute a statement asynchronously and provide resultset. This wraps {@link CqlSession#executeAsync(Statement)} with additional logic
+     *
+     * @param statement statement to execute
+     * @return CompletableFuture with statement results
+     * @throws DriverException - Driver exception mapped to error code
+     */
+    private CompletableFuture<AsyncResultSet> executeASync(Statement statement) throws DriverException  {
+        if(log.isTraceEnabled()) log.trace("Executing Statement Asynchronously with profile {}: {}", statement.getExecutionProfileName(), this.getStatementQuery(statement));
+        try {
+            return this.session.executeAsync(statement).toCompletableFuture().handle(
+                    (result, e) -> {
+                        if (e instanceof Exception) {
+                            if(failoverPolicy !=null && getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()) != null && failoverPolicy.shouldFailover((Exception) e,statement)) {
+                                log.warn("Statement Failed With Exception. Retrying on failover profile: {}", getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()), new DriverException((Exception) e));
+                                try {
+                                    return this.executeASync(statement.setExecutionProfileName(getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()))).get();
+                                } catch (Exception ex) {
+                                    throw new DriverException(ex);
+                                }
+                            }
+                        }
+                        return result;
+                    }
+            );
+        }
+        catch (Exception e) {
+            throw new DriverException(e);
+        }
     }
 
     /**
@@ -425,7 +471,12 @@ public class CasquatchDao {
      */
     @Rest("/solr/object/get")
     public <E extends AbstractCasquatchEntity> List<E> getAllBySolr(Class<E> c, E o, QueryOptions queryOptions) throws DriverException {
-        return this.execute(this.getStatementFactory(c).get(o,queryOptions.withAllColumns())).map(this.getStatementFactory(c)::map).all();
+        if(checkFeature(FEATURES.SOLR_OBJECT)) {
+            return this.execute(this.getStatementFactory(c).get(o,queryOptions.withAllColumns())).map(this.getStatementFactory(c)::map).all();
+        }
+        else {
+            throw new DriverException(DriverException.CATEGORIES.DATABASE_FEATURE_NOT_SUPPORTED, "Solr is not enabled on this node");
+        }
     }
 
     /**
@@ -464,7 +515,13 @@ public class CasquatchDao {
      */
     @Rest("/solr/query/get")
     public <E extends AbstractCasquatchEntity> List<E> getAllBySolr(Class<E> c, String solrQueryString, QueryOptions queryOptions) throws DriverException {
-        return this.execute(this.getStatementFactory(c).getSolr(solrQueryString,queryOptions.withAllColumns())).map(this.getStatementFactory(c)::map).all();
+        if(checkFeature(FEATURES.SOLR)) {
+            log.trace("Object returned {}",this.execute(this.getStatementFactory(c).getSolr(solrQueryString,queryOptions.withAllColumns())).map(this.getStatementFactory(c)::map).all());
+            return this.execute(this.getStatementFactory(c).getSolr(solrQueryString,queryOptions.withAllColumns())).map(this.getStatementFactory(c)::map).all();
+        }
+        else {
+            throw new DriverException(DriverException.CATEGORIES.DATABASE_FEATURE_NOT_SUPPORTED, "Solr is not enabled on this node");
+        }
     }
 
     /**
@@ -490,8 +547,18 @@ public class CasquatchDao {
      */
     @Rest("/solr/object/count")
     public <E extends AbstractCasquatchEntity> Long getCountBySolr(Class<E> c, E o, QueryOptions queryOptions) throws DriverException {
-        Row row = this.execute(this.getStatementFactory(c).count(o,queryOptions.withAllColumns())).one();
-        return Objects.requireNonNull(row).getLong("count");
+        if(checkFeature(FEATURES.SOLR_OBJECT))  {
+            log.trace("Searching with object {}",o.toString());
+            Row row = this.execute(this.getStatementFactory(c).count(o,queryOptions.withAllColumns())).one();
+            //TODO
+            log.trace(row.getColumnDefinitions().toString());
+            for(int i=0;i<row.getColumnDefinitions().size();i++) {
+                log.trace(row.getColumnDefinitions().get(i).getName().toString());
+            }
+            log.trace("Count returned {}",Objects.requireNonNull(row).getLong("count"));
+            return Objects.requireNonNull(row).getLong("count");
+        }
+        throw new DriverException(DriverException.CATEGORIES.DATABASE_FEATURE_NOT_SUPPORTED,"Solr is not enabled on this node");
     }
 
     /**
@@ -517,8 +584,11 @@ public class CasquatchDao {
      */
     @Rest("/solr/query/count")
     public <E extends AbstractCasquatchEntity> Long getCountBySolr(Class<E> c, String solrQueryString, QueryOptions queryOptions) throws DriverException {
-        Row row = this.execute(this.getStatementFactory(c).countSolr(solrQueryString,queryOptions.withAllColumns())).one();
-        return Objects.requireNonNull(row).getLong("count");
+        if(checkFeature(FEATURES.SOLR)) {
+            Row row = this.execute(this.getStatementFactory(c).countSolr(solrQueryString,queryOptions.withAllColumns())).one();
+            return Objects.requireNonNull(row).getLong("count");
+        }
+        throw new DriverException(DriverException.CATEGORIES.DATABASE_FEATURE_NOT_SUPPORTED,"Solr is not enabled on this node");
     }
 
     /**

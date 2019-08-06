@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUE WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -17,8 +17,6 @@
 package com.tmobile.opensource.casquatch;
 
 import com.tmobile.opensource.casquatch.tests.podam.CasquatchPodamFactoryImpl;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import uk.co.jemos.podam.api.PodamFactory;
@@ -29,32 +27,46 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("WeakerAccess")
 @Slf4j
-public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
+public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
 
     protected static final PodamFactory podamFactory = new CasquatchPodamFactoryImpl();
     public abstract CasquatchDao getCasquatchDao();
-    protected Class<T> entityClass;
-    protected DatabaseCache<T> databaseCache;
+    protected Class<E> entityClass;
+    protected DatabaseCache<E> databaseCache;
     private Long expiration = 10000L;
 
     protected QueryOptions queryOptions;
 
-    public AbstractEntityTests(Class<T> entityClass) {
+    /**
+     * Default constructor based on EntityClass
+     * @param entityClass class of entity
+     */
+    public AbstractEntityTests(Class<E> entityClass) {
         this.entityClass=entityClass;
         this.queryOptions=new QueryOptions();
-        databaseCache = this.getCasquatchDao().getCache(this.entityClass,expiration);
+    }
+
+    /**
+     * Getter for Database Cache. Creates if null
+     * @return database cache for entity
+     */
+    protected DatabaseCache<E> getDatabaseCache() {
+        if(this.databaseCache==null) {
+            this.databaseCache=this.getCasquatchDao().getCache(this.entityClass,expiration);
+        }
+        return this.databaseCache;
     }
 
     /**
      * Creates an object and saves it to the database
      * @return created object
      */
-    protected T prepObject() {
-        T obj = podamFactory.manufacturePojoWithFullData(this.entityClass);
+    protected E prepObject() {
+        E obj = podamFactory.manufacturePojoWithFullData(this.entityClass);
         log.debug("Prep Object Created: {}",obj.toString());
         this.getCasquatchDao().save(this.entityClass, obj);
         assertTrue(this.getCasquatchDao().existsById(this.entityClass, obj));
@@ -66,9 +78,9 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
      * @param count number of objects to create
      * @return list of created objects
      */
-    protected List<T> prepObject(@SuppressWarnings("SameParameterValue") Integer count) {
+    protected List<E> prepObject(@SuppressWarnings("SameParameterValue") Integer count) {
         log.trace("Prepping {} objects",count);
-        List<T> objectList = new ArrayList<>();
+        List<E> objectList = new ArrayList<>();
         for(int i=0;i<count;i++) {
             objectList.add(prepObject());
         }
@@ -79,7 +91,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
      * Clean out the created object
      * @param obj object to clean
      */
-    protected void cleanObject(T obj) {
+    protected void cleanObject(E obj) {
         this.getCasquatchDao().delete(this.entityClass, obj);
         assertFalse(this.getCasquatchDao().existsById(this.entityClass, obj));
     }
@@ -88,8 +100,8 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
      * Clean a list of objects
      * @param objectList list of created objects
      */
-    protected void cleanObject(List<T> objectList) {
-        for (T t : objectList) {
+    protected void cleanObject(List<E> objectList) {
+        for (E t : objectList) {
             cleanObject(t);
         }
     }
@@ -111,15 +123,15 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
 
 
-    private T prepCache() {
-        T obj = prepObject();
-        T cachedObject;
-        cachedObject= databaseCache.get(obj);
+    private E prepCache() {
+        E obj = prepObject();
+        E cachedObject;
+        cachedObject= getDatabaseCache().get(obj);
         assert(obj.equals(cachedObject));
         return obj;
     }
 
-    private void changeNonKeyField(T obj) {
+    private void changeNonKeyField(E obj) {
         for (Field field : entityClass.getDeclaredFields()) {
             if (    !field.isAnnotationPresent(com.fasterxml.jackson.annotation.JsonIgnore.class) &&
                     !field.isAnnotationPresent(com.tmobile.opensource.casquatch.annotation.CasquatchIgnore.class) &&
@@ -127,7 +139,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
                     !field.isAnnotationPresent(com.tmobile.opensource.casquatch.annotation.ClusteringColumn.class)
             ) {
                 try {
-                    T fakeObject = podamFactory.manufacturePojoWithFullData(entityClass);
+                    E fakeObject = podamFactory.manufacturePojoWithFullData(entityClass);
                     Method getMethod = entityClass.getDeclaredMethod(CasquatchNamingConvention.javaVariableToJavaGet(field.getName()));
                     Method setMethod = entityClass.getDeclaredMethod(CasquatchNamingConvention.javaVariableToJavaSet(field.getName()),field.getType());
                     setMethod.invoke(obj,getMethod.invoke(fakeObject));
@@ -144,7 +156,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testDelete() {
-        T obj = prepObject();
+        E obj = prepObject();
 
         this.getCasquatchDao().delete(this.entityClass, obj);
         assertFalse(this.getCasquatchDao().existsById(this.entityClass,obj));
@@ -152,7 +164,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testDeleteASync() {
-        T obj = prepObject();
+        E obj = prepObject();
 
         CompletableFuture<Void> tst = this.getCasquatchDao().deleteAsync(this.entityClass, obj);
         waitForDone(tst);
@@ -161,7 +173,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testExistsById() {
-        T obj = prepObject();
+        E obj = prepObject();
 
         assertTrue(this.getCasquatchDao().existsById(this.entityClass,obj));
 
@@ -170,9 +182,9 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testGetAllById() throws IllegalAccessException, InstantiationException {
-        List<T> objectList = prepObject(5);
+        List<E> objectList = prepObject(5);
 
-        List<T> testList = this.getCasquatchDao().getAllById(this.entityClass, this.entityClass.newInstance(),10);
+        List<E> testList = this.getCasquatchDao().getAllById(this.entityClass, this.entityClass.newInstance(),10);
         assertTrue(testList.size()>=5);
 
         cleanObject(objectList);
@@ -180,7 +192,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testGetAllByIdLimited() throws IllegalAccessException, InstantiationException {
-        List<T> objectList = prepObject(5);
+        List<E> objectList = prepObject(5);
 
         assertEquals(5, this.getCasquatchDao().getAllById(this.entityClass, this.entityClass.newInstance(), 5).size());
 
@@ -189,9 +201,9 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testGetById() {
-        T obj = prepObject();
+        E obj = prepObject();
 
-        T tstObj = this.getCasquatchDao().getById(this.entityClass,obj);
+        E tstObj = this.getCasquatchDao().getById(this.entityClass,obj);
         assertEquals(obj, tstObj);
 
         cleanObject(obj);
@@ -199,7 +211,9 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testSave() {
-        T obj = prepObject();
+        E obj = prepObject();
+
+        this.getCasquatchDao().save(this.entityClass,obj);
 
         assertTrue(this.getCasquatchDao().existsById(this.entityClass, obj));
 
@@ -208,7 +222,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testSaveASync() {
-        T obj = prepObject();
+        E obj = prepObject();
 
         CompletableFuture<Void> tst = this.getCasquatchDao().saveAsync(this.entityClass, obj);
         waitForDone(tst);
@@ -219,7 +233,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testDeleteWithQueryOptions() {
-        T obj = prepObject();
+        E obj = prepObject();
 
         this.getCasquatchDao().delete(this.entityClass, obj,queryOptions);
         assertFalse(this.getCasquatchDao().existsById(this.entityClass,obj));
@@ -227,7 +241,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testDeleteASyncWithQueryOptions() {
-        T obj = prepObject();
+        E obj = prepObject();
 
         CompletableFuture<Void> tst = this.getCasquatchDao().deleteAsync(this.entityClass, obj,queryOptions);
         waitForDone(tst);
@@ -236,7 +250,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testExistsByIdWithQueryOptions() {
-        T obj = prepObject();
+        E obj = prepObject();
 
         assertTrue(this.getCasquatchDao().existsById(this.entityClass,obj,queryOptions));
 
@@ -245,7 +259,7 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testGetAllByIdWithQueryOptions() throws IllegalAccessException, InstantiationException {
-        List<T> objectList = prepObject(5);
+        List<E> objectList = prepObject(5);
 
         assertTrue(this.getCasquatchDao().getAllById(this.entityClass, this.entityClass.newInstance(),queryOptions).size()>=5);
 
@@ -254,9 +268,9 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testGetByIdWithQueryOptions() {
-        T obj = prepObject();
+        E obj = prepObject();
 
-        T tstObj = this.getCasquatchDao().getById(this.entityClass,obj, queryOptions);
+        E tstObj = this.getCasquatchDao().getById(this.entityClass,obj, queryOptions);
         assertEquals(obj, tstObj);
 
         cleanObject(obj);
@@ -264,16 +278,29 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testSaveWithQueryOptions() {
-        T obj = prepObject();
+        E obj = prepObject();
 
-        assertTrue(this.getCasquatchDao().existsById(this.entityClass, obj, queryOptions));
+        this.getCasquatchDao().save(this.entityClass,obj,queryOptions);
+
+        assertTrue(this.getCasquatchDao().existsById(this.entityClass, obj));
+
+        cleanObject(obj);
+    }
+
+    @Test
+    public void testSaveWithTTL() {
+        E obj = prepObject();
+
+        this.getCasquatchDao().save(this.entityClass,obj, queryOptions.withTTL(100));
+
+        assertTrue(this.getCasquatchDao().existsById(this.entityClass, obj));
 
         cleanObject(obj);
     }
 
     @Test
     public void testSaveASyncWithQueryOptions() {
-        T obj = prepObject();
+        E obj = prepObject();
 
         CompletableFuture<Void> tst = this.getCasquatchDao().saveAsync(this.entityClass, obj, queryOptions);
         waitForDone(tst);
@@ -286,15 +313,15 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
 
     @Test
     public void testGetCache() {
-        T obj = prepObject();
-        T cachedObject = databaseCache.get(obj);
+        E obj = prepObject();
+        E cachedObject = getDatabaseCache().get(obj);
         assert(obj.equals(cachedObject));
     }
 
     @Test
     public void testGetCacheWithChange() {
-        T obj = prepCache();
-        T cachedObject = databaseCache.get(obj);
+        E obj = prepCache();
+        E cachedObject = getDatabaseCache().get(obj);
 
         log.trace("Changing Value");
         changeNonKeyField(obj);
@@ -302,19 +329,19 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
         this.getCasquatchDao().save(entityClass,obj);
 
         log.trace("Get Cached Value");
-        cachedObject = databaseCache.get(obj);
+        cachedObject = getDatabaseCache().get(obj);
         assert(!obj.equals(cachedObject));
 
         log.trace("Clear Then Get Cached Value");
-        databaseCache.clearCache();
-        cachedObject = databaseCache.get(obj);
+        getDatabaseCache().clearCache();
+        cachedObject = getDatabaseCache().get(obj);
         assert(obj.equals(cachedObject));
     }
 
     @Test
     public void testGetCacheExpirationWithChange() throws InterruptedException{
-        T obj = prepCache();
-        T cachedObject = databaseCache.get(obj);
+        E obj = prepCache();
+        E cachedObject = getDatabaseCache().get(obj);
 
         changeNonKeyField(obj);
         assert(!obj.equals(cachedObject));
@@ -327,10 +354,175 @@ public abstract class AbstractEntityTests<T extends AbstractCasquatchEntity>{
         this.getCasquatchDao().save(entityClass,obj);
 
         log.trace("Allow cache to expire");
-        Thread.sleep(expiration);
+        Thread.sleep(Math.round(expiration*1.1));
 
         log.trace("Get Cached Value");
-        cachedObject = databaseCache.get(obj);
+        cachedObject = getDatabaseCache().get(obj);
         assert(obj.equals(cachedObject));
+    }
+
+    @Test
+    public void testCreateCacheWithDefaultTime() {
+        DatabaseCache<E> databaseCache = getCasquatchDao().getCache(this.entityClass);
+        assertNotNull(databaseCache);
+    }
+
+    @Test
+    public void testGetCacheMissing() {
+        assertNull(getDatabaseCache().get(podamFactory.manufacturePojoWithFullData(this.entityClass)));
+    }
+
+    @Test
+    public void testSetCache() {
+        E obj = prepObject();
+
+        getDatabaseCache().set((E) obj.keys(),obj);
+
+        assertEquals(getDatabaseCache().get(obj),obj);
+    }
+
+    @Test
+    public void testEqualsWithNull() {
+        assertFalse(prepObject().equals(null));
+    }
+
+    @Test
+    public void testEqualsWithBadObject() {
+        //Testing with unrelated object
+        assertFalse(prepObject().equals(new CasquatchDaoBuilder()));
+    }
+
+    @Test
+    public void testGetAllBySolrQuery() throws InterruptedException {
+
+        E obj = prepObject();
+
+        if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR)) {
+            Thread.sleep(1000);
+            List<E> tstObj = this.getCasquatchDao().getAllBySolr(this.entityClass, "*:*");
+            assertEquals(1, tstObj.size());
+            assertEquals(obj, tstObj.get(0));
+        }
+        else {
+            assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
+        }
+
+        cleanObject(obj);
+    }
+
+    @Test
+    public void testGetCountBySolrQuery() throws InterruptedException {
+        E obj = prepObject();
+
+        if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR)) {
+            Thread.sleep(1000);
+            Long count = this.getCasquatchDao().getCountBySolr(this.entityClass,"*:*");
+            assertEquals(1, (long) count);
+        }
+        else {
+            assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
+        }
+
+        cleanObject(obj);
+    }
+
+    @Test
+    public void testGetAllBySolrQueryWithOptions() throws InterruptedException {
+        E obj = prepObject();
+
+        if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR)) {
+            Thread.sleep(1000);
+            List<E> tstObj = this.getCasquatchDao().getAllBySolr(this.entityClass,"*:*",queryOptions.withConsistencyLevel("LOCAL_ONE").withAllColumns());
+            assertEquals(1, tstObj.size());
+            assertEquals(obj, tstObj.get(0));
+        }
+        else {
+            assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
+        }
+        cleanObject(obj);
+    }
+
+
+    @Test
+    public void testGetCountBySolrQueryWithOptions() throws InterruptedException {
+        E obj = prepObject();
+
+        if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR)) {
+            Thread.sleep(1000);
+            Long count = this.getCasquatchDao().getCountBySolr(this.entityClass,"*:*",queryOptions.withConsistencyLevel("LOCAL_ONE").withAllColumns());
+            assertEquals(1, (long) count);
+        }
+        else {
+            assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
+        }
+
+        cleanObject(obj);
+    }
+
+    @Test
+    public void testGetAllBySolrObject() throws InterruptedException {
+
+        E obj = prepObject();
+
+        if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR_OBJECT)) {
+            Thread.sleep(1000);
+            List<E> tstObj = this.getCasquatchDao().getAllBySolr(this.entityClass, obj);
+            assertEquals(1, tstObj.size());
+            assertEquals(obj, tstObj.get(0));
+        }
+        else {
+            assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
+        }
+
+        cleanObject(obj);
+    }
+
+    @Test
+    public void testGetCountBySolrObject() throws InterruptedException {
+        E obj = prepObject();
+
+        if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR_OBJECT)) {
+            Thread.sleep(1000);
+            Long count = this.getCasquatchDao().getCountBySolr(this.entityClass,obj);
+            assertEquals(1, (long) count);
+        }
+        else {
+            assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
+        }
+
+        cleanObject(obj);
+    }
+
+    @Test
+    public void testGetAllBySolrObjectWithOptions() throws InterruptedException {
+        E obj = prepObject();
+
+        if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR_OBJECT)) {
+            Thread.sleep(1000);
+            List<E> tstObj = this.getCasquatchDao().getAllBySolr(this.entityClass,obj,queryOptions.withConsistencyLevel("LOCAL_ONE").withAllColumns());
+            assertEquals(1, tstObj.size());
+            assertEquals(obj, tstObj.get(0));
+        }
+        else {
+            assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
+        }
+        cleanObject(obj);
+    }
+
+
+    @Test
+    public void testGetCountBySolrObjectWithOptions() throws InterruptedException {
+        E obj = prepObject();
+
+        if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR_OBJECT)) {
+            Thread.sleep(1000);
+            Long count = this.getCasquatchDao().getCountBySolr(this.entityClass,obj,queryOptions.withConsistencyLevel("LOCAL_ONE").withAllColumns());
+            assertEquals(1, (long) count);
+        }
+        else {
+            assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
+        }
+
+        cleanObject(obj);
     }
 }
