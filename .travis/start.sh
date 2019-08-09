@@ -23,7 +23,7 @@ startNode() {
     if [[ "$IMAGE" == "cassandra"* ]]; then
         docker run --rm $PARAMS -e CASSANDRA_DC=$DATACENTER -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch -d --name $NODENAME $IMAGE >>/dev/null
     else
-        docker run --rm $PARAMS -e DS_LICENSE=accept -e DC=$DATACENTER -d --name $NODENAME $IMAGE -s >>/dev/null
+        docker run --rm $PARAMS -e DS_LICENSE=accept -e DC=$DATACENTER -d --name $NODENAME $IMAGE >>/dev/null
     fi;
     sleep 5
     if [ $? -eq 0 ]; then
