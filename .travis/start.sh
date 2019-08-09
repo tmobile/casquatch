@@ -11,12 +11,6 @@ startNode() {
 
     PARAMS="--network cassandra_test_default --label casquatch_test=$NODENAME"
 
-    if [[ "$IMAGE" == "cassandra"* ]]; then
-        PARAMS="$PARAMS -e CASSANDRA_DC=$DATACENTER -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch "
-    else
-        PARAMS="$PARAMS -e DS_LICENSE=accept -e DC=$DATACENTER"
-    fi
-
     if [ ! -z "$SEED" ]; then
         SEED_IP=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $SEED `
         if [[ "$IMAGE" == "cassandra"* ]]; then
@@ -26,7 +20,11 @@ startNode() {
         fi;
     fi;
 
-    docker run --rm $PARAMS -d --name $NODENAME $IMAGE >>/dev/null
+    if [[ "$IMAGE" == "cassandra"* ]]; then
+        docker run --rm $PARAMS -e CASSANDRA_DC=$DATACENTER -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch -d --name $NODENAME $IMAGE >>/dev/null
+    else
+        docker run --rm $PARAMS -e DS_LICENSE=accept -e DC=$DATACENTER -d --name $NODENAME $IMAGE -s >>/dev/null
+    fi;
     sleep 5
     if [ $? -eq 0 ]; then
         retryLoop "docker exec -it $NODENAME nodetool status 2>/dev/null | egrep '^[A-Z]{2}' | egrep -c -v '^UN' | grep -q 0 " 300
@@ -70,7 +68,8 @@ casquatch.basic.session-keyspace=$KEYSPACE
 casquatch.generator.createPackage=true
 casquatch.generator.outputFolder=cassandramodels
 casquatch.generator.file=true
-casquatch.basic.request.timeout=2 seconds
+casquatch.basic.request.timeout=10 seconds
+casquatch.profiles.ddl.basic.request.timeout=10 seconds
 advanced.reconnect-on-init=true
 EOF
 showStatus $?
