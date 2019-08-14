@@ -19,6 +19,8 @@ package com.tmobile.opensource.casquatch;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.*;
 import com.datastax.oss.driver.api.core.session.Session;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.opensource.casquatch.annotation.Rest;
 import com.tmobile.opensource.casquatch.models.NodeMetaData;
 import com.tmobile.opensource.casquatch.policies.FailoverPolicy;
@@ -36,6 +38,51 @@ import java.util.concurrent.CompletableFuture;
 @SuppressWarnings("WeakerAccess")
 @Slf4j
 public class CasquatchDao {
+
+    /**
+     * Helper object to parse a result set for trace information
+     */
+    @Getter
+    private class CasquatchTrace {
+        Boolean wasApplied;
+        Boolean isFullyFetched;
+        int availableRows;
+        Map<String,String> columns = new HashMap<>();
+        String dataCenter;
+        String profile;
+        String consistencyLevel;
+        String query;
+        String keyspace;
+        public CasquatchTrace(ResultSet resultSet) {
+            this.wasApplied = resultSet.wasApplied();
+            this.availableRows = resultSet.getAvailableWithoutFetching();
+            this.isFullyFetched=resultSet.isFullyFetched();
+            if(resultSet.getColumnDefinitions() != null) {
+                resultSet.getColumnDefinitions().forEach((c) -> columns.put(c.getName().toString(), c.getType().toString()));
+            }
+            if(resultSet.getExecutionInfo()!=null) {
+                if(resultSet.getExecutionInfo().getCoordinator()!=null) {
+                    this.dataCenter = resultSet.getExecutionInfo().getCoordinator().getDatacenter();
+                }
+                if(resultSet.getExecutionInfo().getStatement()!=null) {
+                    this.query = CasquatchDao.getStatementQuery(resultSet.getExecutionInfo().getStatement());
+                    this.profile = resultSet.getExecutionInfo().getStatement().getExecutionProfileName();
+                    if(resultSet.getExecutionInfo().getStatement().getConsistencyLevel() !=null ) {
+                        this.consistencyLevel = resultSet.getExecutionInfo().getStatement().getConsistencyLevel().name();
+                        this.keyspace = resultSet.getExecutionInfo().getStatement().getKeyspace().toString();
+                    }
+                }
+            }
+        }
+        public String toString() {
+            try {
+                return new ObjectMapper().writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                log.error("Unable to convert to JSON",e);
+                return "Unable to convert to JSON";
+            }
+        }
+    }
 
     public enum FEATURES {
         SOLR,
@@ -159,7 +206,7 @@ public class CasquatchDao {
      * @param statement statement object
      * @return query depending on type
      */
-    private String getStatementQuery(Statement statement) {
+    private static String getStatementQuery(Statement statement) {
         if(statement instanceof SimpleStatement) {
             return ((SimpleStatement) statement).getQuery();
         }
@@ -273,7 +320,9 @@ public class CasquatchDao {
     public ResultSet execute(Statement statement) throws DriverException {
         if(log.isTraceEnabled()) log.trace("Executing Statement with profile {}: {}", statement.getExecutionProfileName(), this.getStatementQuery(statement));
         try {
-            return this.session.execute(statement);
+            ResultSet resultSet = this.session.execute(statement);
+            if(resultSet!=null && log.isTraceEnabled()) log.trace("Casquatch Trace: {}",new CasquatchTrace(resultSet).toString());
+            return resultSet;
         }
         catch (Exception e) {
             if(failoverPolicy !=null && getProfileConfig("failover-policy.profile",statement.getExecutionProfileName()) != null && failoverPolicy.shouldFailover(e,statement)) {
