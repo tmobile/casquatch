@@ -74,5 +74,14 @@
       <description> Changes  New Feature: Added DAO Generator  Release Date: TBD Github: 1.5-SNAPSHOT Maven Central: TBD </description>
     </item>
     
+    <item>
+      <title>2.0-SNAPSHOT</title>
+      <link>http://tmobile.github.io/casquatch/releasenotes/v2.0/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tmobile.github.io/casquatch/releasenotes/v2.0/</guid>
+      <description> Changes  Complete rewrite to correspond to 4.0 OSS Datastax Driver Moved to annotation processing code generation Split projects to separate spring, tests, and generator from core driver New Feature: Rest DAO New Hugo based manual - https://tmobile.github.io/casquatch/ New Travis CI Integration - https://travis-ci.com/tmobile/casquatch  Release Date: TBD Github: 2.0-SNAPSHOT Maven Central: TBD </description>
+    </item>
+    
   </channel>
 </rss>
