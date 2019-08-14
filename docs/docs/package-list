@@ -1,0 +1,8 @@
+com.tmobile.opensource.casquatch
+com.tmobile.opensource.casquatch.annotation
+com.tmobile.opensource.casquatch.annotation.processor
+com.tmobile.opensource.casquatch.generator
+com.tmobile.opensource.casquatch.models
+com.tmobile.opensource.casquatch.policies
+com.tmobile.opensource.casquatch.rest
+com.tmobile.opensource.casquatch.tests.podam

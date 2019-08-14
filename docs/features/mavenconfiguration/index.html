@@ -9,7 +9,7 @@
 
     <link rel="icon" href="/casquatch/images/favicon.png" type="image/png">
 
-    <title> :: Casquatch</title>
+    <title>Maven Configuration :: Casquatch</title>
 
     
     <link href="/casquatch/css/nucleus.css?1565804556" rel="stylesheet">
@@ -35,7 +35,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/casquatch/">
+  <body class="" data-url="/casquatch/features/mavenconfiguration/">
     <nav id="sidebar" class="">
 
 
@@ -147,7 +147,7 @@
   
     
     <li data-nav-id="/casquatch/features/" title="Features" class="dd-item 
-        
+        parent
         
         
         ">
@@ -380,7 +380,7 @@
  
   
     
-      <li data-nav-id="/casquatch/features/mavenconfiguration/" title="Maven Configuration" class="dd-item ">
+      <li data-nav-id="/casquatch/features/mavenconfiguration/" title="Maven Configuration" class="dd-item active">
         <a href="/casquatch/features/mavenconfiguration/">
         Maven Configuration
         
@@ -772,28 +772,126 @@
         <div id="overlay"></div>
         <div class="padding highlightable">
               
+              <div>
+                <div id="top-bar">
+                
+                  
+                  
+                  
+                  <div id="top-github-link">
+                    <a class="github-link" title='Edit this page' href="https://github.com/tmobile/casquatch/edit/master/manual/content/features/mavenconfiguration.md" target="blank">
+                      <i class="fas fa-code-branch"></i>
+                      <span id="top-github-link-text">Edit this page</span>
+                    </a>
+                  </div>
+                  
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                   Maven Configuration 
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#add-version-property">Add version property</a></li>
+<li><a href="#add-dependency-for-driver">Add dependency for Driver</a></li>
+<li><a href="#optional-add-test-dependency-for-driver">Optional: Add test dependency for Driver</a></li>
+<li><a href="#add-annotation-processing">Add annotation processing</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
         <div id="head-tags">
         
         </div>
         
         <div id="body-inner">
           
+            <h1>
+              
+              Maven Configuration
+            </h1>
+          
 
         
 
 
-<span id="sidebar-toggle-span">
-<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fas fa-bars"></i> navigation</a>
-</span>
-
- 
 
 
-<h1 id="welcome">Welcome</h1>
 
-<p>Casquatch is a java abstraction layer for the Cassandra database allowing developers to interact with the database through generated POJOs via simple get, save, delete, procedures without writing a single line of CQL.</p>
+<h2 id="add-version-property">Add version property</h2>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;casquatch.version&gt;</span>X.Y-RELEASE<span style="color:#f92672">&lt;/casquatch.version&gt;</span></code></pre></div>
+
+<h2 id="add-dependency-for-driver">Add dependency for Driver</h2>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">  <span style="color:#f92672">&lt;dependency&gt;</span>
+    <span style="color:#f92672">&lt;groupId&gt;</span>com.tmobile.opensource.casquatch<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId&gt;</span>casquatch-driver<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version&gt;</span>${casquatch.version}<span style="color:#f92672">&lt;/version&gt;</span>
+  <span style="color:#f92672">&lt;/dependency&gt;</span></code></pre></div>
+
+<h2 id="optional-add-test-dependency-for-driver">Optional: Add test dependency for Driver</h2>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">  <span style="color:#f92672">&lt;dependency&gt;</span>
+    <span style="color:#f92672">&lt;groupId&gt;</span>com.tmobile.opensource.casquatch<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId&gt;</span>casquatch-driver-tests<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version&gt;</span>${casquatch.version}<span style="color:#f92672">&lt;/version&gt;</span>
+    <span style="color:#f92672">&lt;scope&gt;</span>test<span style="color:#f92672">&lt;/scope&gt;</span>
+  <span style="color:#f92672">&lt;/dependency&gt;</span></code></pre></div>
+
+<h2 id="add-annotation-processing">Add annotation processing</h2>
+
+<p>See <a href="/casquatch/features/annotations/">Annotations</a> for more information
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;build&gt;</span>
+    <span style="color:#f92672">&lt;plugins&gt;</span>
+        <span style="color:#f92672">&lt;plugin&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>org.apache.maven.plugins<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>maven-compiler-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+            <span style="color:#f92672">&lt;configuration&gt;</span>
+                <span style="color:#f92672">&lt;source&gt;</span>${java.version}<span style="color:#f92672">&lt;/source&gt;</span>
+                <span style="color:#f92672">&lt;target&gt;</span>${java.version}<span style="color:#f92672">&lt;/target&gt;</span>
+                <span style="color:#f92672">&lt;annotationProcessorPaths&gt;</span>
+                    <span style="color:#f92672">&lt;path&gt;</span>
+                        <span style="color:#f92672">&lt;groupId&gt;</span>com.tmobile.opensource.casquatch<span style="color:#f92672">&lt;/groupId&gt;</span>
+                        <span style="color:#f92672">&lt;artifactId&gt;</span>casquatch-driver-processor<span style="color:#f92672">&lt;/artifactId&gt;</span>
+                        <span style="color:#f92672">&lt;version&gt;</span>${casquatch.version}<span style="color:#f92672">&lt;/version&gt;</span>
+                    <span style="color:#f92672">&lt;/path&gt;</span>
+                <span style="color:#f92672">&lt;/annotationProcessorPaths&gt;</span>
+            <span style="color:#f92672">&lt;/configuration&gt;</span>
+        <span style="color:#f92672">&lt;/plugin&gt;</span>
+    <span style="color:#f92672">&lt;/plugins&gt;</span>
+<span style="color:#f92672">&lt;/build&gt;</span></code></pre></div></p>
+
+
+<footer class=" footline" >
 	
-  
+</footer>
+
+
         
         </div> 
         <center>
@@ -878,6 +976,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -890,6 +989,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1067,6 +1169,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1082,6 +1185,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1346,8 +1452,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/casquatch/features/failover/" title="Failover"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/casquatch/overview/" title="Overview" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/casquatch/features/queryoptions/" title="Query Options" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>

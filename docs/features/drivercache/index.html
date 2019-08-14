@@ -9,7 +9,7 @@
 
     <link rel="icon" href="/casquatch/images/favicon.png" type="image/png">
 
-    <title> :: Casquatch</title>
+    <title>Driver Cache :: Casquatch</title>
 
     
     <link href="/casquatch/css/nucleus.css?1565804556" rel="stylesheet">
@@ -35,7 +35,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/casquatch/">
+  <body class="" data-url="/casquatch/features/drivercache/">
     <nav id="sidebar" class="">
 
 
@@ -147,7 +147,7 @@
   
     
     <li data-nav-id="/casquatch/features/" title="Features" class="dd-item 
-        
+        parent
         
         
         ">
@@ -342,7 +342,7 @@
  
   
     
-      <li data-nav-id="/casquatch/features/drivercache/" title="Driver Cache" class="dd-item ">
+      <li data-nav-id="/casquatch/features/drivercache/" title="Driver Cache" class="dd-item active">
         <a href="/casquatch/features/drivercache/">
         Driver Cache
         
@@ -772,28 +772,98 @@
         <div id="overlay"></div>
         <div class="padding highlightable">
               
+              <div>
+                <div id="top-bar">
+                
+                  
+                  
+                  
+                  <div id="top-github-link">
+                    <a class="github-link" title='Edit this page' href="https://github.com/tmobile/casquatch/edit/master/manual/content/features/drivercache.md" target="blank">
+                      <i class="fas fa-code-branch"></i>
+                      <span id="top-github-link-text">Edit this page</span>
+                    </a>
+                  </div>
+                  
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                   Driver Cache 
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#concept">Concept</a></li>
+<li><a href="#example">Example</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
         <div id="head-tags">
         
         </div>
         
         <div id="body-inner">
           
+            <h1>
+              
+              Driver Cache
+            </h1>
+          
 
         
 
 
-<span id="sidebar-toggle-span">
-<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fas fa-bars"></i> navigation</a>
-</span>
-
- 
 
 
-<h1 id="welcome">Welcome</h1>
 
-<p>Casquatch is a java abstraction layer for the Cassandra database allowing developers to interact with the database through generated POJOs via simple get, save, delete, procedures without writing a single line of CQL.</p>
+<h2 id="concept">Concept</h2>
+
+<p>The DriverCache interface is a very simply lazy caching mechanism to allow for objects to be queried with a predefined timeout.</p>
+
+<p>The cache is updated in the following conditions:
+a) Data is requested via get and it does not exist in cache. It is then queried from the database.
+b) Data is requested via get and the timeout has expired (default 15 minutes). This is treated the same as a cache miss and data is thus queried from the Database
+c) A set is called, then the same data is inserted to the cache</p>
+
+<h2 id="example">Example</h2>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Autowired</span>
+CasquatchDao casquatchDao<span style="color:#f92672">;</span>
+
+DatabaseCache<span style="color:#f92672">&lt;</span>MyObj<span style="color:#f92672">&gt;</span> myObjCache <span style="color:#f92672">=</span> casquatchDao<span style="color:#f92672">.</span><span style="color:#a6e22e">getCache</span><span style="color:#f92672">(</span>MyObj<span style="color:#f92672">.</span><span style="color:#a6e22e">cache</span><span style="color:#f92672">)</span>
+
+MyObj obj <span style="color:#f92672">=</span> myObjCache<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#960050;background-color:#1e0010">&#39;</span>key1<span style="color:#f92672">.</span><span style="color:#a6e22e">key2</span><span style="color:#960050;background-color:#1e0010">&#39;</span><span style="color:#f92672">);</span></code></pre></div>
+
+
+<footer class=" footline" >
 	
-  
+</footer>
+
+
         
         </div> 
         <center>
@@ -878,6 +948,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -890,6 +961,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1035,6 +1109,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1050,6 +1125,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1346,8 +1424,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/casquatch/features/configurespring/" title="Configure Spring"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/casquatch/overview/" title="Overview" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/casquatch/features/failover/" title="Failover" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>

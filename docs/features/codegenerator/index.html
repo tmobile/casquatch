@@ -9,7 +9,7 @@
 
     <link rel="icon" href="/casquatch/images/favicon.png" type="image/png">
 
-    <title> :: Casquatch</title>
+    <title>Code Generator :: Casquatch</title>
 
     
     <link href="/casquatch/css/nucleus.css?1565804556" rel="stylesheet">
@@ -35,7 +35,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/casquatch/">
+  <body class="" data-url="/casquatch/features/codegenerator/">
     <nav id="sidebar" class="">
 
 
@@ -147,7 +147,7 @@
   
     
     <li data-nav-id="/casquatch/features/" title="Features" class="dd-item 
-        
+        parent
         
         
         ">
@@ -247,7 +247,7 @@
  
   
     
-      <li data-nav-id="/casquatch/features/codegenerator/" title="Code Generator" class="dd-item ">
+      <li data-nav-id="/casquatch/features/codegenerator/" title="Code Generator" class="dd-item active">
         <a href="/casquatch/features/codegenerator/">
         Code Generator
         
@@ -772,28 +772,104 @@
         <div id="overlay"></div>
         <div class="padding highlightable">
               
+              <div>
+                <div id="top-bar">
+                
+                  
+                  
+                  
+                  <div id="top-github-link">
+                    <a class="github-link" title='Edit this page' href="https://github.com/tmobile/casquatch/edit/master/manual/content/features/codegenerator.md" target="blank">
+                      <i class="fas fa-code-branch"></i>
+                      <span id="top-github-link-text">Edit this page</span>
+                    </a>
+                  </div>
+                  
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                   Code Generator 
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#concept">Concept</a></li>
+<li><a href="#configuration">Configuration</a>
+<ul>
+<li><a href="#examples">Examples</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
         <div id="head-tags">
         
         </div>
         
         <div id="body-inner">
           
+            <h1>
+              
+              Code Generator
+            </h1>
+          
 
         
 
 
-<span id="sidebar-toggle-span">
-<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fas fa-bars"></i> navigation</a>
-</span>
-
- 
 
 
-<h1 id="welcome">Welcome</h1>
 
-<p>Casquatch is a java abstraction layer for the Cassandra database allowing developers to interact with the database through generated POJOs via simple get, save, delete, procedures without writing a single line of CQL.</p>
+<h2 id="concept">Concept</h2>
+
+<p>The code generator reverse engineers the schema to create POJOs Entities by evaluating the session metadata.</p>
+
+<h2 id="configuration">Configuration</h2>
+
+<ul>
+<li>See <a href="/casquatch/features/casquatchgenerator/">Generator Configuration</a> for configuration information</li>
+</ul>
+
+<h3 id="examples">Examples</h3>
+
+<ul>
+<li>Generate using properties file:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">java -Dconfig.file<span style="color:#f92672">=</span>/path/to/config.properties -jar CassandraGenerator.jar </code></pre></div></li>
+<li>Generate all tables in a keyspace providing minimum information:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">java -Dcasquatch.generator.outputFolder<span style="color:#f92672">=</span>tmp -Dcasquatch.generator.keyspace<span style="color:#f92672">=</span>myKeyspace -Dcasquatch.generator.datacenter<span style="color:#f92672">=</span>datacenter1 -jar CassandraGenerator.jar</code></pre></div></li>
+<li>Generate a package for all tables in a keyspace providing additional information:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">java -Dcasquatch.generator.outputFolder<span style="color:#f92672">=</span>tmp -Dcasquatch.generator.keyspace<span style="color:#f92672">=</span>myKeyspace -Dcasquatch.generator.datacenter<span style="color:#f92672">=</span>datacenter1 -Dcasquatch.generator.username<span style="color:#f92672">=</span>cassandra -Dcasquatch.generator.password<span style="color:#f92672">=</span>cassandra -Dcasquatch.generator.createPackage<span style="color:#f92672">=</span>true -Dcasquatch.generator.packageName<span style="color:#f92672">=</span>com.demo.mykeyspace -jar CassandraGenerator.jar</code></pre></div></li>
+</ul>
+
+
+<footer class=" footline" >
 	
-  
+</footer>
+
+
         
         </div> 
         <center>
@@ -878,6 +954,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -890,6 +967,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -955,6 +1035,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -970,6 +1051,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1346,8 +1430,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/casquatch/features/builder/" title="Builder Configuration"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/casquatch/overview/" title="Overview" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/casquatch/features/configuration/" title="Configuration" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>

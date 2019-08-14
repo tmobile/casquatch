@@ -9,7 +9,7 @@
 
     <link rel="icon" href="/casquatch/images/favicon.png" type="image/png">
 
-    <title> :: Casquatch</title>
+    <title>Configure Spring :: Casquatch</title>
 
     
     <link href="/casquatch/css/nucleus.css?1565804556" rel="stylesheet">
@@ -35,7 +35,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/casquatch/">
+  <body class="" data-url="/casquatch/features/configurespring/">
     <nav id="sidebar" class="">
 
 
@@ -147,7 +147,7 @@
   
     
     <li data-nav-id="/casquatch/features/" title="Features" class="dd-item 
-        
+        parent
         
         
         ">
@@ -323,7 +323,7 @@
  
   
     
-      <li data-nav-id="/casquatch/features/configurespring/" title="Configure Spring" class="dd-item ">
+      <li data-nav-id="/casquatch/features/configurespring/" title="Configure Spring" class="dd-item active">
         <a href="/casquatch/features/configurespring/">
         Configure Spring
         
@@ -772,28 +772,104 @@
         <div id="overlay"></div>
         <div class="padding highlightable">
               
+              <div>
+                <div id="top-bar">
+                
+                  
+                  
+                  
+                  <div id="top-github-link">
+                    <a class="github-link" title='Edit this page' href="https://github.com/tmobile/casquatch/edit/master/manual/content/features/configurespring.md" target="blank">
+                      <i class="fas fa-code-branch"></i>
+                      <span id="top-github-link-text">Edit this page</span>
+                    </a>
+                  </div>
+                  
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                   Configure Spring 
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#base-configuration">Base Configuration</a></li>
+<li><a href="#add-dependency-for-casquatch-driver-spring">Add dependency for Casquatch-Driver-Spring</a></li>
+<li><a href="#add-annotation">Add Annotation</a></li>
+<li><a href="#use-autowired-casquatchdao-bean-where-needed">Use Autowired CasquatchDao bean where needed</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
         <div id="head-tags">
         
         </div>
         
         <div id="body-inner">
           
+            <h1>
+              
+              Configure Spring
+            </h1>
+          
 
         
 
 
-<span id="sidebar-toggle-span">
-<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fas fa-bars"></i> navigation</a>
-</span>
-
- 
 
 
-<h1 id="welcome">Welcome</h1>
 
-<p>Casquatch is a java abstraction layer for the Cassandra database allowing developers to interact with the database through generated POJOs via simple get, save, delete, procedures without writing a single line of CQL.</p>
+<h2 id="base-configuration">Base Configuration</h2>
+
+<p>First configure according to <a href="/casquatch/features/mavenconfiguration/">Maven Configuration</a></p>
+
+<h2 id="add-dependency-for-casquatch-driver-spring">Add dependency for Casquatch-Driver-Spring</h2>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;dependency&gt;</span>
+    <span style="color:#f92672">&lt;groupId&gt;</span>com.tmobile.opensource.casquatch<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId&gt;</span>casquatch-driver-spring<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version&gt;</span>${casquatch.version}<span style="color:#f92672">&lt;/version&gt;</span>
+<span style="color:#f92672">&lt;/dependency&gt;</span></code></pre></div>
+
+<h2 id="add-annotation">Add Annotation</h2>
+
+<p>Find @SpringBootApplication and add this line:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@CasquatchSpring</span></code></pre></div></p>
+
+<h2 id="use-autowired-casquatchdao-bean-where-needed">Use Autowired CasquatchDao bean where needed</h2>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Autowired</span>
+<span style="color:#66d9ef">private</span> CasquatchDao db<span style="color:#f92672">;</span></code></pre></div>
+
+
+<footer class=" footline" >
 	
-  
+</footer>
+
+
         
         </div> 
         <center>
@@ -878,6 +954,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -890,6 +967,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1019,6 +1099,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1034,6 +1115,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1346,8 +1430,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/casquatch/features/casquatchgenerator/" title="Configuration - Generator"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/casquatch/overview/" title="Overview" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/casquatch/features/drivercache/" title="Driver Cache" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>

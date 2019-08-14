@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Examples on Casquatch</title>
+    <link>http://tmobile.github.io/casquatch/examples/</link>
+    <description>Recent content in Examples on Casquatch</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    
+	<atom:link href="http://tmobile.github.io/casquatch/examples/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Load Test</title>
+      <link>http://tmobile.github.io/casquatch/examples/loadtest/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tmobile.github.io/casquatch/examples/loadtest/</guid>
+      <description>Overview This is an example project that generates random data then writes, reads, and compares the data. It is a command line application that does not utilize spring
+Github: springrest Schema CREATE KEYSPACE loadtest WITH replication = {&#39;class&#39;: &#39;SimpleStrategy&#39;, &#39;replication_factor&#39;: &#39;1&#39;} AND durable_writes = true; CREATE TABLE loadtest.table_name ( key_one int, key_two int, col_one text, col_two text, PRIMARY KEY (key_one, key_two) ); EOF  Configuration casquatch { basic { contact-points = [ &amp;quot;127.</description>
+    </item>
+    
+    <item>
+      <title>Spring Config Server</title>
+      <link>http://tmobile.github.io/casquatch/examples/springconfigserver/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tmobile.github.io/casquatch/examples/springconfigserver/</guid>
+      <description>Overview This is a project that implements Spring Config Server using the Casquatch Driver. Entity was generated via [casquatch-generator]()
+Github: springconfigserver Schema CREATE KEYSPACE springconfigserver WITH replication = {&#39;class&#39;: &#39;SimpleStrategy&#39;, &#39;replication_factor&#39;: &#39;1&#39;} AND durable_writes = true; CREATE TABLE springconfigserver.configuration ( application text, profile text, label text, key text, value text, PRIMARY KEY ((application, profile), label, key) ) WITH CLUSTERING ORDER BY (label ASC, key ASC); EOF  Configuration casquatch { basic { contact-points = [ &amp;quot;127.</description>
+    </item>
+    
+    <item>
+      <title>Spring Rest</title>
+      <link>http://tmobile.github.io/casquatch/examples/springrest/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tmobile.github.io/casquatch/examples/springrest/</guid>
+      <description>Overview This is a simple project that utilizes Spring and Casquatch to provide a Rest API for a given schema. Entity was generated via the Code Generator
+Github: springrest Schema CREATE KEYSPACE springrest WITH replication = {&#39;class&#39;: &#39;SimpleStrategy&#39;, &#39;replication_factor&#39;: &#39;1&#39;} AND durable_writes = true; CREATE TABLE springrest.table_name ( key_one int, key_two int, col_one text, col_two text, PRIMARY KEY (key_one, key_two) ); EOF  Configuration casquatch { basic { contact-points = [ &amp;quot;127.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/overview/</loc>
+    <lastmod>2019-07-11T10:48:24-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/overview/overview/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/overview/license/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/</loc>
+    <lastmod>2019-07-11T10:48:24-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/summary/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/examples/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/releasenotes/</loc>
+    <lastmod>2019-07-11T10:48:24-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/releasenotes/v1.0/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/releasenotes/v1.1/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/releasenotes/v1.1.1/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/releasenotes/v1.2/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/releasenotes/v1.3/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/releasenotes/v1.4/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/releasenotes/v1.5/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/releasenotes/v2.0/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/api/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/annotations/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/builder/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/codegenerator/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/configuration/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/casquatchdriver/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/casquatchgenerator/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/configurespring/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/drivercache/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/failover/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/examples/loadtest/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/mavenconfiguration/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/queryoptions/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/restapi/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/features/solr/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/examples/springconfigserver/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/examples/springrest/</loc>
+  </url>
+  
+  <url>
+    <loc>http://tmobile.github.io/casquatch/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+</urlset>

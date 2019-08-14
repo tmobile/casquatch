@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Release Notes on Casquatch</title>
+    <link>http://tmobile.github.io/casquatch/releasenotes/</link>
+    <description>Recent content in Release Notes on Casquatch</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Thu, 11 Jul 2019 10:48:24 -0700</lastBuildDate>
+    
+	<atom:link href="http://tmobile.github.io/casquatch/releasenotes/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>1.0-RELEASE</title>
+      <link>http://tmobile.github.io/casquatch/releasenotes/v1.0/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tmobile.github.io/casquatch/releasenotes/v1.0/</guid>
+      <description> Changes  Initial Release  Release Date: 03/05/2018 Github: N/A Maven Central: N/A </description>
+    </item>
+    
+    <item>
+      <title>1.1-RELEASE</title>
+      <link>http://tmobile.github.io/casquatch/releasenotes/v1.1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tmobile.github.io/casquatch/releasenotes/v1.1/</guid>
+      <description> Changes  Added ASync versions of most calls Added Solr Supports Added getAllById - Allows getting all of a partition with multiple clustering keys Added CassandraAdminDriver - Allows a direct driver connection for advanced use cases Merged generator and driver into one project Added this documentation Added automated installer script Improved exception handling General bugfixes and code cleanup  Release Date: 04/05/2018 Github: N/A Maven Central: N/A </description>
+    </item>
+    
+    <item>
+      <title>1.1.1-RELEASE</title>
+      <link>http://tmobile.github.io/casquatch/releasenotes/v1.1.1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tmobile.github.io/casquatch/releasenotes/v1.1.1/</guid>
+      <description> Changes  Model Generator Bug Fixes Additional additional types in generator Backwards compatibility to 5.0 Added Full UDT Support Switched from preferring primitives to preferring classes. Multiple bugs with UDT and tombstone creation  Release Date: 05/02/2018 Github: N/A Maven Central: N/A </description>
+    </item>
+    
+    <item>
+      <title>1.2-RELEASE</title>
+      <link>http://tmobile.github.io/casquatch/releasenotes/v1.2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tmobile.github.io/casquatch/releasenotes/v1.2/</guid>
+      <description> Changes  Initial Open Source Release Added Spring Config Server Extended all tuning properties to be modified using a builder procedure or spring configuration Moved all spring references into CassandraDriverSpringConfiguration Moved from log4j to logback to match spring Renamed package and group ids for open source Added licensing and documentation for open source  Release Date: 06/22/2018 Github: 1.2-RELEASE Maven Central: CassandraDriver &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.tmobile.opensource.casquatch&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;CassandraDriver&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.2-RELEASE&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  </description>
+    </item>
+    
+    <item>
+      <title>1.3-RELEASE</title>
+      <link>http://tmobile.github.io/casquatch/releasenotes/v1.3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tmobile.github.io/casquatch/releasenotes/v1.3/</guid>
+      <description>Changes  Added SSL Support Added CassandraDriver-EE as a simple wrapper to inject the licensed driver. Additional Documentation and Tests Updated to latest Cassandra Driver (3.6.0) Added support for Solr Query By Object and by CQL. Requires DSE Search &amp;gt;= 6.0 Rewrote test suite to fully regression test multiple versions Bugfix: Spring Config Server changes to run independently  Release Date: 09/17/2018 Github: 1.3-RELEASE Maven Central: CassandraDriver &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.tmobile.opensource.casquatch&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;CassandraDriver&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.</description>
+    </item>
+    
+    <item>
+      <title>1.4-RELEASE</title>
+      <link>http://tmobile.github.io/casquatch/releasenotes/v1.4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tmobile.github.io/casquatch/releasenotes/v1.4/</guid>
+      <description>Changes  New Feature: Addded workload and dc filtering policies New Feature: Build includes clone as well as multiple default configuration templates. Rewrote CassandraGenerator as CLI Utility with customization options Added CQL Create Table statements as comments in generated code Added getVersion() which shows Casquatch and driver versions Updated Jackson-Databind to 2.9.8 Updated Datastax Driver to 3.7.1 EE to 1.8.1 Bugfix: Boolean type interpretted as UDT in CassandraGenerator Bugfix: Excluded solr_query from models in CassandraGenerator  Release Date: 04/16/19 Github: 1.</description>
+    </item>
+    
+    <item>
+      <title>1.5-SNAPSHOT</title>
+      <link>http://tmobile.github.io/casquatch/releasenotes/v1.5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tmobile.github.io/casquatch/releasenotes/v1.5/</guid>
+      <description> Changes  New Feature: Added DAO Generator  Release Date: TBD Github: 1.5-SNAPSHOT Maven Central: TBD </description>
+    </item>
+    
+    <item>
+      <title>2.0-SNAPSHOT</title>
+      <link>http://tmobile.github.io/casquatch/releasenotes/v2.0/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tmobile.github.io/casquatch/releasenotes/v2.0/</guid>
+      <description> Changes  Complete rewrite to correspond to 4.0 OSS Datastax Driver Moved to annotation processing code generation Split projects to separate spring, tests, and generator from core driver New Feature: Rest DAO New Hugo based manual - https://tmobile.github.io/casquatch/ New Travis CI Integration - https://travis-ci.com/tmobile/casquatch  Release Date: TBD Github: 2.0-SNAPSHOT Maven Central: TBD </description>
+    </item>
+    
+  </channel>
+</rss>

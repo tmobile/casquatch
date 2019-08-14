@@ -9,7 +9,7 @@
 
     <link rel="icon" href="/casquatch/images/favicon.png" type="image/png">
 
-    <title> :: Casquatch</title>
+    <title>API :: Casquatch</title>
 
     
     <link href="/casquatch/css/nucleus.css?1565804556" rel="stylesheet">
@@ -35,7 +35,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/casquatch/">
+  <body class="" data-url="/casquatch/features/api/">
     <nav id="sidebar" class="">
 
 
@@ -147,7 +147,7 @@
   
     
     <li data-nav-id="/casquatch/features/" title="Features" class="dd-item 
-        
+        parent
         
         
         ">
@@ -190,7 +190,7 @@
  
   
     
-      <li data-nav-id="/casquatch/features/api/" title="API" class="dd-item ">
+      <li data-nav-id="/casquatch/features/api/" title="API" class="dd-item active">
         <a href="/casquatch/features/api/">
         API
         
@@ -772,28 +772,115 @@
         <div id="overlay"></div>
         <div class="padding highlightable">
               
+              <div>
+                <div id="top-bar">
+                
+                  
+                  
+                  
+                  <div id="top-github-link">
+                    <a class="github-link" title='Edit this page' href="https://github.com/tmobile/casquatch/edit/master/manual/content/features/api.md" target="blank">
+                      <i class="fas fa-code-branch"></i>
+                      <span id="top-github-link-text">Edit this page</span>
+                    </a>
+                  </div>
+                  
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                   API 
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#concepts">Concepts</a></li>
+<li><a href="#query-options">Query Options</a></li>
+<li><a href="#example">Example</a>
+<ul>
+<li><a href="#getbyid">GetById</a></li>
+<li><a href="#getallbyid">GetAllById</a></li>
+<li><a href="#save">Save</a></li>
+<li><a href="#delete">Delete</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
         <div id="head-tags">
         
         </div>
         
         <div id="body-inner">
           
+            <h1>
+              
+              API
+            </h1>
+          
 
         
 
 
-<span id="sidebar-toggle-span">
-<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fas fa-bars"></i> navigation</a>
-</span>
-
- 
 
 
-<h1 id="welcome">Welcome</h1>
 
-<p>Casquatch is a java abstraction layer for the Cassandra database allowing developers to interact with the database through generated POJOs via simple get, save, delete, procedures without writing a single line of CQL.</p>
+<h2 id="concepts">Concepts</h2>
+
+<p>The core of Casquatch is the object based API. Full documentation can be seen at <a href="http://tmobile.github.io/casquatch/docs/com/tmobile/opensource/casquatch/CasquatchDao.html">CasquatchDao</a>. The concept is that objects are generated from database metadata via the <a href="/casquatch/features/codegenerator/">Code Generator</a> then they can be passed generically to apis such as <a href="http://tmobile.github.io/casquatch/docs/com/tmobile/opensource/casquatch/CasquatchDao.html#getById-java.lang.Class-T-">getById(class,object)</a> or <a href="http://tmobile.github.io/casquatch/docs/com/tmobile/opensource/casquatch/CasquatchDao.html#save-java.lang.Class-T-">save(class,object)</a></p>
+
+<h2 id="query-options">Query Options</h2>
+
+<p>APIs are all overloaded to additionally take <a href="http://tmobile.github.io/casquatch/docs/com/tmobile/opensource/casquatch/QueryOptions.html">QueryOptions</a> object to specify items such as consistency or limit. See <a href="/casquatch/features/queryoptions/">Query Options</a> for more information</p>
+
+<h2 id="example">Example</h2>
+
+<h3 id="getbyid">GetById</h3>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">TableName object <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span><span style="color:#a6e22e">getById</span><span style="color:#f92672">(</span>TableName<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> TableName<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span>2<span style="color:#f92672">););</span></code></pre></div>
+
+<h3 id="getallbyid">GetAllById</h3>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">List<span style="color:#f92672">&lt;</span>TableName<span style="color:#f92672">&gt;</span> objectList <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span><span style="color:#a6e22e">getAllById</span><span style="color:#f92672">(</span>TableName<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> TableName<span style="color:#f92672">(</span>1<span style="color:#f92672">););</span></code></pre></div>
+
+<h3 id="save">Save</h3>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">TableName object <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> TableName<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span>2<span style="color:#f92672">);</span>
+db<span style="color:#f92672">.</span><span style="color:#a6e22e">save</span><span style="color:#f92672">(</span>TableName<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> object<span style="color:#f92672">);</span></code></pre></div>
+
+<h3 id="delete">Delete</h3>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">TableName object <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> TableName<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span>2<span style="color:#f92672">);</span>
+db<span style="color:#f92672">.</span><span style="color:#a6e22e">delete</span><span style="color:#f92672">(</span>TableName<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> object<span style="color:#f92672">);</span></code></pre></div>
+
+
+<footer class=" footline" >
 	
-  
+</footer>
+
+
         
         </div> 
         <center>
@@ -878,6 +965,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -890,6 +978,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -907,6 +998,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -922,6 +1014,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1346,8 +1441,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/casquatch/features/summary/" title="Summary"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/casquatch/overview/" title="Overview" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/casquatch/features/annotations/" title="Annotations" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>

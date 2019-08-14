@@ -9,7 +9,7 @@
 
     <link rel="icon" href="/casquatch/images/favicon.png" type="image/png">
 
-    <title> :: Casquatch</title>
+    <title>Solr :: Casquatch</title>
 
     
     <link href="/casquatch/css/nucleus.css?1565804556" rel="stylesheet">
@@ -35,7 +35,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/casquatch/">
+  <body class="" data-url="/casquatch/features/solr/">
     <nav id="sidebar" class="">
 
 
@@ -147,7 +147,7 @@
   
     
     <li data-nav-id="/casquatch/features/" title="Features" class="dd-item 
-        
+        parent
         
         
         ">
@@ -437,7 +437,7 @@
  
   
     
-      <li data-nav-id="/casquatch/features/solr/" title="Solr" class="dd-item ">
+      <li data-nav-id="/casquatch/features/solr/" title="Solr" class="dd-item active">
         <a href="/casquatch/features/solr/">
         Solr
         
@@ -772,28 +772,93 @@
         <div id="overlay"></div>
         <div class="padding highlightable">
               
+              <div>
+                <div id="top-bar">
+                
+                  
+                  
+                  
+                  <div id="top-github-link">
+                    <a class="github-link" title='Edit this page' href="https://github.com/tmobile/casquatch/edit/master/manual/content/features/solr.md" target="blank">
+                      <i class="fas fa-code-branch"></i>
+                      <span id="top-github-link-text">Edit this page</span>
+                    </a>
+                  </div>
+                  
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                   Solr 
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#concept">Concept</a></li>
+<li><a href="#json-requires-dse-5-1">JSON (Requires DSE 5.1+)</a></li>
+<li><a href="#object-requires-dse-6-0">Object (Requires DSE 6.0+)</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
         <div id="head-tags">
         
         </div>
         
         <div id="body-inner">
           
+            <h1>
+              
+              Solr
+            </h1>
+          
 
         
 
 
-<span id="sidebar-toggle-span">
-<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fas fa-bars"></i> navigation</a>
-</span>
-
- 
 
 
-<h1 id="welcome">Welcome</h1>
 
-<p>Casquatch is a java abstraction layer for the Cassandra database allowing developers to interact with the database through generated POJOs via simple get, save, delete, procedures without writing a single line of CQL.</p>
+<h2 id="concept">Concept</h2>
+
+<p>Datastax solr queries are available with multiple interfaces. This requires that solr be set up and configured on the Cassandra database server.</p>
+
+<h2 id="json-requires-dse-5-1">JSON (Requires DSE 5.1+)</h2>
+
+<p>Query by JSON with the <a href="http://tmobile.github.io/casquatch/docs/com/tmobile/opensource/casquatch/CasquatchDao.html#getAllBySolr-java.lang.Class-java.lang.String-">getAllBySolr(class,solrQuery)</a>, For details on the format of the solrQuery, please consult <a href="https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/search/siQuerySyntax.html#siQuerySyntax">DSE 5.1 - Search index filter syntax</a> for details.</p>
+
+<h2 id="object-requires-dse-6-0">Object (Requires DSE 6.0+)</h2>
+
+<p>Adds Query by Object with <a href="http://tmobile.github.io/casquatch/docs/com/tmobile/opensource/casquatch/CasquatchDao.html#getAllBySolr-java.lang.Class-T-">getAllBySolr(class,object)</a>. See <a href="https://docs.datastax.com/en/dse/6.0/cql/cql/cql_using/search_index/siQuerySyntax.html">DSE 6.0 - Search index filter syntax</a> for details</p>
+
+
+<footer class=" footline" >
 	
-  
+</footer>
+
+
         
         </div> 
         <center>
@@ -878,6 +943,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -890,6 +956,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1115,6 +1184,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1133,6 +1203,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1346,8 +1419,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/casquatch/features/restapi/" title="Rest API"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/casquatch/overview/" title="Overview" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/casquatch/examples/" title="Examples" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>

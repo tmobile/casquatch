@@ -9,7 +9,7 @@
 
     <link rel="icon" href="/casquatch/images/favicon.png" type="image/png">
 
-    <title> :: Casquatch</title>
+    <title>Rest API :: Casquatch</title>
 
     
     <link href="/casquatch/css/nucleus.css?1565804556" rel="stylesheet">
@@ -35,7 +35,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/casquatch/">
+  <body class="" data-url="/casquatch/features/restapi/">
     <nav id="sidebar" class="">
 
 
@@ -147,7 +147,7 @@
   
     
     <li data-nav-id="/casquatch/features/" title="Features" class="dd-item 
-        
+        parent
         
         
         ">
@@ -418,7 +418,7 @@
  
   
     
-      <li data-nav-id="/casquatch/features/restapi/" title="Rest API" class="dd-item ">
+      <li data-nav-id="/casquatch/features/restapi/" title="Rest API" class="dd-item active">
         <a href="/casquatch/features/restapi/">
         Rest API
         
@@ -772,28 +772,94 @@
         <div id="overlay"></div>
         <div class="padding highlightable">
               
+              <div>
+                <div id="top-bar">
+                
+                  
+                  
+                  
+                  <div id="top-github-link">
+                    <a class="github-link" title='Edit this page' href="https://github.com/tmobile/casquatch/edit/master/manual/content/features/restapi.md" target="blank">
+                      <i class="fas fa-code-branch"></i>
+                      <span id="top-github-link-text">Edit this page</span>
+                    </a>
+                  </div>
+                  
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                   Rest API 
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#concepts">Concepts</a></li>
+<li><a href="#implementation">Implementation</a></li>
+<li><a href="#example">Example</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
         <div id="head-tags">
         
         </div>
         
         <div id="body-inner">
           
+            <h1>
+              
+              Rest API
+            </h1>
+          
 
         
 
 
-<span id="sidebar-toggle-span">
-<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fas fa-bars"></i> navigation</a>
-</span>
-
- 
 
 
-<h1 id="welcome">Welcome</h1>
 
-<p>Casquatch is a java abstraction layer for the Cassandra database allowing developers to interact with the database through generated POJOs via simple get, save, delete, procedures without writing a single line of CQL.</p>
+<h2 id="concepts">Concepts</h2>
+
+<p>A spring rest controller can be generated automatically tieing in to core Casquatch APIs</p>
+
+<h2 id="implementation">Implementation</h2>
+
+<p>Implementation requires a boolean flag set on <a href="http://tmobile.github.io/casquatch/docs/com/tmobile/opensource/casquatch/annotations/CasquatchSpring.html">CasquatchSpring</a> as follows
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@CasquatchSpring</span><span style="color:#f92672">(</span>generateRestApi<span style="color:#f92672">=</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span></code></pre></div></p>
+
+<h2 id="example">Example</h2>
+
+<p>See <a href="/casquatch/examples/springrest/">Spring Rest</a> for a working implementation</p>
+
+
+<footer class=" footline" >
 	
-  
+</footer>
+
+
         
         </div> 
         <center>
@@ -878,6 +944,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -890,6 +957,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1099,6 +1169,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1114,6 +1185,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1346,8 +1420,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/casquatch/features/queryoptions/" title="Query Options"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/casquatch/overview/" title="Overview" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/casquatch/features/solr/" title="Solr" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>

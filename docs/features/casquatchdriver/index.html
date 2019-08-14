@@ -9,7 +9,7 @@
 
     <link rel="icon" href="/casquatch/images/favicon.png" type="image/png">
 
-    <title> :: Casquatch</title>
+    <title>Configuration - Driver :: Casquatch</title>
 
     
     <link href="/casquatch/css/nucleus.css?1565804556" rel="stylesheet">
@@ -35,7 +35,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/casquatch/">
+  <body class="" data-url="/casquatch/features/casquatchdriver/">
     <nav id="sidebar" class="">
 
 
@@ -147,7 +147,7 @@
   
     
     <li data-nav-id="/casquatch/features/" title="Features" class="dd-item 
-        
+        parent
         
         
         ">
@@ -285,7 +285,7 @@
  
   
     
-      <li data-nav-id="/casquatch/features/casquatchdriver/" title="Configuration - Driver" class="dd-item ">
+      <li data-nav-id="/casquatch/features/casquatchdriver/" title="Configuration - Driver" class="dd-item active">
         <a href="/casquatch/features/casquatchdriver/">
         Configuration - Driver
         
@@ -772,28 +772,393 @@
         <div id="overlay"></div>
         <div class="padding highlightable">
               
+              <div>
+                <div id="top-bar">
+                
+                  
+                  
+                  
+                  <div id="top-github-link">
+                    <a class="github-link" title='Edit this page' href="https://github.com/tmobile/casquatch/edit/master/manual/content/features/casquatchdriver.md" target="blank">
+                      <i class="fas fa-code-branch"></i>
+                      <span id="top-github-link-text">Edit this page</span>
+                    </a>
+                  </div>
+                  
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                   Configuration - Driver 
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#concept">Concept</a></li>
+<li><a href="#basic-properties">Basic Properties</a></li>
+<li><a href="#failover-policy">Failover Policy</a></li>
+<li><a href="#query-options">Query Options</a></li>
+<li><a href="#advanced-properties">Advanced Properties</a></li>
+<li><a href="#debugging">Debugging</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
         <div id="head-tags">
         
         </div>
         
         <div id="body-inner">
           
+            <h1>
+              
+              Configuration - Driver
+            </h1>
+          
 
         
 
 
-<span id="sidebar-toggle-span">
-<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fas fa-bars"></i> navigation</a>
-</span>
-
- 
 
 
-<h1 id="welcome">Welcome</h1>
 
-<p>Casquatch is a java abstraction layer for the Cassandra database allowing developers to interact with the database through generated POJOs via simple get, save, delete, procedures without writing a single line of CQL.</p>
+<h2 id="concept">Concept</h2>
+
+<p>This an extension of <a href="https://docs.datastax.com/en/developer/java-driver/4.0/manual/core/configuration/reference/">Reference Configuration</a>. This page will highlight a subset of the properties as well as all non-default values. Please use the reference page for further details.</p>
+
+<h2 id="basic-properties">Basic Properties</h2>
+
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>casquatch.basic.contact-points</td>
+<td>127.0.0.1:9042</td>
+<td>A list of contact point ips and ports. If providing in properties file</td>
+</tr>
+
+<tr>
+<td>casquatch.basic.session-keyspace</td>
+<td></td>
+<td>Keyspace for the connection</td>
+</tr>
+
+<tr>
+<td>casquatch.basic.load-balancing-policy.local-datacenter</td>
+<td></td>
+<td>local datacenter for connect</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.auth-provider.username</td>
+<td>cassandra</td>
+<td>Username for connection</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.auth-provider.password</td>
+<td>cassandra</td>
+<td>Password for connection</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="failover-policy">Failover Policy</h2>
+
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>casquatch.failover-policy.class</td>
+<td>DefaultFailoverPolicy</td>
+<td>Provides a failover policy to fail to a second profile.</td>
+</tr>
+
+<tr>
+<td>casquatch.failover-policy.profile</td>
+<td></td>
+<td>Name of profile to failover to in the vent of failure</td>
+</tr>
+</tbody>
+</table>
+
+<p>See <a href="/casquatch/features/failover/">Failover Policy</a> for more information</p>
+
+<h2 id="query-options">Query Options</h2>
+
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>casquatch.query-options.allow-non-primary-keys</td>
+<td>false</td>
+<td>Default to disallow queries with non primary keys.</td>
+</tr>
+
+<tr>
+<td>casquatch.query-options.null-saving-strategy</td>
+<td>DO_NOT_SET</td>
+<td>Default of whether to persist nulls</td>
+</tr>
+
+<tr>
+<td>casquatch.query-options.limit</td>
+<td>10</td>
+<td>Default row limit when doing a getAll</td>
+</tr>
+
+<tr>
+<td>casquatch.query-options.profile</td>
+<td></td>
+<td>Default execution profile</td>
+</tr>
+
+<tr>
+<td>casquatch.solr-query-options.allow-non-primary-keys</td>
+<td>true</td>
+<td>Default to allow queries with non primary keys.</td>
+</tr>
+
+<tr>
+<td>casquatch.solr-query-options.null-saving-strategy</td>
+<td>DO_NOT_SET</td>
+<td>Default of whether to persist nulls</td>
+</tr>
+
+<tr>
+<td>casquatch.solr-query-options.limit</td>
+<td>10</td>
+<td>Default row limit when doing a getAll</td>
+</tr>
+
+<tr>
+<td>casquatch.solr-query-options.profile</td>
+<td></td>
+<td>Default execution profile</td>
+</tr>
+</tbody>
+</table>
+
+<p>See <a href="/casquatch/features/queryoptions/">Query Options</a> for more information</p>
+
+<h2 id="advanced-properties">Advanced Properties</h2>
+
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>casquatch.basic.request.timeout</td>
+<td>500 milliseconds</td>
+<td>Set the request time out duration</td>
+</tr>
+
+<tr>
+<td>casquatch.basic.request.consistency</td>
+<td>LOCAL_QUORUM</td>
+<td>Default consistency level for queries</td>
+</tr>
+
+<tr>
+<td>casquatch.basic.request.page-size</td>
+<td></td>
+<td>Default page size</td>
+</tr>
+
+<tr>
+<td>casquatch.basic.load-balancing-policy.class</td>
+<td></td>
+<td>Class to provide a custom load balancer policy</td>
+</tr>
+
+<tr>
+<td>casquatch.basic.load-balancing-policy.filter.class</td>
+<td></td>
+<td>Class to provide a custom filtering policy</td>
+</tr>
+
+<tr>
+<td>casquatch.max-requests-per-connection</td>
+<td>1024</td>
+<td>Maximum number of requests per connection</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.connection.init-query-timeout</td>
+<td>12000</td>
+<td>How long to wait for a heartbeat</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.connection.pool.local.size</td>
+<td>3</td>
+<td>Size of the local connection pool</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.reconnect-on-init</td>
+<td>true</td>
+<td>Attempt reconnect if all contact points are unavailable</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.reconnection-policy.class</td>
+<td>ExponentialReconnectionPolicy</td>
+<td>Reconnection policy to use</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.reconnection-policy.base-delay</td>
+<td>500 milliseconds</td>
+<td>Delay between reconnections</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.reconnection-policy.max-delay</td>
+<td>300 seconds</td>
+<td>Maximum delay</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.retry-policy.class</td>
+<td>DefaultRetryPolicy</td>
+<td>Reconnection policy to use</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.speculative-execution-policy.class</td>
+<td>ConstantSpeculativeExecutionPolicy</td>
+<td>Speculative execution policy to use</td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.speculative-execution-policy.max-executions = 2</td>
+<td>Maximum number of executions</td>
+<td></td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.speculative-execution-policy.delay = 500 milliseconds</td>
+<td>Delay before reexecuting the query</td>
+<td></td>
+</tr>
+
+<tr>
+<td>casquatch.advanced.auth-provider.class</td>
+<td>PlainTextAuthProvider</td>
+<td>Authentication provider</td>
+</tr>
+
+<tr>
+<td>casquatch.ssl-engine-factory.class</td>
+<td>DefaultSslEngineFactory</td>
+<td>SSL Class</td>
+</tr>
+
+<tr>
+<td>casquatch.ssl-engine-factory.cipher-suites</td>
+<td>[ &ldquo;TLS_RSA_WITH_AES_128_CBC_SHA&rdquo;, &ldquo;TLS_RSA_WITH_AES_256_CBC_SHA&rdquo; ]</td>
+<td>Default cipher suites</td>
+</tr>
+
+<tr>
+<td>casquatch.ssl-engine-factory.hostname-validation</td>
+<td>true</td>
+<td>Hostname validation</td>
+</tr>
+
+<tr>
+<td>casquatch.ssl-engine-factory.truststore-path</td>
+<td></td>
+<td>Path to truststore</td>
+</tr>
+
+<tr>
+<td>casquatch.ssl-engine-factory.truststore-password</td>
+<td></td>
+<td>Truststore password</td>
+</tr>
+
+<tr>
+<td>casquatch.ssl-engine-factory.keystore-path</td>
+<td></td>
+<td>Path to Keystore</td>
+</tr>
+
+<tr>
+<td>casquatch.ssl-engine-factory.keystore-password</td>
+<td></td>
+<td>Keystore password</td>
+</tr>
+
+<tr>
+<td>casquatch.profiles.ddl.basic.request.timeout</td>
+<td>2 seconds</td>
+<td>Provides a DDL profile with greater timeout</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="debugging">Debugging</h2>
+
+<p>To enable debug logging and dump configured properties to the log, please enable the following:
+com.tmobile.opensource.casquatch.ConfigLoader=DEBUG</p>
+
+
+<footer class=" footline" >
 	
-  
+</footer>
+
+
         
         </div> 
         <center>
@@ -878,6 +1243,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -890,6 +1256,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -987,6 +1356,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1002,6 +1372,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1346,8 +1719,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/casquatch/features/configuration/" title="Configuration"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/casquatch/overview/" title="Overview" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/casquatch/features/casquatchgenerator/" title="Configuration - Generator" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>

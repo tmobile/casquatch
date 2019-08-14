@@ -9,7 +9,7 @@
 
     <link rel="icon" href="/casquatch/images/favicon.png" type="image/png">
 
-    <title> :: Casquatch</title>
+    <title>Query Options :: Casquatch</title>
 
     
     <link href="/casquatch/css/nucleus.css?1565804556" rel="stylesheet">
@@ -35,7 +35,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/casquatch/">
+  <body class="" data-url="/casquatch/features/queryoptions/">
     <nav id="sidebar" class="">
 
 
@@ -147,7 +147,7 @@
   
     
     <li data-nav-id="/casquatch/features/" title="Features" class="dd-item 
-        
+        parent
         
         
         ">
@@ -399,7 +399,7 @@
  
   
     
-      <li data-nav-id="/casquatch/features/queryoptions/" title="Query Options" class="dd-item ">
+      <li data-nav-id="/casquatch/features/queryoptions/" title="Query Options" class="dd-item active">
         <a href="/casquatch/features/queryoptions/">
         Query Options
         
@@ -772,28 +772,94 @@
         <div id="overlay"></div>
         <div class="padding highlightable">
               
+              <div>
+                <div id="top-bar">
+                
+                  
+                  
+                  
+                  <div id="top-github-link">
+                    <a class="github-link" title='Edit this page' href="https://github.com/tmobile/casquatch/edit/master/manual/content/features/queryoptions.md" target="blank">
+                      <i class="fas fa-code-branch"></i>
+                      <span id="top-github-link-text">Edit this page</span>
+                    </a>
+                  </div>
+                  
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                   Query Options 
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#concept">Concept</a></li>
+<li><a href="#options">Options</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
         <div id="head-tags">
         
         </div>
         
         <div id="body-inner">
           
+            <h1>
+              
+              Query Options
+            </h1>
+          
 
         
 
 
-<span id="sidebar-toggle-span">
-<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fas fa-bars"></i> navigation</a>
-</span>
-
- 
 
 
-<h1 id="welcome">Welcome</h1>
 
-<p>Casquatch is a java abstraction layer for the Cassandra database allowing developers to interact with the database through generated POJOs via simple get, save, delete, procedures without writing a single line of CQL.</p>
+<h2 id="concept">Concept</h2>
+
+<p>In order to provide a fluid model of specifying QueryOptions, a QueryOptions object is provided which is immutable and chainable. See <a href="http://tmobile.github.io/casquatch/docs/com/tmobile/opensource/casquatch/QueryOptions.html">Query Options</a> for more information. All CasquatchDao query APIs are overloaded allowing for this object to be passed.</p>
+
+<h2 id="options">Options</h2>
+
+<ul>
+<li>All Columns - Indicates if a query should be built referencing only the keys or all columns. If all columns is used and the query method does not support non key columns then this will reuslt in an exception.</li>
+<li>Consistency Level - Specify a per query consistency level</li>
+<li>Limit - Specify the number of rows to return</li>
+<li>TTL - Set a TTL for the query</li>
+<li>Profile - Excecution profile to use. See (Execution Profiles)[<a href="https://docs.datastax.com/en/developer/java-driver/4.1/manual/core/configuration/#execution-profiles">https://docs.datastax.com/en/developer/java-driver/4.1/manual/core/configuration/#execution-profiles</a>] for more information</li>
+</ul>
+
+
+<footer class=" footline" >
 	
-  
+</footer>
+
+
         
         </div> 
         <center>
@@ -878,6 +944,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -890,6 +957,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1083,6 +1153,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1098,6 +1169,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1346,8 +1420,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/casquatch/features/mavenconfiguration/" title="Maven Configuration"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/casquatch/overview/" title="Overview" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/casquatch/features/restapi/" title="Rest API" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>

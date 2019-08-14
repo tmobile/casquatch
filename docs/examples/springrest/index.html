@@ -9,7 +9,7 @@
 
     <link rel="icon" href="/casquatch/images/favicon.png" type="image/png">
 
-    <title> :: Casquatch</title>
+    <title>Spring Rest :: Casquatch</title>
 
     
     <link href="/casquatch/css/nucleus.css?1565804556" rel="stylesheet">
@@ -35,7 +35,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/casquatch/">
+  <body class="" data-url="/casquatch/examples/springrest/">
     <nav id="sidebar" class="">
 
 
@@ -464,7 +464,7 @@
   
     
     <li data-nav-id="/casquatch/examples/" title="Examples" class="dd-item 
-        
+        parent
         
         
         ">
@@ -526,7 +526,7 @@
  
   
     
-      <li data-nav-id="/casquatch/examples/springrest/" title="Spring Rest" class="dd-item ">
+      <li data-nav-id="/casquatch/examples/springrest/" title="Spring Rest" class="dd-item active">
         <a href="/casquatch/examples/springrest/">
         Spring Rest
         
@@ -772,28 +772,130 @@
         <div id="overlay"></div>
         <div class="padding highlightable">
               
+              <div>
+                <div id="top-bar">
+                
+                  
+                  
+                  
+                  <div id="top-github-link">
+                    <a class="github-link" title='Edit this page' href="https://github.com/tmobile/casquatch/edit/master/manual/content/examples/springrest.md" target="blank">
+                      <i class="fas fa-code-branch"></i>
+                      <span id="top-github-link-text">Edit this page</span>
+                    </a>
+                  </div>
+                  
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                   Spring Rest 
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#github-springrest-https-github-com-tmobile-casquatch-tree-master-casquatch-examples-springrest">Github: <a href="https://github.com/tmobile/casquatch/tree/master/casquatch-examples/springrest">springrest</a></a></li>
+<li><a href="#schema">Schema</a></li>
+<li><a href="#configuration">Configuration</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
         <div id="head-tags">
         
         </div>
         
         <div id="body-inner">
           
+            <h1>
+              
+              Spring Rest
+            </h1>
+          
 
         
 
 
-<span id="sidebar-toggle-span">
-<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fas fa-bars"></i> navigation</a>
-</span>
-
- 
 
 
-<h1 id="welcome">Welcome</h1>
 
-<p>Casquatch is a java abstraction layer for the Cassandra database allowing developers to interact with the database through generated POJOs via simple get, save, delete, procedures without writing a single line of CQL.</p>
+<h2 id="overview">Overview</h2>
+
+<p>This is a simple project that utilizes Spring and Casquatch to provide a Rest API for a given schema. Entity was generated via the <a href="/casquatch/features/codegenerator/">Code Generator</a></p>
+
+<h2 id="github-springrest-https-github-com-tmobile-casquatch-tree-master-casquatch-examples-springrest">Github: <a href="https://github.com/tmobile/casquatch/tree/master/casquatch-examples/springrest">springrest</a></h2>
+
+<h2 id="schema">Schema</h2>
+
+<pre><code>CREATE KEYSPACE springrest WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;
+
+CREATE TABLE springrest.table_name (
+    key_one int,
+    key_two int,
+    col_one text,
+    col_two text,
+    PRIMARY KEY (key_one, key_two)
+);
+EOF
+</code></pre>
+
+<h2 id="configuration">Configuration</h2>
+
+<pre><code>casquatch {
+    basic {
+        contact-points = [
+            &quot;127.0.0.1:9071&quot;
+        ]
+        session-keyspace = springrest
+        load-balancing-policy.local-datacenter=datacenter1
+    }
+    generator {
+        console=false
+        file=true
+        overwrite=true
+        outputFolder=.
+        packageName=com.tmobile.opensource.casquatch.examples
+        createPackage=false
+        contactPoints=${casquatch.basic.contact-points}
+        keyspace=${casquatch.basic.session-keyspace}
+        datacenter=${casquatch.basic.load-balancing-policy.local-datacenter}
+    }
+}
+
+server.servlet.context-path=/${casquatch.basic.session-keyspace}
+
+
+</code></pre>
+
+
+<footer class=" footline" >
 	
-  
+</footer>
+
+
         
         </div> 
         <center>
@@ -1134,6 +1236,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1146,6 +1249,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1179,6 +1285,7 @@
             
                 
                     
+                    
                 
                 
 
@@ -1197,6 +1304,9 @@
             
             
                 
+                    
+                        
+                        
                     
                 
                 
@@ -1346,8 +1456,10 @@
 	 
 	 
 		
+			<a class="nav nav-prev" href="/casquatch/examples/springconfigserver/" title="Spring Config Server"> <i class="fa fa-chevron-left"></i></a>
 		
-			<a class="nav nav-next" href="/casquatch/overview/" title="Overview" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+			<a class="nav nav-next" href="/casquatch/releasenotes/" title="Release Notes" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
