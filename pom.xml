@@ -35,12 +35,6 @@
   </scm>
 
   <modules>
-    <!--
-    <module>cassandradriver</module>
-    <module>cassandradriver-ee</module>
-    <module>cassandragenerator</module>
-    <module>springconfigserver</module>
-    -->
     <module>casquatch-driver</module>
     <module>casquatch-driver-spring</module>
     <module>casquatch-driver-processor</module>
