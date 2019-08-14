@@ -121,7 +121,18 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
         }
     }
 
-
+    protected void waitForSolrIndex(E obj) {
+        int maxWait=30;
+        for(int i=0;i<=maxWait;i++) {
+            if(getCasquatchDao().getAllBySolr(this.entityClass,obj).size()>0) return;
+            try {
+                Thread.sleep(1000);
+            }
+            catch(Exception e) {
+                return;
+            }
+        }
+    }
 
     private E prepCache() {
         E obj = prepObject();
@@ -398,10 +409,11 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
         E obj = prepObject();
 
         if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR)) {
-            Thread.sleep(1000);
+            waitForSolrIndex(obj);
             List<E> tstObj = this.getCasquatchDao().getAllBySolr(this.entityClass, "*:*");
-            assertEquals(1, tstObj.size());
-            assertEquals(obj, tstObj.get(0));
+            assertNotNull(tstObj);
+            assert(tstObj.size()>0);
+            assert(tstObj.contains(obj));
         }
         else {
             assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
@@ -415,9 +427,9 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
         E obj = prepObject();
 
         if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR)) {
-            Thread.sleep(1000);
+            waitForSolrIndex(obj);
             Long count = this.getCasquatchDao().getCountBySolr(this.entityClass,"*:*");
-            assertEquals(1, (long) count);
+            assert(count > 0);
         }
         else {
             assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
@@ -431,10 +443,11 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
         E obj = prepObject();
 
         if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR)) {
-            Thread.sleep(1000);
+            waitForSolrIndex(obj);
             List<E> tstObj = this.getCasquatchDao().getAllBySolr(this.entityClass,"*:*",queryOptions.withConsistencyLevel("LOCAL_ONE").withAllColumns());
-            assertEquals(1, tstObj.size());
-            assertEquals(obj, tstObj.get(0));
+            assertNotNull(tstObj);
+            assert(tstObj.size()>0);
+            assert(tstObj.contains(obj));
         }
         else {
             assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
@@ -448,9 +461,9 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
         E obj = prepObject();
 
         if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR)) {
-            Thread.sleep(1000);
+            waitForSolrIndex(obj);
             Long count = this.getCasquatchDao().getCountBySolr(this.entityClass,"*:*",queryOptions.withConsistencyLevel("LOCAL_ONE").withAllColumns());
-            assertEquals(1, (long) count);
+            assert(count > 0);
         }
         else {
             assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
@@ -465,10 +478,11 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
         E obj = prepObject();
 
         if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR_OBJECT)) {
-            Thread.sleep(1000);
+            waitForSolrIndex(obj);
             List<E> tstObj = this.getCasquatchDao().getAllBySolr(this.entityClass, obj);
-            assertEquals(1, tstObj.size());
-            assertEquals(obj, tstObj.get(0));
+            assertNotNull(tstObj);
+            assert(tstObj.size()>0);
+            assert(tstObj.contains(obj));
         }
         else {
             assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
@@ -482,7 +496,7 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
         E obj = prepObject();
 
         if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR_OBJECT)) {
-            Thread.sleep(1000);
+            waitForSolrIndex(obj);
             Long count = this.getCasquatchDao().getCountBySolr(this.entityClass,obj);
             assertEquals(1, (long) count);
         }
@@ -498,10 +512,11 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
         E obj = prepObject();
 
         if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR_OBJECT)) {
-            Thread.sleep(1000);
+            waitForSolrIndex(obj);
             List<E> tstObj = this.getCasquatchDao().getAllBySolr(this.entityClass,obj,queryOptions.withConsistencyLevel("LOCAL_ONE").withAllColumns());
-            assertEquals(1, tstObj.size());
-            assertEquals(obj, tstObj.get(0));
+            assertNotNull(tstObj);
+            assert(tstObj.size()>0);
+            assert(tstObj.contains(obj));
         }
         else {
             assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
@@ -515,7 +530,7 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
         E obj = prepObject();
 
         if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR_OBJECT)) {
-            Thread.sleep(1000);
+            waitForSolrIndex(obj);
             Long count = this.getCasquatchDao().getCountBySolr(this.entityClass,obj,queryOptions.withConsistencyLevel("LOCAL_ONE").withAllColumns());
             assertEquals(1, (long) count);
         }
