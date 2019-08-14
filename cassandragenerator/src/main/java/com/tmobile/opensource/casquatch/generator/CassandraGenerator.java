@@ -84,6 +84,7 @@ public class CassandraGenerator {
 			Database db = new Database();
 			Output output = new Output();
 			Boolean pkg;
+			Boolean dao;
 			List<String> tables;
 			List<String> cacheableTables;
 			List<String> types;
@@ -99,6 +100,7 @@ public class CassandraGenerator {
 				this.output.mode = MODE_CONSOLE;
 				this.output.folder="./";
 				this.pkg=false;
+				this.dao=false;
 				this.packageName="com.tmobile.opensource.casquatch.models.$KEYSPACE$";
 			}
 			
@@ -256,6 +258,18 @@ public class CassandraGenerator {
 					throw new Exception ("invalid cassandraGenerator.package");
 				}
 			}
+
+			if(properties.containsKey("cassandraGenerator.dao")) {
+				if(properties.getProperty("cassandraGenerator.dao").toLowerCase().equals("true")) {
+					this.withDAO();
+				}
+				else if(properties.getProperty("cassandraGenerator.dao").toLowerCase().equals("false")) {
+					this.withoutDAO();
+				}
+				else {
+					throw new Exception ("invalid cassandraGenerator.dao");
+				}
+			}
 			
 			if(properties.containsKey("cassandraGenerator.tables")) {
 				this.withTables(Arrays.asList(properties.getProperty("cassandraGenerator.tables").split(",")));
@@ -285,67 +299,71 @@ public class CassandraGenerator {
 		public Builder withArgs(ApplicationArguments args) throws Exception {
 			
 			logger.info(args.getOptionNames().toString());
-			
+
 			if(args.containsOption("properties")) {
 				this.withProperties(args.getOptionValues("properties").get(0));
 			}
-			
+
 			if(args.containsOption("output")) {
 				this.withOutputFolder(args.getOptionValues("output").get(0));
 			}
-			
+
 			if(args.containsOption("overwrite")) {
 				this.withOverwriteOutput();
 			}
-			
+
 			if(args.containsOption("contactPoints")) {
 				this.withContactPoints(args.getOptionValues("contactPoints").get(0));
 			}
-			
+
 			if(args.containsOption("port")) {
 				this.withPort(Integer.parseInt(args.getOptionValues("port").get(0)));
 			}
-			
+
 			if(args.containsOption("keyspace")) {
 				this.withKeyspace(args.getOptionValues("keyspace").get(0));
 			}
-			
+
 			if(args.containsOption("datacenter")) {
 				this.withDatacenter(args.getOptionValues("datacenter").get(0));
 			}
-			
+
 			if(args.containsOption("user")) {
 				this.withUsername(args.getOptionValues("user").get(0));
 			}
-			
+
 			if(args.containsOption("password")) {
 				this.withPassword(args.getOptionValues("password").get(0));
 			}
-			
+
+			if(args.containsOption("dao")) {
+				this.withDAO();
+			}
+
 			if(args.containsOption("package")) {
 				this.withPackage();
 			}
-			
+
 			if(args.containsOption("packageName")) {
 				this.withPackageName(args.getOptionValues("packageName").get(0));
 			}
-			
+
 			if(args.containsOption("table")) {
 				this.withTables(args.getOptionValues("table"));
 			}
-			
+
 			if(args.containsOption("cacheableTable")) {
 				this.withCacheableTables(args.getOptionValues("cacheableTable"));
 			}
-			
+
 			if(args.containsOption("type")) {
 				this.withTypes(args.getOptionValues("type"));
 			}
-			
+
 			if(args.containsOption("console")) {
 				this.withConsoleOutput();
 			}
-			
+
 			return this;
 		}
 		
@@ -453,6 +471,24 @@ public class CassandraGenerator {
 	     */
 		public Builder withFileOutput() {
 			config.output.mode = MODE_FILE;
+			return this;
+		}
+
+		/**
+		 * Build with dao
+		 * @return Reference to Builder object
+		 */
+		public Builder withDAO() {
+			config.dao=true;
+			return this;
+		}
+
+		/**
+		 * Build without dao
+		 * @return Reference to Builder object
+		 */
+		public Builder withoutDAO() {
+			config.dao=false;
 			return this;
 		}
 		
@@ -616,6 +652,9 @@ public class CassandraGenerator {
 		if(config.pkg) {
 			generatePom();
 		}
+		if(config.dao) {
+			generateDAO();
+		}
 		generateTables();
 		generatecacheableTables();
 		generateTypes();
@@ -643,8 +682,87 @@ public class CassandraGenerator {
 		generate("pom.ftl",input,"pom.xml");
 	
 	}
-	
-   /**
+
+	/**
+	 * Generates all table daos
+	 * @throws Exception passed exception
+	 */
+	public void generateDAO() throws Exception {
+
+		String path = "src/main/java/"+(config.packageName.replace(".", "/"))+"/dao/";
+
+		generateTableDAOs(path, config.db.keyspace, config.tables);
+
+		Map<String, Object> input = new HashMap<String, Object>();
+		input.put("keyspace", config.db.keyspace);
+		input.put("package", config.packageName);
+
+		generate("dao/pom.ftl",input,"pom.xml");
+		generate("dao/CassandraDAO.ftl",input,path+"/CassandraDAO.java");
+
+	}
+
+	/**
+	 * Generates all table daos
+	 * @param keyspace provided keyspace
+	 * @param tables list of tables
+	 * @throws Exception passed exception
+	 */
+	public void generateTableDAOs(String path, String keyspace, List<String> tables) throws Exception {
+		if(tables != null && tables.size() > 0) {
+			for (int i=0;i < tables.size();i++) {
+				this.generateTableDAO(path,keyspace, tables.get(i));
+			}
+		}
+		else {
+			List<TablesExtended> tableList = db.executeAll(TablesExtended.class, "select keyspace_name, table_name from system_schema.tables where keyspace_name = '"+keyspace.toLowerCase()+"'");
+			for (int i=0;i < tableList.size();i++) {
+				this.generateTableDAO(path,keyspace, tableList.get(i).getTableName());
+			}
+		}
+	}
+
+	/**
+	 * Generates a single table dao
+	 * @param keyspace provided keyspace
+	 * @param table name of table
+	 * @throws Exception passed exception
+	 */
+	public void generateTableDAO(String path, String keyspace, String table) throws Exception {
+
+		logger.info("Creating dao for table "+keyspace+"."+table);
+
+		String cql = adminDB.getDatastaxSession().getCluster().getMetadata().getKeyspace(keyspace).getTable(table).asCQLQuery();
+
+		Map<String, Object> input = new HashMap<String, Object>();
+		input.put("keyspace",keyspace);
+		input.put("package", config.packageName);
+		input.put("table",table);
+		input.put("className",ColumnsExtended.format(table,true));
+		input.put("cql", cql);
+
+
+		List<ColumnsExtended> columns = db.executeAll(ColumnsExtended.class, "select keyspace_name, table_name, column_name, clustering_order, kind, position, type from system_schema.columns where keyspace_name = '"+keyspace.toLowerCase()+"' and table_name = '"+table.toLowerCase()+"'");
+
+		for(ColumnsExtended col : columns) {
+			if(col.getVarName().equals("id")) {
+				logger.error("{}.{} contains a column named id which will conflict and thus has been skipped. Please rename.",keyspace,table);
+				return;
+			}
+			if(col.getType().equals("counter")) {
+				logger.warn("{}.{} contains a counter column which cannot be updated via the object model. Attempting to update this column will result in an error.");
+			}
+		}
+
+		String fileName = path+TablesExtended.format(table,true)+"DAO.java";
+
+		generate("dao/dse_table.ftl",input,fileName);
+		generate("dao/dse_table_test.ftl",input,"src/test/java/"+(config.packageName.replace(".", "/"))+"/CassandraGenerator"+TablesExtended.format(table,true)+"DAOTests.java");
+
+	}
+
+
+	/**
     * Generates all tables
     * @throws Exception passed exception
     */ 
@@ -695,7 +813,7 @@ public class CassandraGenerator {
 		logger.info("Creating models for table "+keyspace+"."+table);
 		
 		String cql = adminDB.getDatastaxSession().getCluster().getMetadata().getKeyspace(keyspace).getTable(table).asCQLQuery();
-		
+
 		List<ColumnsExtended> columns = db.executeAll(ColumnsExtended.class, "select keyspace_name, table_name, column_name, clustering_order, kind, position, type from system_schema.columns where keyspace_name = '"+keyspace.toLowerCase()+"' and table_name = '"+table.toLowerCase()+"'");
        
 		// Remove if column is solr_query
@@ -720,9 +838,19 @@ public class CassandraGenerator {
         			imports.add(tmpImport);
         		}
         	}
-        }      
+        }
+
+		for(ColumnsExtended col : columns) {
+			if(col.getVarName().equals("id")) {
+				logger.error("{}.{} contains a column named id which will conflict and thus has been skipped. Please rename.",keyspace,table);
+				return;
+			}
+			if(col.getType().equals("counter")) {
+				logger.warn("{}.{} contains a counter column which cannot be updated via the object model. Attempting to update this column will result in an error.");
+			}
+		}
 		
-		Map<String, Object> input = new HashMap<String, Object>();
+		Map<String, Object> input = new HashMap<>();
 
         
         input.put("imports",imports);
@@ -746,7 +874,9 @@ public class CassandraGenerator {
         	
         } else {
     		generate("models/dse_table.ftl",input,fileName);		        	
-        }	
+        }
+
+		generate("models/dse_table_test.ftl",input,"src/test/java/"+(config.packageName.replace(".", "/"))+"/CassandraGenerator"+TablesExtended.format(table,true)+"Tests.java");
 	}
 	
    /**

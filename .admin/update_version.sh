@@ -13,6 +13,7 @@ sed -i .updaterelease "s/$OLD_VERSION/$NEW_VERSION/g" cassandradriver/pom.xml
 sed -i .updaterelease "s/$OLD_VERSION/$NEW_VERSION/g" cassandradriver-ee/pom.xml
 sed -i .updaterelease "s/$OLD_VERSION/$NEW_VERSION/g" cassandragenerator/pom.xml
 sed -i .updaterelease "s/$OLD_VERSION/$NEW_VERSION/g" cassandragenerator/src/main/resources/templates/pom.ftl
+sed -i .updaterelease "s/$OLD_VERSION/$NEW_VERSION/g" cassandragenerator/src/main/resources/templates/dao/pom.ftl
 sed -i .updaterelease "s/$OLD_VERSION/$NEW_VERSION/g" install.sh
 
 find . -name '*.updaterelease' -exec rm {} \;

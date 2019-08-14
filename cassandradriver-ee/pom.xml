@@ -6,10 +6,10 @@
 
   <groupId>com.tmobile.opensource.casquatch</groupId>
   <artifactId>CassandraDriver-EE</artifactId>
-  <version>1.4-RELEASE</version>
+  <version>1.5-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>Project Casquatch - Cassandra Driver - Enterprise Edition</name>
+  <name>Project Casquatch - Cassandra Driver (Legacy) - Enterprise Edition</name>
   <description>Wrapper of Cassandra Driver that uses the licensed Datastax Enterprise Driver</description>
   <url>http://github.com/tmobile/casquatch</url>
   <licenses>
@@ -42,7 +42,7 @@
     <dependency>
       <groupId>com.tmobile.opensource.casquatch</groupId>
       <artifactId>CassandraDriver</artifactId>
-      <version>1.4-RELEASE</version>
+      <version>1.5-SNAPSHOT</version>
       <exclusions>
            <exclusion>
                <groupId>com.datastax.cassandra</groupId>
@@ -67,7 +67,7 @@
     <dependency>
       <groupId>com.tmobile.opensource.casquatch</groupId>
       <artifactId>CassandraDriver</artifactId>
-      <version>1.4-RELEASE</version>
+      <version>1.5-SNAPSHOT</version>
       <classifier>tests</classifier>
       <type>test-jar</type>
       <scope>test</scope>

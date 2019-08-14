@@ -696,15 +696,15 @@ public class CassandraDriver {
      * @param config driver configuration
      */
     protected CassandraDriver(Builder.Configuration config) {
-    	logger.info("Using Version: "+CassandraDriver.getVersion());
+    	logger.info("Using Version: {}",CassandraDriver.getVersion());
     	config.validate();
     	this.config = config;
         this.clusterMap = new HashMap<String, Cluster>();
         this.sessionMap = new HashMap<String, Session>();
         this.mappingManagerMap = new HashMap<String, MappingManager>();
-        this.driverConfig = new DatabaseCache<DriverConfig>(DriverConfig.class, this);    	
+        this.driverConfig = new DatabaseCache<DriverConfig>(DriverConfig.class, this);
     }
-    
+
     /**
      * Initializes the Driver
      * @param username Name of User
@@ -726,7 +726,7 @@ public class CassandraDriver {
 				.getConfiguration()
 			);
     }
-    
+
     /**
      * Returns the CassandraDriver version information-
      * @return Cluster object for key
@@ -767,7 +767,7 @@ public class CassandraDriver {
                 default:
                     cluster = createSingleDCCluster(key);
             }
-            logger.info("Created new cluster connection for key "+key);
+            logger.info("Created new cluster connection for key {}",key);
             clusterMap.put(key,cluster);
         }
         return clusterMap.get(key);
@@ -783,7 +783,7 @@ public class CassandraDriver {
         if (!sessionMap.containsKey(key)) {
             try {
                 sessionMap.put(key, getCluster(key).connect(config.keyspace));
-                logger.info("Opened new session in "+key+" to "+config.keyspace);
+                logger.info("Opened new session in {} to {}",key,config.keyspace);
             }
             catch (Exception e) {
                 DriverException driverException = new DriverException(e);
@@ -792,7 +792,7 @@ public class CassandraDriver {
         }
         return sessionMap.get(key);
     }
-    
+
     /**
      * Gets the solr session
      * @return Session object for solr
@@ -801,15 +801,15 @@ public class CassandraDriver {
 	protected Session getSolrSession() throws DriverException {
 		if(!config.features.solr) {
 			throw new DriverException(401,"Solr is disabled");
-		}    	
+		}
 		else if(config.loadBalancing.filter.workload.workloads.contains("Search") && config.defaults.solrDC.isEmpty()) {
 			logger.debug("Using default cluster as workload was defined as Solr");
 			return this.getSession("default");
 		}
 		else {
-			logger.debug("Using "+config.defaults.solrDC);
-			return this.getSession(config.defaults.solrDC);        		
-		} 
+			logger.debug("Using {}",config.defaults.solrDC);
+			return this.getSession(config.defaults.solrDC);
+		}
 	}
 
     /**
@@ -830,31 +830,31 @@ public class CassandraDriver {
      * @return Cluster object for supplied details
      */
     private Cluster createHACluster(String localDC) {
-        logger.info("Creating new HA cluster with local set to "+localDC);
-        
+        logger.info("Creating new HA cluster with local set to {}",localDC);
+
         DCAwareRoundRobinPolicy.Builder dcAwareRoundRobinPolicyBuilder = DCAwareRoundRobinPolicy.builder();
-        
+
         if(localDC!=null) {
         	dcAwareRoundRobinPolicyBuilder = dcAwareRoundRobinPolicyBuilder.withLocalDc(localDC);
         }
-        
+
         if(config.useRemoteConnections > 0) {
-        	dcAwareRoundRobinPolicyBuilder = 
+        	dcAwareRoundRobinPolicyBuilder =
     			dcAwareRoundRobinPolicyBuilder
     				.withUsedHostsPerRemoteDc(config.useRemoteConnections)
     				.allowRemoteDCsForLocalConsistencyLevel();
         }
-        
+
         LoadBalancingPolicy loadBalancingPolicy = dcAwareRoundRobinPolicyBuilder.build();
-        
+
         if(config.loadBalancing.token.enabled) {
         	loadBalancingPolicy = new TokenAwarePolicy(loadBalancingPolicy);
         }
-        
+
         if(config.loadBalancing.filter.dc.enabled) {
         	loadBalancingPolicy = HostFilterPolicy.fromDCWhiteList(loadBalancingPolicy,config.loadBalancing.filter.dc.datacenters);
         }
-        
+
         if(config.loadBalancing.filter.workload.enabled) {
         	try {
 				Class<?> workloadFilterClass = Class.forName("com.tmobile.opensource.casquatch.policies.WorkloadFilterPolicy");
@@ -864,7 +864,7 @@ public class CassandraDriver {
 			} catch (Exception e) {
 				throw new DriverException(402,"Workload filter requires Casquatch-EE");
 			}
-        	
+
         	//loadBalancingPolicy = WorkloadFilterPolicy.fromWorkloadList(loadBalancingPolicy,  config.loadBalancing.filter.workload.workloads);
         }
 
@@ -877,12 +877,12 @@ public class CassandraDriver {
      * @return Cluster object for supplied details
      */
     private Cluster createSingleDCCluster(String datacenter) {
-        logger.info("Creating new Single DC cluster with datacenter set to "+datacenter);
-        
+        logger.info("Creating new Single DC cluster with datacenter set to {}",datacenter);
+
         LoadBalancingPolicy loadBalancingPolicy = DCAwareRoundRobinPolicy.builder()
                 .withLocalDc(datacenter)
                 .build();
-        
+
         if(config.loadBalancing.token.enabled) {
         	loadBalancingPolicy = new TokenAwarePolicy(loadBalancingPolicy);
         }
@@ -918,7 +918,7 @@ public class CassandraDriver {
         ExponentialReconnectionPolicy reconnectionPolicy = new ExponentialReconnectionPolicy(config.reconnection.delay, config.reconnection.maxDelay);
 
         RetryPolicy retryPolicy = FallthroughRetryPolicy.INSTANCE;
-        
+
         Cluster.Builder clusterBuilder = Cluster.builder()
                 .addContactPoints(config.contactPoints.toArray(new String[0]))
                 .withLoadBalancingPolicy(loadBalancingPolicy)
@@ -929,24 +929,24 @@ public class CassandraDriver {
                 .withSocketOptions(socketOptions)
                 .withReconnectionPolicy(reconnectionPolicy)
                 .withRetryPolicy(retryPolicy);
-        
-        if (config.ssl.node) {        	
-        	try {                
+
+        if (config.ssl.node) {
+        	try {
         		if (config.ssl.truststore.path!= null && !config.ssl.truststore.path.isEmpty()) {
 					KeyStore keyStore = KeyStore.getInstance("JKS");
 					InputStream trustStore = new FileInputStream(config.ssl.truststore.path);
 					keyStore.load(trustStore, config.ssl.truststore.password.toCharArray());
 					TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 					trustManagerFactory.init(keyStore);
-					trustStore.close();		
-	
+					trustStore.close();
+
 	                SSLContext sslContext = SSLContext.getInstance("TLS");
 	                sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
-	                		
+
 	                RemoteEndpointAwareJdkSSLOptions sslOptions = new RemoteEndpointAwareJdkSSLOptions(sslContext, null) {};
-		        	
+
 		        	clusterBuilder = clusterBuilder.withSSL(sslOptions);
-        		} 
+        		}
         		else {
         			clusterBuilder  = clusterBuilder.withSSL();
         		}
@@ -956,9 +956,9 @@ public class CassandraDriver {
                 throw driverException;
             }
         }
-        
+
         Cluster cluster = clusterBuilder.build();
-        
+
         return cluster;
     }
 
@@ -968,9 +968,9 @@ public class CassandraDriver {
      * @param cql query
      * @throws DriverException - Driver exception mapped to error code
      */
-    public void execute(String cql) throws DriverException{        
+    public void execute(String cql) throws DriverException{
         try {
-            logger.debug("Executing "+cql+" on default");
+            logger.debug("Executing {} on default",cql);
             this.getSession(getConnectionKey("default")).execute(cql);
         }
         catch (Exception e) {
@@ -989,7 +989,7 @@ public class CassandraDriver {
      * @throws DriverException - Driver exception mapped to error code
      */
     public <T extends AbstractCassandraTable> T executeOne(Class<T> c, String cql) throws DriverException {
-        logger.debug("Executing "+cql+" on "+getConnectionKey(c));
+        logger.debug("Executing {} on {}",cql,getConnectionKey(c));
         try {
         	return this.getMapper(c).map(this.getSession(getConnectionKey(c)).execute(cql)).one();
 	    }
@@ -1009,7 +1009,7 @@ public class CassandraDriver {
      * @throws DriverException - Driver exception mapped to error code
      */
     public <T extends AbstractCassandraTable> List<T> executeAll(Class<T> c, String cql) throws DriverException {
-        logger.debug("Executing "+cql+" on "+getConnectionKey(c));
+        logger.debug("Executing {} on {}",cql,getConnectionKey(c));
         try {
         	return this.getMapper(c).map(this.getSession(getConnectionKey(c)).execute(cql)).all();
         }
@@ -1028,8 +1028,8 @@ public class CassandraDriver {
      * @throws DriverException - Driver exception mapped to error code
      */
     public <T extends AbstractCassandraTable> T getById(Class<T> c, T o) throws DriverException {
-        logger.debug("Getting "+c.getAnnotation(Table.class).keyspace()+"."+c.getAnnotation(Table.class).name()+" values "+o.toString()+" from "+getConnectionKey(c));
-        try {
+		logger.debug("Getting {}.{} values {} from {}",c.getAnnotation(Table.class).keyspace(),c.getAnnotation(Table.class).name(),o.toString(),getConnectionKey(c));
+		try {
             return this.getMapper(c).get(buildID(c,o,"read"));
         }
 	    catch (Exception e) {
@@ -1047,12 +1047,13 @@ public class CassandraDriver {
      * @throws DriverException - Driver exception mapped to error code
      */
     public <T extends AbstractCassandraTable> T getOneById(Class<T> c, T o) throws DriverException {
-        logger.debug("Getting One "+c.getAnnotation(Table.class).keyspace()+"."+c.getAnnotation(Table.class).name()+" values "+o.toString()+" from "+getConnectionKey(c));
-        try {
+		logger.debug("Getting One {}.{} values {} from {}",c.getAnnotation(Table.class).keyspace(),c.getAnnotation(Table.class).name(),o.toString(),getConnectionKey(c));
+
+		try {
         	Select select = this.generateSelectQuery(c, o);
-	       	logger.debug("Running Query: "+select.getQueryString());       	
+	       	logger.debug("Running Query: {}",select.getQueryString());
         	return this.getMapper(c).map(this.getSession(getConnectionKey(c)).execute(select)).one();
-        	
+
         }
 	    catch (Exception e) {
 	        DriverException driverException = new DriverException(e);
@@ -1069,12 +1070,12 @@ public class CassandraDriver {
      * @throws DriverException - Driver exception mapped to error code
      */
     public <T extends AbstractCassandraTable> List<T> getAllById(Class<T> c, T o) throws DriverException {
-        logger.debug("Getting All "+c.getAnnotation(Table.class).keyspace()+"."+c.getAnnotation(Table.class).name()+" values "+o.toString()+" from "+getConnectionKey(c));
+        logger.debug("Getting All {}.{} values {} from {}",c.getAnnotation(Table.class).keyspace(),c.getAnnotation(Table.class).name(),o.toString(),getConnectionKey(c));
         try {
         	Select select = this.generateSelectQuery(c, o);
-	       	logger.debug("Running Query: "+select.getQueryString());       	
+	       	logger.debug("Running Query: {}",select.getQueryString());
         	return this.getMapper(c).map(this.getSession(getConnectionKey(c)).execute(select)).all();
-        	
+
         }
 	    catch (Exception e) {
 	        DriverException driverException = new DriverException(e);
@@ -1089,17 +1090,17 @@ public class CassandraDriver {
      * @param o Object containing keys populated
      * @return Select object
      * @throws DriverException - Driver exception mapped to error code
-     */    
+     */
     protected <T extends AbstractCassandraTable> Select generateSelectQuery(Class<T> c, T o) throws DriverException {
         try {
-        	Select select = QueryBuilder.select().from(c.getAnnotation(Table.class).name());        
+        	Select select = QueryBuilder.select().from(c.getAnnotation(Table.class).name());
 	       	for(Field val : c.getDeclaredFields()) {
-	       		 if(val.getAnnotationsByType(com.datastax.driver.mapping.annotations.PartitionKey.class).length > 0) {	       			
+	       		 if(val.getAnnotationsByType(com.datastax.driver.mapping.annotations.PartitionKey.class).length > 0) {
 	       			if(o.getClass().getMethod("get"+StringUtils.capitalize(val.getName())).invoke(o) != null) {
 	       				select.where().and(QueryBuilder.eq(val.getAnnotation(com.datastax.driver.mapping.annotations.Column.class).name(), o.getClass().getMethod("get"+StringUtils.capitalize(val.getName())).invoke(o)));
 	       			}
 	       		 }
-	       		 if(val.getAnnotationsByType(com.datastax.driver.mapping.annotations.ClusteringColumn.class).length > 0) {	       			
+	       		 if(val.getAnnotationsByType(com.datastax.driver.mapping.annotations.ClusteringColumn.class).length > 0) {
 	       			if(o.getClass().getMethod("get"+StringUtils.capitalize(val.getName())).invoke(o) != null) {
 	       				select.where().and(QueryBuilder.eq(val.getAnnotation(com.datastax.driver.mapping.annotations.Column.class).name(), o.getClass().getMethod("get"+StringUtils.capitalize(val.getName())).invoke(o)));
 	       			}
@@ -1120,12 +1121,12 @@ public class CassandraDriver {
      * @param o Object containing values populated
      * @return Select object
      * @throws DriverException - Driver exception mapped to error code
-     */    
+     */
     protected <T extends AbstractCassandraTable> Select generateSolrQuery(Class<T> c, T o) throws DriverException {
         try {
-        	Select select = QueryBuilder.select().from(c.getAnnotation(Table.class).name());        
+        	Select select = QueryBuilder.select().from(c.getAnnotation(Table.class).name());
 	       	for(Field val : c.getDeclaredFields()) {
-	       		 if(val.getAnnotationsByType(com.datastax.driver.mapping.annotations.Column.class).length > 0) {	       			
+	       		 if(val.getAnnotationsByType(com.datastax.driver.mapping.annotations.Column.class).length > 0) {
 	       			if(o.getClass().getMethod("get"+StringUtils.capitalize(val.getName())).invoke(o) != null) {
 	       				select.where().and(QueryBuilder.eq(val.getAnnotation(com.datastax.driver.mapping.annotations.Column.class).name(), o.getClass().getMethod("get"+StringUtils.capitalize(val.getName())).invoke(o)));
 	       			}
@@ -1147,16 +1148,16 @@ public class CassandraDriver {
      * @return Object containing results
      * @throws DriverException - Driver exception mapped to error code
      */
-     private <T extends AbstractCassandraTable> Result<T> executeSolr(Class<T> c, Select select) throws DriverException {	
+     private <T extends AbstractCassandraTable> Result<T> executeSolr(Class<T> c, Select select) throws DriverException {
          try {
- 	       	logger.debug("Running Query: "+select.getQueryString()+" against Solr");       	
+ 	       	logger.debug("Running Query: {} against Solr",select.getQueryString());
          	return this.getMapper(c).map(this.getSolrSession().execute(select));
-         	
+
          }
          catch (InvalidQueryException e) {
          	DriverException driverException;
          	if(e.getMessage().contains("ALLOW FILTERING")) {
-         		driverException = new DriverException(402,"query requires DSE Search >= 6.0.2");
+         		driverException = new DriverException(402,"Query requires DSE Search >= 6.0.2");
          	}
          	else {
          		driverException = new DriverException(e);
@@ -1174,7 +1175,7 @@ public class CassandraDriver {
      * WARNING: This requires at least DSE Search 6.0
      * @param <T> Domain Object for results
      * @param c Class of object
-     * @param o partially populated object 
+     * @param o partially populated object
      * @return List of Objects
      * @throws DriverException - Driver exception mapped to error code
      */
@@ -1212,7 +1213,7 @@ public class CassandraDriver {
     /**
      *  Get a list of objects by supplying a solr query
      * @param <T> Domain Object for results
-     * @param c Class of object     * 
+     * @param c Class of object     *
      * @param solrQueryString string representing the solr query (See https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/search/siQuerySyntax.html#siQuerySyntax)
      * @param limit limit the number of results
      * @return List of Objects
@@ -1226,20 +1227,20 @@ public class CassandraDriver {
     /**
      * Get a list of objects from solr by specifying a query
      * @param <T> Domain Object for results
-     * @param c Class of object     * 
+     * @param c Class of object     *
      * @param cql Raw CQL statement
      * @return List of Objects
      * @throws DriverException - Driver exception mapped to error code
      */
     public <T extends AbstractCassandraTable> List<T> getAllBySolrCQL(Class<T> c, String cql) throws DriverException {
          try {
-    		logger.debug("Running Query: "+cql+" against Solr");       	
-    		return this.getMapper(c).map(this.getSolrSession().execute(cql)).all();	       		
+    		logger.debug("Running Query: {} against Solr",cql);
+    		return this.getMapper(c).map(this.getSolrSession().execute(cql)).all();
          }
          catch (InvalidQueryException e) {
          	DriverException driverException;
          	if(e.getMessage().contains("ALLOW FILTERING")) {
-         		driverException = new DriverException(402,"query requires DSE Search >= 6.0.2");
+         		driverException = new DriverException(402,"Query requires DSE Search >= 6.0.2");
          	}
          	else {
          		driverException = new DriverException(e);
@@ -1259,13 +1260,14 @@ public class CassandraDriver {
      * @param solrQueryString string representing the solr query (See https://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/search/siQuerySyntax.html#siQuerySyntax)
      * @return count of results
      * @throws DriverException - Driver exception mapped to error code
-     */    
-    public <T extends AbstractCassandraTable> Long getCountBySolr(Class<T> c, String solrQueryString) throws DriverException {    
-        logger.debug("Getting All from "+c.getAnnotation(Table.class).keyspace()+".”+c.getAnnotation(Table.class).name()+” with solar_query "+solrQueryString+" from "+getConnectionKey("solar"));
-        try {
+     */
+    public <T extends AbstractCassandraTable> Long getCountBySolr(Class<T> c, String solrQueryString) throws DriverException {
+        logger.debug("Getting Count from {}.{} with solar_query {} from {}",c.getAnnotation(Table.class).keyspace(),c.getAnnotation(Table.class).name(),solrQueryString,getConnectionKey("solar"));
+
+		try {
             Select select = QueryBuilder.select().countAll().from(c.getAnnotation(Table.class).name());
             select.where().and(QueryBuilder.eq("solr_query", solrQueryString));
-            logger.debug("Running Query: "+select.getQueryString());
+            logger.debug("Running Query: {}",select.getQueryString());
             ResultSet result = this.getSolrSession().execute(select);
             if(result != null) {
                 List<Row> rowList = result.all();
@@ -1285,7 +1287,7 @@ public class CassandraDriver {
              throw driverException;
          }
     }
-    
+
     /**
      * Build the ID string to pass to mapper function including any options
      * @param <T> Domain Object for results
@@ -1310,8 +1312,9 @@ public class CassandraDriver {
      * @throws DriverException - Driver exception mapped to error code
      */
     public <T extends AbstractCassandraTable> boolean existsById(Class<T> c, T o) throws DriverException {
-        logger.debug("Checking for existing "+c.getAnnotation(Table.class).keyspace()+"."+c.getAnnotation(Table.class).name()+" values "+o.toString()+" in "+getConnectionKey(c));        
-        try {
+        logger.debug("Checking for existing {}.{} values {} in {}",c.getAnnotation(Table.class).keyspace(),c.getAnnotation(Table.class).name(),o.toString(),getConnectionKey(c));
+
+		try {
         	T obj = this.getMapper(c).get(buildID(c,o,"read"));
             if (obj != null){
                 return true;
@@ -1334,8 +1337,9 @@ public class CassandraDriver {
      * @throws DriverException - Driver exception mapped to error code
      */
     public <T extends AbstractCassandraTable> void delete(Class<T> c, T o) throws DriverException {
-        logger.debug("Deleting "+c.getAnnotation(Table.class).keyspace()+"."+c.getAnnotation(Table.class).name()+" with values "+o.toString()+" from "+getConnectionKey(c));
-        try {
+		logger.debug("Deleting {}.{} with values {} from {}",c.getAnnotation(Table.class).keyspace(),c.getAnnotation(Table.class).name(),o.toString(),getConnectionKey(c));
+
+		try {
         	this.getMapper(c).delete(o,getConsistencyLevel(c,"write"));
         }
 	    catch (Exception e) {
@@ -1353,8 +1357,9 @@ public class CassandraDriver {
      * @throws DriverException - Driver exception mapped to error code
      */
     public <T extends AbstractCassandraTable> ListenableFuture<Void> deleteAsync(Class<T> c, T o) throws DriverException {
-        logger.debug("Deleting asynchronously "+c.getAnnotation(Table.class).keyspace()+"."+c.getAnnotation(Table.class).name()+" with values "+o.toString()+" from "+getConnectionKey(c));
-        try {
+		logger.debug("Deleting asynchronously {}.{} with values {} from {}",c.getAnnotation(Table.class).keyspace(),c.getAnnotation(Table.class).name(),o.toString(),getConnectionKey(c));
+
+		try {
         	return this.getMapper(c).deleteAsync(o,getConsistencyLevel(c,"write"));
         }
 	    catch (Exception e) {
@@ -1371,8 +1376,9 @@ public class CassandraDriver {
      * @throws DriverException - Driver exception mapped to error code
      */
     public <T extends AbstractCassandraTable> void save(Class<T> c, T o) throws DriverException{
-        logger.debug("Saving to  "+c.getAnnotation(Table.class).keyspace()+"."+c.getAnnotation(Table.class).name()+" values "+o.toString()+" to "+getConnectionKey(c));
-    	try {
+		logger.debug("Saving to {}.{} with values {} to {}",c.getAnnotation(Table.class).keyspace(),c.getAnnotation(Table.class).name(),o.toString(),getConnectionKey(c));
+
+		try {
     		this.getMapper(c).save(o,getConsistencyLevel(c,"write"));
     	}
 	    catch (Exception e) {
@@ -1390,8 +1396,9 @@ public class CassandraDriver {
      * @throws DriverException - Driver exception mapped to error code
      */
     public <T extends AbstractCassandraTable> ListenableFuture<Void> saveAsync(Class<T> c, T o) throws DriverException{
-        logger.debug("Saving (asynchronously) to  "+c.getAnnotation(Table.class).keyspace()+"."+c.getAnnotation(Table.class).name()+" values "+o.toString()+" to "+getConnectionKey(c));
-    	try {
+		logger.debug("Saving (asynchronously) to {}.{} values {} to {} ",c.getAnnotation(Table.class).keyspace(),c.getAnnotation(Table.class).name(),o.toString(),getConnectionKey(c));
+
+		try {
     		return this.getMapper(c).saveAsync(o,getConsistencyLevel(c,"write"));
     	}
 	    catch (Exception e) {
@@ -1414,7 +1421,7 @@ public class CassandraDriver {
             key = getConnectionKey(tableName);
         }
         return key;
-    }    
+    }
 
     /**
      * Get mapper for the given class
@@ -1428,7 +1435,7 @@ public class CassandraDriver {
     		mapper.setDefaultSaveOptions(Mapper.Option.saveNullFields(true));
     	}
     	else {
-    		mapper.setDefaultSaveOptions(Mapper.Option.saveNullFields(false));    		
+    		mapper.setDefaultSaveOptions(Mapper.Option.saveNullFields(false));
     	}
         return mapper;
     }
@@ -1448,10 +1455,10 @@ public class CassandraDriver {
             }
             if (tmpDriverConfig != null) {
                 key = tmpDriverConfig.getDataCenter();
-                logger.info("Found Connection Key for " + tableName);
+                logger.info("Found Connection Key for {}",tableName);
             }
         }
-        logger.debug("Connection Key set to "+key+" for "+tableName);
+        logger.debug("Connection Key set to {} for {}",key,tableName);
         return key;
     }
 
@@ -1495,7 +1502,7 @@ public class CassandraDriver {
     public void close() {
         for(String key : this.clusterMap.keySet()) {
             this.clusterMap.get(key).close();
-            logger.info("Closed cluster connection for key "+key);
+            logger.info("Closed cluster connection for key {}",key);
         }
 
     }

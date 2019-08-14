@@ -1,0 +1,13 @@
+#!/bin/sh
+git submodule update
+rm -rf manual/static/docs
+rm -rf docs
+mvn javadoc:aggregate
+cp -r target/site/apidocs manual/static/docs
+cd manual
+hugo
+mv public ../docs
+cd ..
+git add docs
+git add manual/static/docs
+git commit -m "Updated Manual"

@@ -1,3 +1,4 @@
+**/docs
 **/nohup.out
 */.gitignore
 **/logs/*
@@ -8,6 +9,11 @@
 **/doc/*
 **/config/**
 **/application.properties
+**/application.conf
 cassandramodels/
 **/*.out
 **/.DS_Store
+**/*.iml
+**/*.ipr
+**/*.iws
+**/.idea

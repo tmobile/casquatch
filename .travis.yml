@@ -1,0 +1,26 @@
+language: java
+services:
+  - docker
+matrix:
+  include:
+    - name: Cassandra 3.0
+      env: IMAGE=cassandra:3.0
+    - name: Cassandra 3.11
+      env: IMAGE=cassandra:3.11
+    - name: DSE 5.1.10-openjdk8
+      env: IMAGE="datastax/dse-server:5.1.10-openjdk8"
+    - name: DSE 5.1.15
+      env: IMAGE="datastax/dse-server:5.1.15"
+    - name: DSE 6.0.8
+      env: IMAGE="datastax/dse-server:6.0.8"
+    - name: DSE 6.7.3
+      env: IMAGE="datastax/dse-server:6.7.3"
+cache:
+  directories:
+    - $HOME/maven_docker
+script:
+  - .travis/start.sh $IMAGE
+  - .travis/generator.sh $IMAGE
+  - .travis/run_external_tests.sh $IMAGE
+  - .travis/run_examples.sh $IMAGE
+  - .travis/cleanup.sh $IMAGE
