@@ -1,6 +1,8 @@
 #!/bin/sh
 # Runs the release process
 
+
+
 grep -q RELEASE pom.xml
 if [ $? -ne 0 ]; then
   echo "Current version is not *-RELEASE"
@@ -10,7 +12,7 @@ fi
 
 git status | grep -q "nothing to commit, working tree clean"
 if [ $? -ne 0 ]; then
-  echo "Uncomitted files exists"
+  echo "Uncommitted files exists"
   exit 1;
 fi;
 
@@ -23,11 +25,7 @@ if [ $? -eq 0 ]; then
   exit 1;
 fi
 
-mvn javadoc:aggregate
-rm -rf docs
-mv target/site/apidocs/ docs
-git add docs
-git commit -m "Updated docs for release" docs
+./update_manual
 
 read -p "Please enter to stage for publishing"
 git checkout -b tmp-release
