@@ -1,9 +1,0 @@
-com.tmobile.opensource.casquatch
-com.tmobile.opensource.casquatch.exceptions
-com.tmobile.opensource.casquatch.generator
-com.tmobile.opensource.casquatch.generator.models.system_schema
-com.tmobile.opensource.casquatch.models
-com.tmobile.opensource.casquatch.models.shared
-com.tmobile.opensource.casquatch.models.springconfig
-com.tmobile.opensource.casquatch.policies
-com.tmobile.opensource.casquatch.springconfigserver
