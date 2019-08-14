@@ -5,9 +5,9 @@ rm -rf docs
 mvn javadoc:aggregate
 cp -r target/site/apidocs manual/static/docs
 cd manual
-hugo
+hugo -t hugo-theme-learn
 mv public ../docs
 cd ..
-git add docs
-git add manual/static/docs
+git add -f docs
+git add -f manual/static/docs
 git commit -m "Updated Manual"
