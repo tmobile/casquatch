@@ -138,7 +138,7 @@ public class CasquatchGenerator {
 
         }
         if(casquatchGeneratorConfiguration.getPackageName()==null) {
-            casquatchGeneratorConfiguration.setPackageName("com.tmobile.opensource.models."+casquatchGeneratorConfiguration.getKeyspace());
+            casquatchGeneratorConfiguration.setPackageName("com.tmobile.opensource.casquatch.models."+casquatchGeneratorConfiguration.getKeyspace());
         }
         session=casquatchDaoBuilder.session();
     }
@@ -247,7 +247,14 @@ public class CasquatchGenerator {
         input.put("ddl",userDefinedType.describe(false).replace("CREATE TYPE \""+casquatchGeneratorConfiguration.getKeyspace()+"\".","CREATE TYPE ").replace("\"","\\\""));
         input.put("fields",fields);
         input.put("imports",imports);
-        generate("Type.ftl", input, "src/main/java/" + (casquatchGeneratorConfiguration.getPackageName().replace(".", "/")) + "/" + CasquatchNamingConvention.cqlToJavaClass(userDefinedType.getName().toString()) + ".java");
+        String output;
+        if(casquatchGeneratorConfiguration.getCreatePackage()) {
+            output = "src/main/java/" + (casquatchGeneratorConfiguration.getPackageName().replace(".", "/")) + "/" + CasquatchNamingConvention.cqlToJavaClass(userDefinedType.getName().toString()) + ".java";
+        }
+        else {
+            output = CasquatchNamingConvention.cqlToJavaClass(userDefinedType.getName().toString()) + ".java";
+        }
+        generate("Type.ftl", input, output);
     }
 
     /**
@@ -296,7 +303,6 @@ public class CasquatchGenerator {
             }
             if(column.getValue().getType().getProtocolCode()==48) {
                 udtColumns.put(column.getKey().toString(),((UserDefinedType) column.getValue().getType()).getName().toString());
-
             }
             else {
                 if(!partitionKeys.containsKey(column.getKey()) && !clusteringColumns.containsKey(column.getKey())) {
@@ -318,8 +324,25 @@ public class CasquatchGenerator {
         input.put("udtColumns",udtColumns);
         input.put("imports",imports);
         input.put("naming",new CasquatchNamingConvention());
-        generate("Entity.ftl", input, "src/main/java/" + (casquatchGeneratorConfiguration.getPackageName().replace(".", "/")) + "/" + CasquatchNamingConvention.cqlToJavaClass(entity.getName().toString()) + ".java");
-        generate("EntityTest.ftl",input,"src/test/java/"+(casquatchGeneratorConfiguration.getPackageName().replace(".", "/"))+"/"+CasquatchNamingConvention.classToEmbeddedTests(CasquatchNamingConvention.cqlToJavaClass(entity.getName().toString()))+".java");
+
+        String entityName;
+        if(casquatchGeneratorConfiguration.getCreatePackage()) {
+            entityName = "src/main/java/" + (casquatchGeneratorConfiguration.getPackageName().replace(".", "/")) + "/" + CasquatchNamingConvention.cqlToJavaClass(entity.getName().toString()) + ".java";
+        }
+        else {
+            entityName = CasquatchNamingConvention.cqlToJavaClass(entity.getName().toString()) + ".java";
+        }
+
+        String entityTestName;
+        if(casquatchGeneratorConfiguration.getCreatePackage()) {
+            entityTestName = "src/test/java/" + (casquatchGeneratorConfiguration.getPackageName().replace(".", "/")) + "/" + CasquatchNamingConvention.classToEmbeddedTests(CasquatchNamingConvention.cqlToJavaClass(entity.getName().toString()))+".java";
+        }
+        else {
+            entityTestName = CasquatchNamingConvention.classToEmbeddedTests(CasquatchNamingConvention.cqlToJavaClass(entity.getName().toString()))+".java";
+        }
+
+        generate("Entity.ftl", input, entityName);
+        generate("EntityTest.ftl",input,entityTestName);
     }
 
     /**

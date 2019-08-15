@@ -13,8 +13,10 @@ runExample() {
     showStatus $?
 
     log "Generate Entity"
-    $JAVA -Dcasquatch.basic.contact-points.0=$SEED_IP:9042 -Dconfig.file=casquatch-examples/$EXAMPLE/src/main/resources/application.conf -Dcasquatch.generator.outputFolder=casquatch-examples/$EXAMPLE -Dcasquatch.basic.load-balancing-policy.local-datacenter=$DATACENTER -jar $GENERATOR
+    $JAVA -Dcasquatch.basic.contact-points.0=$SEED_IP:9042 -Dconfig.file=casquatch-examples/$EXAMPLE/src/main/resources/application.conf -Dcasquatch.generator.outputFolder=casquatch-examples/$EXAMPLE/src/main/java/com/tmobile/opensource/casquatch/examples/$EXAMPLE -Dcasquatch.basic.load-balancing-policy.local-datacenter=$DATACENTER -jar $GENERATOR
     showStatus $?
+    mkdir -p src/test/java/com/tmobile/opensource/casquatch/examples/$EXAMPLE/
+    mv src/main/java/com/tmobile/opensource/casquatch/examples/$EXAMPLE/*EmbeddedTests.java src/test/java/com/tmobile/opensource/casquatch/examples/$EXAMPLE/
 
     log "Testing"
     $WORKER /bin/bash -c "cd casquatch-examples/$EXAMPLE;mvn -Dcasquatch.basic.contact-points.0=$SEED_IP:9042 -Dcasquatch.basic.load-balancing-policy.local-datacenter=$DATACENTER clean test"
