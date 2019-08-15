@@ -69,11 +69,14 @@ public class CasquatchDao {
                     this.profile = resultSet.getExecutionInfo().getStatement().getExecutionProfileName();
                     if(resultSet.getExecutionInfo().getStatement().getConsistencyLevel() !=null ) {
                         this.consistencyLevel = resultSet.getExecutionInfo().getStatement().getConsistencyLevel().name();
-                        this.keyspace = resultSet.getExecutionInfo().getStatement().getKeyspace().toString();
+                        if(resultSet.getExecutionInfo().getStatement().getKeyspace()!=null) {
+                            this.keyspace = resultSet.getExecutionInfo().getStatement().getKeyspace().toString();
+                        }
                     }
                 }
             }
         }
+
         public String toString() {
             try {
                 return new ObjectMapper().writeValueAsString(this);
