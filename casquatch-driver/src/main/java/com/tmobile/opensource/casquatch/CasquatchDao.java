@@ -599,11 +599,6 @@ public class CasquatchDao {
         if(checkFeature(FEATURES.SOLR_OBJECT))  {
             log.trace("Searching with object {}",o.toString());
             Row row = this.execute(this.getStatementFactory(c).count(o,queryOptions.withAllColumns())).one();
-            //TODO
-            log.trace(row.getColumnDefinitions().toString());
-            for(int i=0;i<row.getColumnDefinitions().size();i++) {
-                log.trace(row.getColumnDefinitions().get(i).getName().toString());
-            }
             log.trace("Count returned {}",Objects.requireNonNull(row).getLong("count"));
             return Objects.requireNonNull(row).getLong("count");
         }
