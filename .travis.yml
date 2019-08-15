@@ -7,8 +7,6 @@ matrix:
       env: IMAGE=cassandra:3.0
     - name: Cassandra 3.11
       env: IMAGE=cassandra:3.11
-    - name: DSE 5.1.10-openjdk8
-      env: IMAGE="datastax/dse-server:5.1.10-openjdk8"
     - name: DSE 5.1.15
       env: IMAGE="datastax/dse-server:5.1.15"
     - name: DSE 6.0.8
