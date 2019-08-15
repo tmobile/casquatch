@@ -227,33 +227,33 @@ public class CasquatchDao {
      * @return boolean indicator
      */
     public Boolean checkFeature(FEATURES feature) {
+        log.trace("Checking Feature with data : {}",this.nodeMetaData.toString());
         switch(feature) {
             case SOLR:
                 if(this.nodeMetaData.getDseVersion()==null) {
                     log.warn("Check Feature SOLR: DSE Version Is null : Failed");
-                    log.trace("Node Data: {}",this.nodeMetaData.toString());
+
                     return false;
                 }
                 else if (this.nodeMetaData.getWorkloads()==null) {
                     log.warn("Check Feature SOLR: Workloads Version Is null : Failed");
-                    log.trace("Node Data: {}",this.nodeMetaData.toString());
                     return false;
                 }
                 else if (!this.nodeMetaData.getWorkloads().contains("Search")) {
                     log.warn("Check Feature SOLR: Workloads does not contain Search : Failed");
-                    log.trace("Node Data: {}",this.nodeMetaData.toString());
                     return false;
                 }
+                log.trace("Check Feature SOLR: Passed");
                 return true;
             case SOLR_OBJECT:
                 if(!checkFeature(FEATURES.SOLR)) {
                     return false;
                 }
-                else if (Integer.parseInt(this.nodeMetaData.getDseVersion().split("\\.")[0]) > 6) {
+                else if (Integer.parseInt(this.nodeMetaData.getDseVersion().split("\\.")[0]) < 6) {
                     log.warn("Check Feature SOLR_OBJECT: Version {} < 6.0.0 : Failed", this.nodeMetaData.getDseVersion());
-                    log.trace("Node Data: {}",this.nodeMetaData.toString());
                     return false;
                 }
+                log.trace("Check Feature SOLR_OBJECT: Passed");
                 return true;
             default:
                 return true;
@@ -568,7 +568,6 @@ public class CasquatchDao {
     @Rest("/solr/query/get")
     public <E extends AbstractCasquatchEntity> List<E> getAllBySolr(Class<E> c, String solrQueryString, QueryOptions queryOptions) throws DriverException {
         if(checkFeature(FEATURES.SOLR)) {
-            log.trace("Object returned {}",this.execute(this.getStatementFactory(c).getSolr(solrQueryString,queryOptions.withAllColumns())).map(this.getStatementFactory(c)::map).all());
             return this.execute(this.getStatementFactory(c).getSolr(solrQueryString,queryOptions.withAllColumns())).map(this.getStatementFactory(c)::map).all();
         }
         else {
@@ -600,9 +599,7 @@ public class CasquatchDao {
     @Rest("/solr/object/count")
     public <E extends AbstractCasquatchEntity> Long getCountBySolr(Class<E> c, E o, QueryOptions queryOptions) throws DriverException {
         if(checkFeature(FEATURES.SOLR_OBJECT))  {
-            log.trace("Searching with object {}",o.toString());
             Row row = this.execute(this.getStatementFactory(c).count(o,queryOptions.withAllColumns())).one();
-            log.trace("Count returned {}",Objects.requireNonNull(row).getLong("count"));
             return Objects.requireNonNull(row).getLong("count");
         }
         throw new DriverException(DriverException.CATEGORIES.DATABASE_FEATURE_NOT_SUPPORTED,"Solr is not enabled on this node");

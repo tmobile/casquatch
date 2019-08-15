@@ -16,6 +16,7 @@
 
 package com.tmobile.opensource.casquatch;
 
+import com.tmobile.opensource.casquatch.annotation.CasquatchIgnore;
 import com.tmobile.opensource.casquatch.tests.podam.CasquatchPodamFactoryImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -121,10 +122,27 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
         }
     }
 
-    protected void waitForSolrIndex(E obj) {
+    protected void waitForSolrIndex(E obj){
         int maxWait=30;
+        List<String> solrQuery = new ArrayList<>();
+        try {
+            for (Field field : this.entityClass.getDeclaredFields()) {
+                if (!field.isAnnotationPresent(CasquatchIgnore.class)) {
+                    solrQuery.add(
+                            CasquatchNamingConvention.javaVariableToCql(field.getName()) +
+                                    ":" +
+                                    this.entityClass.getMethod(CasquatchNamingConvention.javaVariableToJavaGet(field.getName())).invoke(obj)
+                    );
+                }
+            }
+        }
+        catch (Exception e) {
+            log.error("Unable to build solr_query",e);
+            throw new DriverException(DriverException.CATEGORIES.CASQUATCH_MISSING_GENERATED_CLASS,"Unable to build solr_query");
+        }
+        log.trace("Using solr_query {}",String.join(" ",solrQuery));
         for(int i=0;i<=maxWait;i++) {
-            if(getCasquatchDao().getAllBySolr(this.entityClass,obj).size()>0) return;
+            if(getCasquatchDao().getAllBySolr(this.entityClass,String.join(" ",solrQuery)).size()>0) return;
             try {
                 Thread.sleep(1000);
             }
@@ -319,8 +337,6 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
 
         cleanObject(obj);
     }
-
-
 
     @Test
     public void testGetCache() {
