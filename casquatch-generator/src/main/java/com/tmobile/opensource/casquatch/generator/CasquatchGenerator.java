@@ -23,6 +23,8 @@ import com.datastax.oss.driver.api.core.metadata.schema.ColumnMetadata;
 import com.datastax.oss.driver.api.core.metadata.schema.KeyspaceMetadata;
 import com.datastax.oss.driver.api.core.metadata.schema.TableMetadata;
 import com.datastax.oss.driver.api.core.type.DataType;
+import com.datastax.oss.driver.api.core.type.DataTypes;
+import com.datastax.oss.driver.api.core.type.TupleType;
 import com.datastax.oss.driver.api.core.type.UserDefinedType;
 import com.tmobile.opensource.casquatch.CasquatchDao;
 import com.tmobile.opensource.casquatch.CasquatchDaoBuilder;
@@ -301,7 +303,15 @@ public class CasquatchGenerator {
             if(column.getKey().toString().equals("solr_query")) {
                 continue;
             }
-            if(column.getValue().getType().getProtocolCode()==48) {
+            else if(column.getValue().getType()== DataTypes.COUNTER) {
+                log.error("Counters are not supported. {} will not be generated.",entity.getName());
+                return;
+            }
+            else if(column.getValue().getType() instanceof TupleType) {
+                log.error("Tuples are not supported. {} will not be generated.",entity.getName());
+                return;
+            }
+            else if(column.getValue().getType().getProtocolCode()==48) {
                 udtColumns.put(column.getKey().toString(),((UserDefinedType) column.getValue().getType()).getName().toString());
             }
             else {
