@@ -193,9 +193,6 @@ public class CasquatchNamingConvention {
         }
         else if(type instanceof TupleType) {
             classList.add(com.datastax.oss.driver.api.core.data.TupleValue.class);
-            for(DataType innerType : ((TupleType) type).getComponentTypes()) {
-                classList.addAll(cqlDataTypeToJavaClasses(innerType));
-            }
         }
 
         if(classList.size()==0) {
@@ -225,8 +222,7 @@ public class CasquatchNamingConvention {
                 if(
                         clazz.equals(java.util.List.class) ||
                                 clazz.equals(java.util.Map.class) ||
-                                clazz.equals(java.util.Set.class) ||
-                                clazz.equals(com.datastax.oss.driver.api.core.data.TupleValue.class)
+                                clazz.equals(java.util.Set.class)
                 ) {
                     counter++;
                     javaType.append(clazz.getSimpleName()).append("<");

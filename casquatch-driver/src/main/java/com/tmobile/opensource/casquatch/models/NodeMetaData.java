@@ -21,20 +21,16 @@ import com.tmobile.opensource.casquatch.AbstractCasquatchEntity;
 import com.tmobile.opensource.casquatch.annotation.CasquatchEntity;
 import com.tmobile.opensource.casquatch.annotation.CasquatchIgnore;
 import com.tmobile.opensource.casquatch.annotation.PartitionKey;
-import java.lang.String;
-import java.net.InetAddress;
-import java.lang.Integer;
-import java.lang.Boolean;
-import java.util.UUID;
-import java.util.Set;
-import java.util.Map;
-import java.nio.ByteBuffer;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import org.apache.commons.text.TextStringBuilder;
+
+import java.net.InetAddress;
+import java.nio.ByteBuffer;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @CasquatchEntity(table = "system.local")
 @Getter @Setter @NoArgsConstructor

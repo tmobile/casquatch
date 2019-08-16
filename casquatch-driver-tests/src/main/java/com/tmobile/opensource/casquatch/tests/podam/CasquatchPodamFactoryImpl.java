@@ -19,7 +19,12 @@ package com.tmobile.opensource.casquatch.tests.podam;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 /**
@@ -31,8 +36,13 @@ public class CasquatchPodamFactoryImpl extends PodamFactoryImpl {
      */
     public CasquatchPodamFactoryImpl() {
         super();
-        this.getStrategy().addOrReplaceTypeManufacturer(UUID.class, new UUIDStrategy());
-        this.getStrategy().addOrReplaceTypeManufacturer(ByteBuffer.class, new ByteBufferStrategy());
         this.getStrategy().addOrReplaceTypeManufacturer(BigDecimal.class, new BigDecimalStrategy());
+        this.getStrategy().addOrReplaceTypeManufacturer(BigInteger.class, new BigIntegerStrategy());
+        this.getStrategy().addOrReplaceTypeManufacturer(ByteBuffer.class, new ByteBufferStrategy());
+        this.getStrategy().addOrReplaceTypeManufacturer(InetAddress.class, new InetAddressStrategy());
+        this.getStrategy().addOrReplaceTypeManufacturer(Instant.class, new InstantStrategy());
+        this.getStrategy().addOrReplaceTypeManufacturer(LocalDate.class, new LocalDateStrategy());
+        this.getStrategy().addOrReplaceTypeManufacturer(LocalTime.class, new LocalTimeStrategy());
+        this.getStrategy().addOrReplaceTypeManufacturer(UUID.class, new UUIDStrategy());
     }
 }

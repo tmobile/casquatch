@@ -21,26 +21,28 @@ import uk.co.jemos.podam.api.DataProviderStrategy;
 import uk.co.jemos.podam.typeManufacturers.AbstractTypeManufacturer;
 
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Map;
 
 /**
- * Implements BigDecimal generation
+ * Implements Instant generation
  */
-class BigDecimalStrategy extends AbstractTypeManufacturer<BigDecimal> {
+class InstantStrategy extends AbstractTypeManufacturer<Instant> {
 
     /**
-     * Required interface to implement BigDecimal generation.
+     * Required interface to implement Instant generation.
      * @param strategy passed strategy
      * @param attributeMetadata passed attribute metadata
      * @param genericTypesArgumentsMap passed map
-     * @return generated BigDecimal
+     * @return generated Instant
      */
     @Override
-    public BigDecimal getType(DataProviderStrategy strategy,
+    public Instant getType(DataProviderStrategy strategy,
                            AttributeMetadata attributeMetadata,
                            Map<String, Type> genericTypesArgumentsMap) {
 
-        return new BigDecimal(strategy.getTypeValue(attributeMetadata,genericTypesArgumentsMap,Integer.class)/100);
+        return Instant.now().truncatedTo(ChronoUnit.MILLIS);
     }
 }

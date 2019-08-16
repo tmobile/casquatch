@@ -32,7 +32,7 @@ public class FailoverTests {
         casquatchDao=new CasquatchTestDaoBuilder()
                 .withEmbedded()
                 .withTestKeyspace("junittest")
-                .withDDL(TableName.getDDL())
+                .withDDL(SimpleTable.getDDL())
                 .withBasicRequestConsistency("TWO")
                 .startProfile("test_one")
                 .withBasicRequestConsistency("ONE")
@@ -47,12 +47,12 @@ public class FailoverTests {
 
     @Test
     public void testFailover() {
-        casquatchDao.save(TableName.class, new TableName(1,1));
+        casquatchDao.save(SimpleTable.class, new SimpleTable(1,1));
     }
 
     @Test
     public void testFailoverASync() throws InterruptedException {
-        CompletableFuture<Void> completableFuture = casquatchDao.saveAsync(TableName.class, new TableName(1,1));
+        CompletableFuture<Void> completableFuture = casquatchDao.saveAsync(SimpleTable.class, new SimpleTable(1,1));
         int maxWait=10;
         for(int i=0;i<=maxWait;i++) {
             if(completableFuture.isDone()) {

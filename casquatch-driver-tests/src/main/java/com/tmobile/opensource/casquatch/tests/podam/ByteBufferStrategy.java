@@ -18,8 +18,6 @@ package com.tmobile.opensource.casquatch.tests.podam;
 
 import uk.co.jemos.podam.api.AttributeMetadata;
 import uk.co.jemos.podam.api.DataProviderStrategy;
-import uk.co.jemos.podam.api.PodamUtils;
-import uk.co.jemos.podam.common.PodamConstants;
 import uk.co.jemos.podam.typeManufacturers.AbstractTypeManufacturer;
 
 import java.lang.reflect.Type;
@@ -43,12 +41,6 @@ class ByteBufferStrategy extends AbstractTypeManufacturer<ByteBuffer> {
                         AttributeMetadata attributeMetadata,
                         Map<String, Type> genericTypesArgumentsMap) {
 
-        StringBuilder buff = new StringBuilder();
-
-        while (buff.length() < PodamConstants.STR_DEFAULT_LENGTH) {
-            buff.append(PodamUtils.getNiceCharacter());
-        }
-
-       return ByteBuffer.wrap(buff.toString().getBytes());
+       return ByteBuffer.wrap(strategy.getTypeValue(attributeMetadata,genericTypesArgumentsMap,String.class).getBytes());
     }
 }

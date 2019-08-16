@@ -22,6 +22,7 @@ import com.datastax.oss.driver.api.core.cql.BoundStatement;
 import com.datastax.oss.driver.api.core.cql.BoundStatementBuilder;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import com.datastax.oss.driver.api.core.data.GettableByName;
+import com.datastax.oss.driver.api.core.data.UdtValue;
 import com.datastax.oss.driver.api.querybuilder.BuildableQuery;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
 import com.datastax.oss.driver.api.querybuilder.delete.Delete;
@@ -32,6 +33,11 @@ import com.datastax.oss.driver.api.querybuilder.select.Select;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.bindMarker;
 
@@ -121,6 +127,44 @@ public abstract class AbstractStatementFactory<E extends AbstractCasquatchEntity
      * @return select object containing where clause
      */
     protected abstract Select selectWhereObject(Select select, E obj, QueryOptions queryOptions);
+
+    /**
+     * Wrapper to filter out classes which cannot be queried
+     * @param clazz class to check
+     * @return boolean indicating if class can be mapped
+     */
+    protected Boolean allowQueryByType(Class clazz) {
+        if(clazz.equals(List.class) || clazz.equals(Set.class) || clazz.equals(Map.class) || clazz.equals(ByteBuffer.class)) {
+            return false;
+        }
+        else {
+            return true;
+        }
+
+    }
+
+    /**
+     * Wrapper to bind a variable if it is marked
+     * @param boundStatementBuilder bound statement builder reference
+     * @param field field to bind
+     * @param value value to bind
+     * @param fieldClass class of field
+     * @param <T> generic for field
+     * @return bound statement builder with object bound
+     */
+    protected <T> BoundStatementBuilder bindIfMarked(BoundStatementBuilder boundStatementBuilder, String field, T value, Class<T> fieldClass) {
+        try {
+            if (fieldClass.equals(UdtValue.class)) {
+                return boundStatementBuilder.setUdtValue(field, (UdtValue) value);
+            } else {
+                return boundStatementBuilder.set(field, value, fieldClass);
+            }
+        }
+        catch (java.lang.IllegalArgumentException e) {
+            log.trace("Failed to bind {}",field,e);
+            return boundStatementBuilder;
+        }
+    }
 
     /**
      * Populate bind values of query using the provided object
@@ -257,5 +301,7 @@ public abstract class AbstractStatementFactory<E extends AbstractCasquatchEntity
     public BoundStatement save(E obj, QueryOptions queryOptions) {
         return buildBoundStatement(insertObject(obj,queryOptions),obj, queryOptions,this.session);
     }
+
+
 
 }

@@ -16,7 +16,8 @@
 
 package com.tmobile.opensource.casquatch;
 
-import com.tmobile.opensource.casquatch.annotation.CasquatchIgnore;
+import com.tmobile.opensource.casquatch.annotation.ClusteringColumn;
+import com.tmobile.opensource.casquatch.annotation.PartitionKey;
 import com.tmobile.opensource.casquatch.tests.podam.CasquatchPodamFactoryImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -127,12 +128,9 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
         List<String> solrQuery = new ArrayList<>();
         try {
             for (Field field : this.entityClass.getDeclaredFields()) {
-                if (!field.isAnnotationPresent(CasquatchIgnore.class)) {
-                    solrQuery.add(
-                            CasquatchNamingConvention.javaVariableToCql(field.getName()) +
-                                    ":" +
-                                    this.entityClass.getMethod(CasquatchNamingConvention.javaVariableToJavaGet(field.getName())).invoke(obj)
-                    );
+                if(field.isAnnotationPresent(PartitionKey.class) || field.isAnnotationPresent(ClusteringColumn.class)) {
+                    Object fieldValue=this.entityClass.getMethod(CasquatchNamingConvention.javaVariableToJavaGet(field.getName())).invoke(obj);
+                    solrQuery.add(String.format("%s:%s", CasquatchNamingConvention.javaVariableToCql(field.getName()), fieldValue));
                 }
             }
         }
@@ -342,6 +340,8 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
     public void testGetCache() {
         E obj = prepObject();
         E cachedObject = getDatabaseCache().get(obj);
+        log.trace("Created {}",obj);
+        log.trace("Returned {}",cachedObject);
         assert(obj.equals(cachedObject));
     }
 

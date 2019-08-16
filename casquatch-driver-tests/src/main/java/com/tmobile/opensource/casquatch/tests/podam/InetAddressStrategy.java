@@ -21,26 +21,26 @@ import uk.co.jemos.podam.api.DataProviderStrategy;
 import uk.co.jemos.podam.typeManufacturers.AbstractTypeManufacturer;
 
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.util.Map;
 
 /**
- * Implements BigDecimal generation
+ * Implements InetAddress generation
  */
-class BigDecimalStrategy extends AbstractTypeManufacturer<BigDecimal> {
+class InetAddressStrategy extends AbstractTypeManufacturer<InetAddress> {
 
     /**
-     * Required interface to implement BigDecimal generation.
+     * Required interface to implement InetAddress generation.
      * @param strategy passed strategy
      * @param attributeMetadata passed attribute metadata
      * @param genericTypesArgumentsMap passed map
-     * @return generated BigDecimal
+     * @return generated InetAddress
      */
     @Override
-    public BigDecimal getType(DataProviderStrategy strategy,
-                           AttributeMetadata attributeMetadata,
-                           Map<String, Type> genericTypesArgumentsMap) {
+    public InetAddress getType(DataProviderStrategy strategy,
+                               AttributeMetadata attributeMetadata,
+                               Map<String, Type> genericTypesArgumentsMap) {
 
-        return new BigDecimal(strategy.getTypeValue(attributeMetadata,genericTypesArgumentsMap,Integer.class)/100);
+        return InetAddress.getLoopbackAddress();
     }
 }

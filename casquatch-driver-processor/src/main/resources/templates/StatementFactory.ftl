@@ -68,7 +68,12 @@ public class ${naming.classToStatementFactory(naming.classToSimpleClass(class))}
         if(!options.getIgnoreNonPrimaryKeys()) {
 <#list nonKeyFields as field,type>
             if(${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}()!=null) {
-                select=select.whereColumn("${naming.javaVariableToCql(field)}").isEqualTo(bindMarker());
+                if(!allowQueryByType(${type}.class)) {
+                    log.warn("Ignorning column ${field}. ${type} is not a supported query column type");
+                }
+                else {
+                    select=select.whereColumn("${naming.javaVariableToCql(field)}").isEqualTo(bindMarker());
+                }
             }
 </#list>
 <#list udtFields as field,type>
@@ -104,19 +109,11 @@ public class ${naming.classToStatementFactory(naming.classToSimpleClass(class))}
     @Override
     protected Delete deleteObject(${naming.classToSimpleClass(class)} ${naming.classToVar(naming.classToSimpleClass(class))}, QueryOptions options) {
         Delete delete=null;
-
 <#list keyFields as field,type>
         if(${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}()!=null) {
             delete=(delete==null?deleteStart:delete).whereColumn("${naming.javaVariableToCql(field)}").isEqualTo(bindMarker());
        }
 </#list>
-        if(!options.getIgnoreNonPrimaryKeys()) {
-<#list nonKeyFields as field,type>
-            if(${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}()!=null) {
-                delete=(delete==null?deleteStart:delete).whereColumn("${naming.javaVariableToCql(field)}").isEqualTo(bindMarker());
-            }
-</#list>
-        }
         return delete;
     }
 
@@ -129,21 +126,18 @@ public class ${naming.classToStatementFactory(naming.classToSimpleClass(class))}
     protected BoundStatementBuilder bindObject(BoundStatementBuilder boundStatementBuilder, ${naming.classToSimpleClass(class)} ${naming.classToVar(naming.classToSimpleClass(class))}, QueryOptions options) {
 <#list keyFields as field,type>
         if(${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}()!=null || options.getPersistNulls()) {
-            boundStatementBuilder = boundStatementBuilder.set("${naming.javaVariableToCql(field)}", ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}(), ${type}.class);
+            boundStatementBuilder = bindIfMarked(boundStatementBuilder,"${naming.javaVariableToCql(field)}", ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}(), ${type}.class);
         }
 </#list>
         if(!options.getIgnoreNonPrimaryKeys()) {
 <#list nonKeyFields as field,type>
             if(${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}()!=null || options.getPersistNulls()) {
-                boundStatementBuilder = boundStatementBuilder.set("${naming.javaVariableToCql(field)}", ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}(), ${type}.class);
+                boundStatementBuilder = bindIfMarked(boundStatementBuilder,"${naming.javaVariableToCql(field)}", ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}(), ${type}.class);
             }
 </#list>
 <#list udtFields as field,type>
             if(${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}()!=null || options.getPersistNulls()) {
-                try {
-                    boundStatementBuilder = boundStatementBuilder.setUdtValue("${naming.javaVariableToCql(field)}", ${naming.classToVar(naming.classToTypeFactory(naming.classToSimpleClass(type)))}.toUdtValue(${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}()));
-                }
-                catch (java.lang.IllegalArgumentException e) {}
+                boundStatementBuilder=bindIfMarked(boundStatementBuilder,"${naming.javaVariableToCql(field)}",${naming.classToVar(naming.classToTypeFactory(naming.classToSimpleClass(type)))}.toUdtValue(${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaGet(field)}()), UdtValue.class);
             }
 </#list>
         }
@@ -158,6 +152,7 @@ public class ${naming.classToStatementFactory(naming.classToSimpleClass(class))}
             ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaSet(field)}(source.get("${naming.javaVariableToCql(field)}",${naming.classToSimpleClass(type)}.class));
         }
         catch (java.lang.IllegalArgumentException e) {
+            log.trace("Failed to map {}","${naming.javaVariableToCql(field)}",e);
         }
 </#list>
 <#list nonKeyFields as field,type>
@@ -165,13 +160,18 @@ public class ${naming.classToStatementFactory(naming.classToSimpleClass(class))}
             ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaSet(field)}(source.get("${naming.javaVariableToCql(field)}",${naming.classToSimpleClass(type)}.class));
         }
         catch (java.lang.IllegalArgumentException e) {
+            log.trace("Failed to map {}","${naming.javaVariableToCql(field)}",e);
         }
 </#list>
 <#list udtFields as field,type>
         try {
-            ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaSet(field)}(${naming.classToVar(naming.classToTypeFactory(naming.classToSimpleClass(type)))}.fromUdtValue(source.getUdtValue("${field}")));
+            ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaSet(field)}(${naming.classToVar(naming.classToTypeFactory(naming.classToSimpleClass(type)))}.fromUdtValue(source.getUdtValue("${naming.javaVariableToCql(field)}")));
         }
         catch (java.lang.IllegalArgumentException e) {
+            log.trace("Failed to map {}","${naming.javaVariableToCql(field)}",e);
+        }
+        catch (java.lang.NullPointerException e) {
+            log.trace("Failed to map {}","${naming.javaVariableToCql(field)}",e);
         }
 </#list>
         return ${naming.classToVar(naming.classToSimpleClass(class))};

@@ -120,6 +120,7 @@ public class CasquatchEntityProcessor  extends CasquatchProcessorStarter {
                             }
                             else if(enclosedElement.getAnnotation(com.tmobile.opensource.casquatch.annotation.UDT.class)!=null) {
                                 udtFields.put(enclosedElement.getSimpleName().toString(),type);
+                                if (!imports.contains("com.datastax.oss.driver.api.core.data.UdtValue")) imports.add("com.datastax.oss.driver.api.core.data.UdtValue");
                             }
                             else {
                                 nonKeyFields.put(enclosedElement.getSimpleName().toString(),type);
