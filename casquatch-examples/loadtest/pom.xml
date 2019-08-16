@@ -28,7 +28,7 @@
 	<properties>
 		<casquatch.version>2.0-SNAPSHOT</casquatch.version>
 		<java.version>1.8</java.version>
-		<start-class>com.tmobile.opensource.casquatch.examples.loadtest.LoadtestApplication</start-class>
+		<start-class>com.tmobile.opensource.casquatch.examples.loadtest.LoadTestApplication</start-class>
 		<maven-compiler.version>3.8.1</maven-compiler.version>
 		<maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
 		<maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
