@@ -6,10 +6,11 @@ startNode() {
     IMAGE=$1
     NODENAME=$2
     SEED=$3
+    PORT=$(( ( RANDOM % 300 )  + 9000 ))
 
     log "Starting Node - $NODENAME "
 
-    PARAMS="--network cassandra_test_default --label casquatch_test=$NODENAME"
+    PARAMS="--network cassandra_test_default  -p $PORT:9042 --label casquatch_test=$NODENAME"
 
     if [ ! -z "$SEED" ]; then
         SEED_IP=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $SEED `
