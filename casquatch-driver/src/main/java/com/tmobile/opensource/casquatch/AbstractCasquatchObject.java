@@ -51,7 +51,7 @@ abstract class AbstractCasquatchObject {
                         !method.isAnnotationPresent(com.tmobile.opensource.casquatch.annotation.CasquatchIgnore.class)) {
                     try {
                         if (!(method.invoke(this) == null && method.invoke(obj)==null) && !method.invoke(obj).equals(method.invoke(this))) {
-                            log.trace("No match on " + method.getName());
+                            log.trace("No match on {}",method.getName());
                             return false;
                         }
 

@@ -63,13 +63,13 @@ public class CasquatchTestDaoBuilder extends CasquatchDaoBuilder {
             session.close();
         }
         catch(com.datastax.oss.driver.api.core.servererrors.AlreadyExistsException e) {
-            log.warn("DDL Exception",e);
+            log.warn("DDL Exception: {}",e.getMessage());
         }
         catch(com.datastax.oss.driver.api.core.servererrors.InvalidQueryException e) {
-            log.warn("DDL Exception",e);
+            log.warn("DDL Exception: {}",e.getMessage());
         }
         catch(Exception e) {
-            log.error("DDL Exception",e);
+            log.warn("DDL Exception: {}",e.getMessage());
             throw(e);
         }
         return this;

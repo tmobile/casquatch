@@ -517,6 +517,7 @@ public class CasquatchDao {
 
     /**
      * Get all objects by passing a partially populated object. Non-Key columns are allowed.
+     * See https://docs.datastax.com/en/dse/6.0/cql/cql/cql_using/search_index/siQuerySyntax.html for details and limitations including some fields which will not be populated.
      * @param <E> Entity Object for results
      * @param c Class of object
      * @param o partially populated object

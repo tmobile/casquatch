@@ -140,7 +140,6 @@ public abstract class AbstractStatementFactory<E extends AbstractCasquatchEntity
         else {
             return true;
         }
-
     }
 
     /**
@@ -161,7 +160,7 @@ public abstract class AbstractStatementFactory<E extends AbstractCasquatchEntity
             }
         }
         catch (java.lang.IllegalArgumentException e) {
-            log.trace("Failed to bind {}",field,e);
+            log.trace("Failed to bind {}: {}",field,e.getMessage());
             return boundStatementBuilder;
         }
     }
