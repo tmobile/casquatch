@@ -150,6 +150,14 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
         }
     }
 
+    //As Solr Object parses out some fields, only search for a matching key
+    private Boolean containsObjectKey(List<E> objList, E obj) {
+        for(E e : objList) {
+            if(e.keys().equals(obj.keys())) return true;
+        }
+        return false;
+    }
+
     private E prepCache() {
         E obj = prepObject();
         E cachedObject;
@@ -420,7 +428,7 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
     }
 
     @Test
-    public void testGetAllBySolrQuery() throws InterruptedException {
+    public void testGetAllBySolrQuery() {
 
         E obj = prepObject();
 
@@ -439,7 +447,7 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
     }
 
     @Test
-    public void testGetCountBySolrQuery() throws InterruptedException {
+    public void testGetCountBySolrQuery() {
         E obj = prepObject();
 
         if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR)) {
@@ -455,7 +463,7 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
     }
 
     @Test
-    public void testGetAllBySolrQueryWithOptions() throws InterruptedException {
+    public void testGetAllBySolrQueryWithOptions() {
         E obj = prepObject();
 
         if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR)) {
@@ -473,7 +481,7 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
 
 
     @Test
-    public void testGetCountBySolrQueryWithOptions() throws InterruptedException {
+    public void testGetCountBySolrQueryWithOptions() {
         E obj = prepObject();
 
         if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR)) {
@@ -489,7 +497,7 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
     }
 
     @Test
-    public void testGetAllBySolrObject() throws InterruptedException {
+    public void testGetAllBySolrObject() {
 
         E obj = prepObject();
 
@@ -498,7 +506,7 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
             List<E> tstObj = this.getCasquatchDao().getAllBySolr(this.entityClass, obj);
             assertNotNull(tstObj);
             assert(tstObj.size()>0);
-            assert(tstObj.contains(obj));
+            assert(containsObjectKey(tstObj,obj));
         }
         else {
             assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
@@ -508,7 +516,7 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
     }
 
     @Test
-    public void testGetCountBySolrObject() throws InterruptedException {
+    public void testGetCountBySolrObject() {
         E obj = prepObject();
 
         if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR_OBJECT)) {
@@ -524,7 +532,7 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
     }
 
     @Test
-    public void testGetAllBySolrObjectWithOptions() throws InterruptedException {
+    public void testGetAllBySolrObjectWithOptions() {
         E obj = prepObject();
 
         if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR_OBJECT)) {
@@ -532,7 +540,7 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
             List<E> tstObj = this.getCasquatchDao().getAllBySolr(this.entityClass,obj,queryOptions.withConsistencyLevel("LOCAL_ONE").withAllColumns());
             assertNotNull(tstObj);
             assert(tstObj.size()>0);
-            assert(tstObj.contains(obj));
+            assert(containsObjectKey(tstObj,obj));
         }
         else {
             assertThrows(DriverException.class, () -> this.getCasquatchDao().getAllBySolr(this.entityClass, obj));
@@ -542,7 +550,7 @@ public abstract class AbstractEntityTests<E extends AbstractCasquatchEntity>{
 
 
     @Test
-    public void testGetCountBySolrObjectWithOptions() throws InterruptedException {
+    public void testGetCountBySolrObjectWithOptions() {
         E obj = prepObject();
 
         if(getCasquatchDao().checkFeature(CasquatchDao.FEATURES.SOLR_OBJECT)) {
