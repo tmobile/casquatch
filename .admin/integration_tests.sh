@@ -1,0 +1,215 @@
+#!/bin/bash
+#
+# Run integration tests against maven docker image
+#
+# .admin/integration_tests.sh IMAGE [NODES]
+#
+# .admin/integration_tests.sh datastax/dse-server:6.0.8
+#
+
+#Define environment vars to use throughout script
+export DATACENTER=dc1
+export DATACENTER2=dc2
+export KEYSPACE=fulltest
+export OUTPUT=.admin/test.out
+export VERSION=2.0-SNAPSHOT
+export BASEDIR=`pwd`
+export WORKER="docker run --rm --network cassandra_test_default -v $HOME/.m2/repository:/root/.m2/repository -v $BASEDIR:$BASEDIR -w $BASEDIR -it maven:latest"
+export MVN="$WORKER mvn "
+export JAVA="$WORKER java"
+export DEFAULT_NODE_COUNT=1
+export GENERATOR=casquatch-generator/target/casquatch-generator-$VERSION.jar
+
+#Calculated image variables
+export IMAGE=$1
+export BASENAME=`echo $IMAGE | tr -cd '[:alnum:]'`
+export SEED_IP=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $BASENAME `
+
+#Logging Variables
+export RED="\033[1;31m"
+export GREEN="\033[1;32m"
+export MAGENTA="\033[1;35m"
+export BOLD="\033[1m"
+export NOCOLOR="\033[0m"
+export LOG_HEADER="[${MAGENTA}Casquatch Build${NOCOLOR}]"
+
+#Determine node count if supplied
+if [ -z $2 ]; then
+    export NODES=$DEFAULT_NODE_COUNT
+else
+    export NODES=$2
+fi;
+
+
+#retryLoop command timeout
+#Run the command until it succeeds or hits the timeout
+retryLoop() {
+  command=$1
+  timeout=$2
+  lc=0
+  retcode=-1
+  sleep=10
+  until [ $retcode -eq 0 ]; do
+    if [ $lc -gt $((timeout/sleep)) ]; then
+      return 1
+    fi;
+    lc=$((lc+1))
+    sleep $sleep;
+    eval $command
+    retcode=$?
+  done;
+  sleep $((sleep*2))
+}
+
+#runTests package test
+#runs a speciifc junit test
+runTests() {
+  log "Run Tests $1:$2"
+  $MVN -pl $1 -Dconfig.file=../config/application.properties -Dtest=$2 test
+}
+
+#showStatus returnCode
+#Shows return code as a colored status
+showStatus() {
+  if [ $1 -eq 0 ]; then
+    log "${GREEN}Success${NOCOLOR}"
+  else
+    log "${RED}Fail${NOCOLOR}"
+    exit $1;
+  fi
+}
+
+#log message
+#Log a message
+log() {
+  echo -e "$LOG_HEADER ${BOLD}$1${NOCOLOR}"
+}
+
+#cleanup
+cleanup() {
+    log "Cleanup"
+    docker ps -flabel=casquatch_test -q | xargs -I % docker kill % >>/dev/null 2>&1
+    docker container ls -a -flabel=casquatch_test -q | xargs -I % docker rm -f % >>/dev/null 2>&1
+    $MVN -q clean
+    rm -rf cassandramodels
+    rm -rf config/application.properties
+    rm -rf $HOME/maven_docker/repository/com/tmobile/opensource/casquatch
+}
+
+#Start up node
+startNode() {
+    IMAGE=$1
+    NODENAME=$2
+    SEED=$3
+    PORT=$(( ( RANDOM % 300 )  + 9000 ))
+
+    log "Starting Node - $NODENAME "
+
+    PARAMS="--network cassandra_test_default  -p $PORT:9042 --label casquatch_test=$NODENAME"
+
+    if [ ! -z "$SEED" ]; then
+        SEED_IP=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $SEED `
+        if [[ "$IMAGE" == "cassandra"* ]]; then
+            PARAMS="$PARAMS -e CASSANDRA_SEEDS=$SEED_IP"
+        else
+            PARAMS="$PARAMS -e SEEDS=$SEED_IP"
+        fi;
+    fi;
+
+    if [[ "$IMAGE" == "cassandra"* ]]; then
+        docker run --rm $PARAMS -e CASSANDRA_DC=$DATACENTER -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch -d --name $NODENAME $IMAGE >>/dev/null
+    else
+        docker run --rm $PARAMS -e DS_LICENSE=accept -e DC=$DATACENTER -d --name $NODENAME $IMAGE -s >>/dev/null
+    fi;
+    sleep 5
+    if [ $? -eq 0 ]; then
+        retryLoop "docker exec -it $NODENAME nodetool status 2>/dev/null | egrep '^[A-Z]{2}' | egrep -c -v '^UN' | grep -q 0 " 300
+        retryLoop "echo exit | docker exec -i $NODENAME cqlsh 2>/dev/null " 300
+    else
+        $?
+    fi;
+    showStatus $?
+}
+
+#Run the example
+runExample() {
+    EXAMPLE=$1
+    log "Running Example - $EXAMPLE"
+
+    cd $BASEDIR/casquatch-examples/$EXAMPLE
+
+    log "Installing CQL"
+    cat schema.cql | docker exec -i $BASENAME cqlsh
+    showStatus $?
+
+    log "Generate Entity"
+    $JAVA -Dcasquatch.basic.contact-points.0=$SEED_IP:9042 -Dconfig.file=casquatch-examples/$EXAMPLE/src/main/resources/application.conf -Dcasquatch.generator.outputFolder=casquatch-examples/$EXAMPLE/src/main/java/com/tmobile/opensource/casquatch/examples/$EXAMPLE -Dcasquatch.basic.load-balancing-policy.local-datacenter=$DATACENTER -jar $GENERATOR
+    showStatus $?
+    mkdir -p src/test/java/com/tmobile/opensource/casquatch/examples/$EXAMPLE/
+    mv src/main/java/com/tmobile/opensource/casquatch/examples/$EXAMPLE/*EmbeddedTests.java src/test/java/com/tmobile/opensource/casquatch/examples/$EXAMPLE/
+
+    log "Testing"
+    $WORKER /bin/bash -c "cd casquatch-examples/$EXAMPLE;mvn -Dcasquatch.basic.contact-points.0=$SEED_IP:9042 -Dcasquatch.basic.load-balancing-policy.local-datacenter=$DATACENTER clean test"
+    showStatus $?
+}
+
+###########
+# Tests
+
+cleanup > /dev/null 2>&1
+
+docker network create cassandra_test_default > /dev/null 2>&1
+
+log "Starting Docker Cluster - $BASENAME "
+startNode $IMAGE ${BASENAME}
+for (( n=2; n<=$NODES; n++)); do
+    startNode $IMAGE ${BASENAME}_n${n} ${BASENAME}
+done;
+
+log "Installing Keyspace to $BASENAME"
+docker exec -i $BASENAME cqlsh << EOF
+  CREATE KEYSPACE IF NOT EXISTS $KEYSPACE WITH replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1}  AND durable_writes = true;
+  CREATE TABLE IF NOT EXISTS $KEYSPACE."table_name" ( "key_one" int, "key_two" int, "col_one" text, "col_two" text, PRIMARY KEY ("key_one", "key_two") );
+EOF
+showStatus $?
+
+log "Configure driver"
+mkdir config 2>>$OUTPUT
+SEED_IP=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $BASENAME `
+cat << EOF > config/application.properties
+casquatch.basic.contact-points.0=$SEED_IP:9042
+casquatch.basic.load-balancing-policy.local-datacenter=$DATACENTER
+casquatch.basic.session-keyspace=$KEYSPACE
+casquatch.generator.createPackage=true
+casquatch.generator.outputFolder=cassandramodels
+casquatch.generator.file=true
+casquatch.basic.request.timeout=5 seconds
+casquatch.advanced.connection.init-query-timeoutt=5 seconds
+casquatch.profiles.ddl.basic.request.timeout=5 seconds
+EOF
+showStatus $?
+
+if [ ! -f $GENERATOR ]; then
+    log "Creating generator"
+    $MVN -pl casquatch-generator package
+    showStatus $?
+fi
+
+log "Generating Models"
+java -Dconfig.file=config/application.properties -jar $GENERATOR
+showStatus $?
+
+log "Testing Generated Models"
+cd cassandramodels
+mvn test
+showStatus $?
+cd ..
+
+log "Running ExternalTests"
+runTests casquatch-driver-tests *ExternalTests
+showStatus $?
+
+runExample loadtest
+runExample springconfigserver
+runExample springrest
+
