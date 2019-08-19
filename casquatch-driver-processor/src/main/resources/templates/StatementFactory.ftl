@@ -148,30 +148,18 @@ public class ${naming.classToStatementFactory(naming.classToSimpleClass(class))}
     public ${naming.classToSimpleClass(class)} map(GettableByName source) {
         ${naming.classToSimpleClass(class)} ${naming.classToVar(naming.classToSimpleClass(class))} = new ${naming.classToSimpleClass(class)}();
 <#list keyFields as field,type>
-        try {
+        if(!source.isNull("${naming.javaVariableToCql(field)}")) {
             ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaSet(field)}(source.get("${naming.javaVariableToCql(field)}",${naming.classToSimpleClass(type)}.class));
-        }
-        catch (java.lang.IllegalArgumentException e) {
-            log.trace("Failed to map {}","${naming.javaVariableToCql(field)}",e);
         }
 </#list>
 <#list nonKeyFields as field,type>
-        try {
+        if(!source.isNull("${naming.javaVariableToCql(field)}")) {
             ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaSet(field)}(source.get("${naming.javaVariableToCql(field)}",${naming.classToSimpleClass(type)}.class));
-        }
-        catch (java.lang.IllegalArgumentException e) {
-            log.trace("Failed to map {}","${naming.javaVariableToCql(field)}",e);
         }
 </#list>
 <#list udtFields as field,type>
-        try {
+        if(!source.isNull("${naming.javaVariableToCql(field)}")) {
             ${naming.classToVar(naming.classToSimpleClass(class))}.${naming.javaVariableToJavaSet(field)}(${naming.classToVar(naming.classToTypeFactory(naming.classToSimpleClass(type)))}.fromUdtValue(source.getUdtValue("${naming.javaVariableToCql(field)}")));
-        }
-        catch (java.lang.IllegalArgumentException e) {
-            log.trace("Failed to map {}","${naming.javaVariableToCql(field)}",e);
-        }
-        catch (java.lang.NullPointerException e) {
-            log.trace("Failed to map {}","${naming.javaVariableToCql(field)}",e);
         }
 </#list>
         return ${naming.classToVar(naming.classToSimpleClass(class))};
