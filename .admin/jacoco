@@ -1,0 +1,2 @@
+mvn clean test -DCASQUATCH_LOG_LEVEL=TRACE jacoco:report-aggregate
+open -a 'Google Chrome' ./casquatch-driver-tests/target/site/jacoco-aggregate/index.html

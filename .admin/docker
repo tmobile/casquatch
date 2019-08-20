@@ -22,8 +22,7 @@ echo "Configure project"
 echo "---------------------------------------------"
 mkdir config
 cat << EOF > config/application.properties
-cassandraDriver.contactPoints=localhost
-cassandraDriver.localDC=datacenter1
-cassandraDriver.keyspace=$KEYSPACE
-cassandraDriver.features.driverConfig=disabled
+casquatch.basic.contact-points.0=localhost:9042
+casquatch.basic.load-balancing-policy.local-datacenter=datacenter1
+casquatch.basic.session-keyspace=$KEYSPACE
 EOF

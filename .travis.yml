@@ -14,12 +14,12 @@ jobs:
       script: mvn test
     - stage: Integration Tests
       name: Cassandra 3.0
-      script: .admin/integration_tests.sh cassandra:3.0
+      script: .admin/integration_tests cassandra:3.0
     - name: Cassandra 3.11
-      script: .admin/integration_tests.sh cassandra:3.11
+      script: .admin/integration_tests cassandra:3.11
     - name: DSE 5.1.15
-      script: .admin/integration_tests.sh datastax/dse-server:5.1.15
+      script: .admin/integration_tests datastax/dse-server:5.1.15
     - name: DSE 6.0.8
-      script: .admin/integration_tests.sh datastax/dse-server:6.0.8
+      script: .admin/integration_tests datastax/dse-server:6.0.8
     - name: DSE 6.7.3
-      script: .admin/integration_tests.sh datastax/dse-server:6.7.3
+      script: .admin/integration_tests datastax/dse-server:6.7.3

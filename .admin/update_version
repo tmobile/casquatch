@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# Helper script to update the version number
+#
+
+OLD_VERSION=$1
+NEW_VERSION=$2
+
+sed -i .updaterelease "s/$OLD_VERSION/$NEW_VERSION/g" pom.xml
+sed -i .updaterelease "s/$OLD_VERSION/$NEW_VERSION/g" */pom.xml
+sed -i .updaterelease "s/$OLD_VERSION/$NEW_VERSION/g" casquatch-generator/src/main/resources/templates/pom.ftl
+sed -i .updaterelease "s/$OLD_VERSION/$NEW_VERSION/g" casquatch-driver-tests/genmodels.sh
+sed -i .updaterelease "s/$OLD_VERSION/$NEW_VERSION/g" casquatch-examples/*/pom.xml
+sed -i .updaterelease "s/$OLD_VERSION/$NEW_VERSION/g" casquatch-examples/.setup.sh
+sed -i .updaterelease "s/$OLD_VERSION/$NEW_VERSION/g" .admin/integration_tests
+sed -i .updaterelease "s/$OLD_VERSION/$NEW_VERSION/g" manual/content/examples/*.md
+
+find . -name '*.updaterelease' -exec rm {} \;
