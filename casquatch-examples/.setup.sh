@@ -72,3 +72,5 @@ echo "---------------------------------------------"
 echo "Generate Entity"
 echo "---------------------------------------------"
 java -Dconfig.file=src/main/resources/application.conf -jar $GENERATOR
+mkdir -p src/test/java/com/tmobile/opensource/casquatch/examples/$NAME/
+mv src/main/java/com/tmobile/opensource/casquatch/examples/$NAME/*EmbeddedTests.java src/test/java/com/tmobile/opensource/casquatch/examples/$NAME/
