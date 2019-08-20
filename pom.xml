@@ -6,7 +6,7 @@
 
   <groupId>com.tmobile.opensource.casquatch</groupId>
   <artifactId>casquatch-parent</artifactId>
-  <version>2.0-SNAPSHOT</version>
+  <version>2.0-RELEASE</version>
   <packaging>pom</packaging>
 
   <name>Project Casquatch</name>
@@ -53,7 +53,7 @@
   <properties>
     <apache-commons-text.version>1.7</apache-commons-text.version>
     <cassandraunit.version>3.11.2.0</cassandraunit.version>
-    <casquatch.version>2.0-SNAPSHOT</casquatch.version>
+    <casquatch.version>2.0-RELEASE</casquatch.version>
     <datastax.version>4.1.0</datastax.version>
     <datastax_v3.version>3.7.1</datastax_v3.version>
     <google-auto-service.version>1.0-rc6</google-auto-service.version>

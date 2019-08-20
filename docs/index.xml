@@ -32,6 +32,16 @@
     </item>
     
     <item>
+      <title>Concepts</title>
+      <link>http://tmobile.github.io/casquatch/overview/concepts/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tmobile.github.io/casquatch/overview/concepts/</guid>
+      <description>CasquatchDao CasquatchDao is your main interface to the database and provides an extensive api. This can be configured through a Builder, Autowired with Spring, or loaded through a configuration file.
+Casquatch Entity The CasquatchEntity corresponds directly to a table. Fields and naming are translated through CasquatchNamingConvention to CQL equivalents. At minimum an entity will look like the following: @CasquatchEntity @Getter @Setter @NoArgsConstructor public class TableName extends AbstractCasquatchEntity { @PartitionKey private Integer keyOne; @ClusteringColumn(1) private Integer keyTwo; private String colOne; private String colTwo; }</description>
+    </item>
+    
+    <item>
       <title>Summary</title>
       <link>http://tmobile.github.io/casquatch/features/summary/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -104,12 +114,12 @@
     </item>
     
     <item>
-      <title>2.0-SNAPSHOT</title>
+      <title>2.0-RELEASE</title>
       <link>http://tmobile.github.io/casquatch/releasenotes/v2.0/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://tmobile.github.io/casquatch/releasenotes/v2.0/</guid>
-      <description> Changes  Complete rewrite to correspond to 4.0 OSS Datastax Driver Moved to annotation processing code generation Split projects to separate spring, tests, and generator from core driver New Feature: Rest DAO New Hugo based manual - https://tmobile.github.io/casquatch/ New Travis CI Integration - https://travis-ci.com/tmobile/casquatch  Release Date: TBD Github: 2.0-SNAPSHOT Maven Central: TBD </description>
+      <description> Changes  Complete rewrite to correspond to 4.0 OSS Datastax Driver Moved to annotation processing based code generation Split projects to separate spring, tests, and generator from core driver New Feature: FailoverPolicy to enable custom failover policies New Feature: Rest DAO generation New Hugo based manual - https://tmobile.github.io/casquatch/ New Travis CI Integration - https://travis-ci.com/tmobile/casquatch  Release Date: 08/20/2019 Github: 2.0-RELEASE Maven Central: CassandraDriver &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.tmobile.opensource.casquatch&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;casquatch-driver&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;2.0-RELEASE&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  </description>
     </item>
     
     <item>
@@ -277,13 +287,15 @@ Github: springconfigserver Schema CREATE KEYSPACE springconfigserver WITH replic
     </item>
     
     <item>
-      <title>Spring Rest</title>
+      <title>Spring Rest - Tutorial</title>
       <link>http://tmobile.github.io/casquatch/examples/springrest/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://tmobile.github.io/casquatch/examples/springrest/</guid>
-      <description>Overview This is a simple project that utilizes Spring and Casquatch to provide a Rest API for a given schema. Entity was generated via the Code Generator
-Github: springrest Schema CREATE KEYSPACE springrest WITH replication = {&#39;class&#39;: &#39;SimpleStrategy&#39;, &#39;replication_factor&#39;: &#39;1&#39;} AND durable_writes = true; CREATE TABLE springrest.table_name ( key_one int, key_two int, col_one text, col_two text, PRIMARY KEY (key_one, key_two) ); EOF  Configuration casquatch { basic { contact-points = [ &amp;quot;127.</description>
+      <description>Overview This is a simple project that utilizes Spring and Casquatch to provide a Rest API for a given schema
+Working Example: springrest Tutorial In this tutorial we are going to step through the creation of a simple project from start to finish.
+Prerequisites The following prerequisites are required:
+ JDK 8 Maven Docker (or a running Cassandra database)  Spring Initializer Spring offers the Spring Initializer to quick start a project.</description>
     </item>
     
   </channel>

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PORT=$(( ( RANDOM % 300 )  + 9000 ))
-GENERATOR=../../casquatch-generator/target/casquatch-generator-2.0-SNAPSHOT.jar
+GENERATOR=../../casquatch-generator/target/casquatch-generator-2.0-RELEASE.jar
 DOCKER_VERSION=cassandra:latest
 TEST_COMMAND="mvn clean test"
 RUN_COMMAND="mvn clean spring-boot:run"

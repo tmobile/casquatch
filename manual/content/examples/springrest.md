@@ -68,7 +68,7 @@ Now the project is ready for Casquatch Integration by adding dependencies, entit
 
 1. Add Properties to pom.xml
 {{< highlight xml >}}
-<casquatch.version>2.0-SNAPSHOT</casquatch.version>
+<casquatch.version>2.0-RELEASE</casquatch.version>
 {{< /highlight >}}
 2. Add Dependencies to pom.xml
 {{< highlight xml >}}

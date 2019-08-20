@@ -3,7 +3,7 @@
 # Helper script to spin up docker and regenerate test models
 #
 
-VERSION=2.0-SNAPSHOT
+VERSION=2.0-RELEASE
 KEYSPACE=junittest
 INSTANCE=casquatch-driver-tests
 OUTPUT_FOLDER=src/test/java/com/tmobile/opensource/casquatch/tests/
