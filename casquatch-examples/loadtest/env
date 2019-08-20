@@ -1,3 +1,4 @@
 NAME=loadtest
 SCHEMA=schema.cql
-RUN_COMMAND="mvn clean test package;java -jar target/loadtest-0.0.1-SNAPSHOT.jar"
+TEST_COMMAND="mvn clean test package"
+RUN_COMMAND="java -jar target/loadtest-0.0.1-SNAPSHOT.jar"
