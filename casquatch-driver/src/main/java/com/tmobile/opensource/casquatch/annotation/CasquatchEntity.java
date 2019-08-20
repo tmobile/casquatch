@@ -38,12 +38,6 @@ public @interface CasquatchEntity {
     boolean generateTests() default false;
 
     /**
-     * Triggers the generation of DSE Test suite
-     * @return boolean indicator
-     */
-    boolean generateDSETests() default false;
-
-    /**
      * Override table name. Infered from {@link com.tmobile.opensource.casquatch.CasquatchNamingConvention#javaClassToCql(String)} if left blank
      * @return name of table
      */
