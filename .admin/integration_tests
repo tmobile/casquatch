@@ -183,9 +183,10 @@ casquatch.basic.session-keyspace=$KEYSPACE
 casquatch.generator.createPackage=true
 casquatch.generator.outputFolder=cassandramodels
 casquatch.generator.file=true
-casquatch.basic.request.timeout=5 seconds
-casquatch.advanced.connection.init-query-timeoutt=5 seconds
-casquatch.profiles.ddl.basic.request.timeout=5 seconds
+casquatch.basic.request.timeout=10 seconds
+casquatch.advanced.connection.init-query-timeout=10 seconds
+casquatch.advanced.control-connection.timeout=10 seconds
+casquatch.profiles.ddl.basic.request.timeout=10 seconds
 EOF
 showStatus $?
 
