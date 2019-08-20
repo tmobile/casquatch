@@ -5,7 +5,9 @@ package ${package};
 
 import com.tmobile.opensource.casquatch.AbstractCasquatchEntity;
 import com.tmobile.opensource.casquatch.annotation.CasquatchEntity;
+<#if !minify>
 import com.tmobile.opensource.casquatch.annotation.CasquatchIgnore;
+</#if>
 <#if clusteringColumns?has_content>
 import com.tmobile.opensource.casquatch.annotation.ClusteringColumn;
 </#if>
@@ -21,7 +23,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+<#if !minify || createTests>
 import org.apache.commons.text.TextStringBuilder;
+</#if>
 
 @CasquatchEntity
 @Getter @Setter @NoArgsConstructor
@@ -46,6 +50,7 @@ public class ${naming.classToSimpleClass(class)} extends AbstractCasquatchEntity
     </#list>
 </#if>
 
+<#if !minify>
     /**
     * Generated: Initialize with Partition Keys
     <#list partitionKeys as cql,col>
@@ -92,7 +97,8 @@ public class ${naming.classToSimpleClass(class)} extends AbstractCasquatchEntity
 </#list>
         return ${naming.classToVar(naming.classToSimpleClass(class))};
     }
-
+</#if>
+<#if !minify || createTests>
     /**
     * Generated: Returns DDL
     * @return DDL for table
@@ -107,5 +113,6 @@ public class ${naming.classToSimpleClass(class)} extends AbstractCasquatchEntity
         ddl.appendln("${ddl}");
         return ddl.toString();
     }
+</#if>
 }
 

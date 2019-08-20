@@ -58,6 +58,10 @@ public class CasquatchGeneratorConfiguration {
     String packageName;
     @Optional
     Boolean overwrite=false;
+    @Optional
+    Boolean minify=false;
+    @Optional
+    Boolean createTests=true;
 
     /**
      * Validate the configuration and throw an exception on failure

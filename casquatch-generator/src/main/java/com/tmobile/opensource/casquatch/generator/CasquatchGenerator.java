@@ -352,7 +352,9 @@ public class CasquatchGenerator {
         }
 
         generate("Entity.ftl", input, entityName);
-        generate("EntityTest.ftl",input,entityTestName);
+        if(casquatchGeneratorConfiguration.getCreateTests()) {
+            generate("EntityTest.ftl", input, entityTestName);
+        }
     }
 
     /**
@@ -452,6 +454,8 @@ public class CasquatchGenerator {
         input.put("class", casquatchGeneratorConfiguration.getPackageName()+"."+CasquatchNamingConvention.cqlToJavaClass(name));
         input.put("name", name);
         input.put("naming", new CasquatchNamingConvention());
+        input.put("minify",casquatchGeneratorConfiguration.getMinify());
+        input.put("createTests",casquatchGeneratorConfiguration.getCreateTests());
         return input;
     }
 }

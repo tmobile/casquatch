@@ -18,4 +18,6 @@ Properties can be passed either through a -D parameter or in a properties file a
 | casquatch.generator.overwrite | Boolean | No | false | Toggle overwriting of files in outputFolder |
 | casquatch.generator.createPackage | Boolean | No | false | If createPackage=true then pom.xml and src folder structure will be added |
 | casquatch.generator.packageName | String | No | com.tmobile.opensource.casquatch.models | Package name for source files |
+| casquatch.minify | Boolean | No | false | Create entity with minimal amount of code by excluding convenience methods |
+| casquatch.createTests | String | No | true | Create test entities as well |
 | config.file | String | No | Specify a path  to a config file to place parameters |
