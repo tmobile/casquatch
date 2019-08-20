@@ -79,7 +79,8 @@ public class CasquatchDaoBuilder {
             if (!this.configMap.isEmpty()) {
                 for (Map.Entry<String, Object> entry : this.configMap.entrySet()) {
                     if (entry.getValue() != null && !(entry.getValue() instanceof String && ((String) entry.getValue()).isEmpty())) {
-                        log.debug("Runtime Property: {} -> {}", entry.getKey(), entry.getValue());
+                        if (log.isTraceEnabled())
+                            log.trace("Runtime Property: {} -> {}", entry.getKey(), entry.getValue());
                         this.config = this.config.withValue(entry.getKey(), ConfigValueFactory.fromAnyRef(entry.getValue()));
                     }
                 }
@@ -301,6 +302,18 @@ public class CasquatchDaoBuilder {
     }
 
     /**
+     * Add value to property list mapped to solr-query-options.null-saving-strategy
+     *
+     * NOTE: Generated from reference.conf files on release
+     *
+     * @param value value for property
+     * @return builder with property set
+     */
+    public CasquatchDaoBuilder withSolrQueryOptionsNullSavingStrategy(String value) {
+        return this.with("solr-query-options.null-saving-strategy",value);
+    }
+
+    /**
      * Add value to property list mapped to advanced.control-connection.schema-agreement.timeout
      *
      * NOTE: Generated from reference.conf files on release
@@ -457,6 +470,18 @@ public class CasquatchDaoBuilder {
     }
 
     /**
+     * Add value to property list mapped to query-options.profile
+     *
+     * NOTE: Generated from reference.conf files on release
+     *
+     * @param value value for property
+     * @return builder with property set
+     */
+    public CasquatchDaoBuilder withQueryOptionsProfile(String value) {
+        return this.with("query-options.profile",value);
+    }
+
+    /**
      * Add value to property list mapped to advanced.netty.admin-group.shutdown.timeout
      *
      * NOTE: Generated from reference.conf files on release
@@ -490,6 +515,18 @@ public class CasquatchDaoBuilder {
      */
     public CasquatchDaoBuilder withAdvancedMetricsNodeCqlMessagesHighestLatency(String value) {
         return this.with("advanced.metrics.node.cql-messages.highest-latency",value);
+    }
+
+    /**
+     * Add value to property list mapped to solr-query-options.limit
+     *
+     * NOTE: Generated from reference.conf files on release
+     *
+     * @param value value for property
+     * @return builder with property set
+     */
+    public CasquatchDaoBuilder withSolrQueryOptionsLimit(Integer value) {
+        return this.with("solr-query-options.limit",value);
     }
 
     /**
@@ -598,7 +635,7 @@ public class CasquatchDaoBuilder {
      */
     public CasquatchDaoBuilder withAdvancedMetricsNodeEnabled(String value) {
         if(value.contains(",")) {
-            return this.with("advanced.metrics.node.enabled", Arrays.asList(value.split(",")));
+            return this.with("advanced.metrics.node.enabled", Collections.singletonList(value.split(",")));
         }
         else {
             return this.with("advanced.metrics.node.enabled", Collections.singletonList(value));
@@ -689,6 +726,18 @@ public class CasquatchDaoBuilder {
     }
 
     /**
+     * Add value to property list mapped to query-options.ignore-non-primary-keys
+     *
+     * NOTE: Generated from reference.conf files on release
+     *
+     * @param value value for property
+     * @return builder with property set
+     */
+    public CasquatchDaoBuilder withQueryOptionsIgnoreNonPrimaryKeys(Boolean value) {
+        return this.with("query-options.ignore-non-primary-keys",value);
+    }
+
+    /**
      * Add value to property list mapped to advanced.metrics.session.throttling.delay.significant-digits
      *
      * NOTE: Generated from reference.conf files on release
@@ -710,6 +759,18 @@ public class CasquatchDaoBuilder {
      */
     public CasquatchDaoBuilder withBasicRequestConsistency(String value) {
         return this.with("basic.request.consistency",value);
+    }
+
+    /**
+     * Add value to property list mapped to query-options.persist-nulls
+     *
+     * NOTE: Generated from reference.conf files on release
+     *
+     * @param value value for property
+     * @return builder with property set
+     */
+    public CasquatchDaoBuilder withQueryOptionsPersistNulls(Boolean value) {
+        return this.with("query-options.persist-nulls",value);
     }
 
     /**
@@ -758,7 +819,7 @@ public class CasquatchDaoBuilder {
      */
     public CasquatchDaoBuilder withAdvancedMetricsSessionEnabled(String value) {
         if(value.contains(",")) {
-            return this.with("advanced.metrics.session.enabled", Arrays.asList(value.split(",")));
+            return this.with("advanced.metrics.session.enabled", Collections.singletonList(value.split(",")));
         }
         else {
             return this.with("advanced.metrics.session.enabled", Collections.singletonList(value));
@@ -822,6 +883,18 @@ public class CasquatchDaoBuilder {
      */
     public CasquatchDaoBuilder withAdvancedMetricsSessionCqlRequestsRefreshInterval(String value) {
         return this.with("advanced.metrics.session.cql-requests.refresh-interval",value);
+    }
+
+    /**
+     * Add value to property list mapped to solr-query-options.consistency
+     *
+     * NOTE: Generated from reference.conf files on release
+     *
+     * @param value value for property
+     * @return builder with property set
+     */
+    public CasquatchDaoBuilder withSolrQueryOptionsConsistency(String value) {
+        return this.with("solr-query-options.consistency",value);
     }
 
     /**
@@ -966,7 +1039,7 @@ public class CasquatchDaoBuilder {
      */
     public CasquatchDaoBuilder withBasicContactPoints(String value) {
         if(value.contains(",")) {
-            return this.with("basic.contact-points", Arrays.asList(value.split(",")));
+            return this.with("basic.contact-points", Collections.singletonList(value.split(",")));
         }
         else {
             return this.with("basic.contact-points", Collections.singletonList(value));
@@ -1030,6 +1103,18 @@ public class CasquatchDaoBuilder {
      */
     public CasquatchDaoBuilder withAdvancedSpeculativeExecutionPolicyMaxExecutions(Integer value) {
         return this.with("advanced.speculative-execution-policy.max-executions",value);
+    }
+
+    /**
+     * Add value to property list mapped to solr-query-options.allow-non-primary-keys
+     *
+     * NOTE: Generated from reference.conf files on release
+     *
+     * @param value value for property
+     * @return builder with property set
+     */
+    public CasquatchDaoBuilder withSolrQueryOptionsAllowNonPrimaryKeys(Boolean value) {
+        return this.with("solr-query-options.allow-non-primary-keys",value);
     }
 
     /**
@@ -1114,6 +1199,18 @@ public class CasquatchDaoBuilder {
      */
     public CasquatchDaoBuilder withAdvancedConnectionPoolLocalSize(Integer value) {
         return this.with("advanced.connection.pool.local.size",value);
+    }
+
+    /**
+     * Add value to property list mapped to solr-query-options.ignore-non-primary-keys
+     *
+     * NOTE: Generated from reference.conf files on release
+     *
+     * @param value value for property
+     * @return builder with property set
+     */
+    public CasquatchDaoBuilder withSolrQueryOptionsIgnoreNonPrimaryKeys(Boolean value) {
+        return this.with("solr-query-options.ignore-non-primary-keys",value);
     }
 
     /**
@@ -1381,6 +1478,18 @@ public class CasquatchDaoBuilder {
     }
 
     /**
+     * Add value to property list mapped to solr-query-options.profile
+     *
+     * NOTE: Generated from reference.conf files on release
+     *
+     * @param value value for property
+     * @return builder with property set
+     */
+    public CasquatchDaoBuilder withSolrQueryOptionsProfile(String value) {
+        return this.with("solr-query-options.profile",value);
+    }
+
+    /**
      * Add value to property list mapped to advanced.ssl-engine-factory.hostname-validation
      *
      * NOTE: Generated from reference.conf files on release
@@ -1450,7 +1559,7 @@ public class CasquatchDaoBuilder {
      */
     public CasquatchDaoBuilder withAdvancedSslEngineFactoryCipherSuites(String value) {
         if(value.contains(",")) {
-            return this.with("advanced.ssl-engine-factory.cipher-suites", Arrays.asList(value.split(",")));
+            return this.with("advanced.ssl-engine-factory.cipher-suites", Collections.singletonList(value.split(",")));
         }
         else {
             return this.with("advanced.ssl-engine-factory.cipher-suites", Collections.singletonList(value));

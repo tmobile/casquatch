@@ -1,17 +1,18 @@
-/* Copyright 2018 T-Mobile US, Inc.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+/*
+ * Copyright 2018 T-Mobile US, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.tmobile.opensource.casquatch;
 
 import com.datastax.oss.driver.api.core.CqlSession;
@@ -30,13 +31,14 @@ import java.util.*;
 /**
  * Builder for {@link CasquatchDao}
  */
+@SuppressWarnings({"WeakerAccess", "SpellCheckingInspection"})
 @Slf4j
 public class ${naming.classToSimpleClass(class)} {
 
-    private final Map<String,Object> configMap = new HashMap<>();
-    private String prefix=null;
-    private String path=null;
-    private Config config;
+    protected final Map<String,Object> configMap = new HashMap<>();
+    protected String prefix=null;
+    protected String path=null;
+    protected Config config;
 
     /**
      * Clear cached configuration
@@ -183,6 +185,7 @@ public class ${naming.classToSimpleClass(class)} {
         List<String> list;
         if(this.configMap.containsKey(key)) {
             if(this.configMap.get(key) instanceof List) {
+                //noinspection unchecked
                 list = (List<String>) this.configMap.get(key);
                 list.addAll(valueList);
             }
@@ -215,10 +218,10 @@ public class ${naming.classToSimpleClass(class)} {
         <#case "LIST">
     public CasquatchDaoBuilder ${naming.configToFunction(key)}(String value) {
         if(value.contains(",")) {
-            return this.with("${key}", Arrays.asList(value.split(",")));
+            return this.with("${key}", Collections.singletonList(value.split(",")));
         }
         else {
-            return this.with("${key}", Arrays.asList(value));
+            return this.with("${key}", Collections.singletonList(value));
         }
     }
     /**
