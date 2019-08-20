@@ -31,7 +31,7 @@
 	<description>Example Project integrating Casquatch with Spring Config Server</description>
 
 	<properties>
-		<casquatch.version>2.0-SNAPSHOT</casquatch.version>
+		<casquatch.version>2.0-RELEASE</casquatch.version>
 		<java.version>1.8</java.version>
 		<spring-cloud.version>Greenwich.SR2</spring-cloud.version>
 	</properties>

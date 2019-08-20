@@ -32,5 +32,15 @@
   </description>
     </item>
     
+    <item>
+      <title>Concepts</title>
+      <link>http://tmobile.github.io/casquatch/overview/concepts/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://tmobile.github.io/casquatch/overview/concepts/</guid>
+      <description>CasquatchDao CasquatchDao is your main interface to the database and provides an extensive api. This can be configured through a Builder, Autowired with Spring, or loaded through a configuration file.
+Casquatch Entity The CasquatchEntity corresponds directly to a table. Fields and naming are translated through CasquatchNamingConvention to CQL equivalents. At minimum an entity will look like the following: @CasquatchEntity @Getter @Setter @NoArgsConstructor public class TableName extends AbstractCasquatchEntity { @PartitionKey private Integer keyOne; @ClusteringColumn(1) private Integer keyTwo; private String colOne; private String colTwo; }</description>
+    </item>
+    
   </channel>
 </rss>

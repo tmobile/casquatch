@@ -75,12 +75,12 @@
     </item>
     
     <item>
-      <title>2.0-SNAPSHOT</title>
+      <title>2.0-RELEASE</title>
       <link>http://tmobile.github.io/casquatch/releasenotes/v2.0/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://tmobile.github.io/casquatch/releasenotes/v2.0/</guid>
-      <description> Changes  Complete rewrite to correspond to 4.0 OSS Datastax Driver Moved to annotation processing code generation Split projects to separate spring, tests, and generator from core driver New Feature: Rest DAO New Hugo based manual - https://tmobile.github.io/casquatch/ New Travis CI Integration - https://travis-ci.com/tmobile/casquatch  Release Date: TBD Github: 2.0-SNAPSHOT Maven Central: TBD </description>
+      <description> Changes  Complete rewrite to correspond to 4.0 OSS Datastax Driver Moved to annotation processing based code generation Split projects to separate spring, tests, and generator from core driver New Feature: FailoverPolicy to enable custom failover policies New Feature: Rest DAO generation New Hugo based manual - https://tmobile.github.io/casquatch/ New Travis CI Integration - https://travis-ci.com/tmobile/casquatch  Release Date: 08/20/2019 Github: 2.0-RELEASE Maven Central: CassandraDriver &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.tmobile.opensource.casquatch&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;casquatch-driver&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;2.0-RELEASE&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  </description>
     </item>
     
   </channel>

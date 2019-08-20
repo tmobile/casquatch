@@ -32,7 +32,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<casquatch.version>2.0-SNAPSHOT</casquatch.version>
+		<casquatch.version>2.0-RELEASE</casquatch.version>
 		<swagger.version>2.9.2</swagger.version>
 	</properties>
 

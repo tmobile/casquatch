@@ -31,13 +31,15 @@ Github: springconfigserver Schema CREATE KEYSPACE springconfigserver WITH replic
     </item>
     
     <item>
-      <title>Spring Rest</title>
+      <title>Spring Rest - Tutorial</title>
       <link>http://tmobile.github.io/casquatch/examples/springrest/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://tmobile.github.io/casquatch/examples/springrest/</guid>
-      <description>Overview This is a simple project that utilizes Spring and Casquatch to provide a Rest API for a given schema. Entity was generated via the Code Generator
-Github: springrest Schema CREATE KEYSPACE springrest WITH replication = {&#39;class&#39;: &#39;SimpleStrategy&#39;, &#39;replication_factor&#39;: &#39;1&#39;} AND durable_writes = true; CREATE TABLE springrest.table_name ( key_one int, key_two int, col_one text, col_two text, PRIMARY KEY (key_one, key_two) ); EOF  Configuration casquatch { basic { contact-points = [ &amp;quot;127.</description>
+      <description>Overview This is a simple project that utilizes Spring and Casquatch to provide a Rest API for a given schema
+Working Example: springrest Tutorial In this tutorial we are going to step through the creation of a simple project from start to finish.
+Prerequisites The following prerequisites are required:
+ JDK 8 Maven Docker (or a running Cassandra database)  Spring Initializer Spring offers the Spring Initializer to quick start a project.</description>
     </item>
     
   </channel>
