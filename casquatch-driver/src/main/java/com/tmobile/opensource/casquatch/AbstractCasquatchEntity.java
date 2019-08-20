@@ -18,7 +18,12 @@ package com.tmobile.opensource.casquatch;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tmobile.opensource.casquatch.annotation.CasquatchIgnore;
+import com.tmobile.opensource.casquatch.annotation.ClusteringColumn;
+import com.tmobile.opensource.casquatch.annotation.PartitionKey;
 import lombok.extern.slf4j.Slf4j;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Abstract Entity class to extend Casquatch entities with expected functionality
@@ -26,11 +31,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractCasquatchEntity extends AbstractCasquatchObject {
     /**
-     * Return instance of class with only primary key set
+     * Return instance of class with only primary key set. A default implementation is provided using Reflection but an explicit procedure is recommended.
      * @return instance containing only primary key
      */
     @JsonIgnore
     @CasquatchIgnore
-    public abstract AbstractCasquatchEntity keys();
-
+    public AbstractCasquatchEntity keys() {
+        Class<? extends AbstractCasquatchEntity> entityClass = this.getClass();
+        AbstractCasquatchEntity entity;
+        try {
+            entity = entityClass.newInstance();
+            for (Field field : entityClass.getDeclaredFields()) {
+                if (field.isAnnotationPresent(PartitionKey.class) || field.isAnnotationPresent(ClusteringColumn.class)) {
+                    entityClass.getMethod(CasquatchNamingConvention.javaVariableToJavaSet(field.getName()),field.getType()).invoke(entity, entityClass.getMethod(CasquatchNamingConvention.javaVariableToJavaGet(field.getName())).invoke(this));
+                }
+            }
+        } catch (Exception e) {
+            throw new DriverException(DriverException.CATEGORIES.CASQUATCH_MISSING_GENERATED_CLASS, "Unable to detect primary keys");
+        }
+        return entity;
+    }
 }
