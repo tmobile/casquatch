@@ -10,4 +10,4 @@ The full manual is available at http://tmobile.github.io/casquatch
 See [Spring Rest Tutorial](https://tmobile.github.io/casquatch/examples/springrest) for a quick start example getting up and running with a Rest DAO backed by Casquatch.
 
 ## Release Notes
-Release notes are now maintained in [Manual](https://tmobile.github.io/casquatch/releasenotes/)
+Release notes are now maintained in the [Manual](https://tmobile.github.io/casquatch/releasenotes/)
