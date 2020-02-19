@@ -54,13 +54,13 @@ See [Query Options]({{< ref "queryoptions.md" >}}) for more information
 | casquatch.advanced.speculative-execution-policy.max-executions = 2 | Maximum number of executions | 
 | casquatch.advanced.speculative-execution-policy.delay = 500 milliseconds | Delay before reexecuting the query |
 | casquatch.advanced.auth-provider.class | PlainTextAuthProvider | Authentication provider |
-| casquatch.ssl-engine-factory.class | DefaultSslEngineFactory | SSL Class |
-| casquatch.ssl-engine-factory.cipher-suites | [ "TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_256_CBC_SHA" ] | Default cipher suites |
-| casquatch.ssl-engine-factory.hostname-validation | true | Hostname validation |
-| casquatch.ssl-engine-factory.truststore-path | | Path to truststore |
-| casquatch.ssl-engine-factory.truststore-password | | Truststore password |
-| casquatch.ssl-engine-factory.keystore-path | | Path to Keystore |
-| casquatch.ssl-engine-factory.keystore-password | | Keystore password |
+| casquatch.advanced.ssl-engine-factory.class | DefaultSslEngineFactory | SSL Class |
+| casquatch.advanced.ssl-engine-factory.cipher-suites | [ "TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_256_CBC_SHA" ] | Default cipher suites |
+| casquatch.advanced.ssl-engine-factory.hostname-validation | true | Hostname validation |
+| casquatch.advanced.ssl-engine-factory.truststore-path | | Path to truststore |
+| casquatch.advanced.ssl-engine-factory.truststore-password | | Truststore password |
+| casquatch.advanced.ssl-engine-factory.keystore-path | | Path to Keystore |
+| casquatch.advanced.ssl-engine-factory.keystore-password | | Keystore password |
 | casquatch.profiles.ddl.basic.request.timeout | 2 seconds | Provides a DDL profile with greater timeout |
 
 ## Debugging
